@@ -1,11 +1,8 @@
---local zoneTextReal = GetRealZoneText();
---local zoneText = GetZoneText()
---local zoneTextMinimap = GetMinimapZoneText()
---print(zoneTextReal, zoneText, zoneTextMinimap)
+DT_ItemDb = {}
+DT_UnitDb = {}
 
-DT_ItemDb = {} -- stored item informations
-DT_UnitDb = {} -- stored unit informations
-DT_Options = {} -- stores options
+DT_Options = {}
+DT_Options['MinLogLevel'] = DT_LogLevel.None
 
 function DT_TableSize(table)
     local size = 0
@@ -16,13 +13,18 @@ function DT_TableSize(table)
     return size
 end
 
+function DT_InitOptions()
+    DT_Options['MinLogLevel'] = DT_LogLevel.Info
+end
+
 function DT_AddonLoaded(addonName)
-    -- print('DT_AddonLoaded', addonName)
     if (addonName == 'TestKai') then
         local itemsCount = DT_TableSize(DT_ItemDb)
         local unitsCount = DT_TableSize(DT_UnitDb)
 
-        print('DataTracker loaded, ' .. itemsCount .. ' Gegenstände, ' .. unitsCount .. ' Gegner')
+        DT_InitOptions()
+
+        DT_LogInfo('DataTracker loaded, ' .. itemsCount .. ' Gegenstände, ' .. unitsCount .. ' Gegner')
     end
 end
 
@@ -32,6 +34,8 @@ end
 
 -- Called when a mob was killed and should be stored to db
 function DT_MobKill(unitId, unitName)
+    DT_LogTrace('DT_MobKill', unitId, unitName)
+
     local unitInfo = DT_UnitDb[unitId]
     if (unitInfo == nil) then
         unitInfo = {}
@@ -47,11 +51,13 @@ function DT_MobKill(unitId, unitName)
 
     unitInfo['kills'] = kills
 
-    print('DataTracker Gegner: ' .. unitName .. ' (' .. unitId .. '), getötet: ' .. kills)
+    DT_LogDebug('Kill: ' .. unitName .. ' (' .. unitId .. '), total kills: ' .. kills)
 end
 
 -- Called if a new item was looted and should be added to db
-function DT_AddItem(itemId, itemName, itemQuantity, unitId)
+function DT_AddItem(itemId, itemName, itemQuantity, itemQuality, unitId)
+    DT_LogVerbose('DT_AddItem', itemId, itemName, itemQuantity, itemQuality, unitId)
+
     -- store item info
     local itemInfo = DT_ItemDb[itemId]
     if (itemInfo == nil) then
@@ -60,7 +66,8 @@ function DT_AddItem(itemId, itemName, itemQuantity, unitId)
     end
 
     itemInfo['name'] = itemName
-    
+    itemInfo['quality'] = itemQuality
+
     local lootedCounter = itemInfo['looted']
     if (lootedCounter == nil) then
         lootedCounter = itemQuantity
@@ -90,12 +97,13 @@ function DT_AddItem(itemId, itemName, itemQuantity, unitId)
     end
     unitLootedInfo[itemId] = unitItemLootedCounter
 
-    print('DataTracker Gegenstand: ' .. itemName .. ' (' .. itemId .. '), gelootet: ' .. lootedCounter)
+    DT_LogDebug('Item: ' .. itemName .. ' (' .. itemId .. '), total times looted: ' .. lootedCounter)
 end
 
 -- occures when the target changes, used to store unit id and name
 function DT_TargetChanged()
     if (UnitIsPlayer('target') or not UnitCanAttack('player', 'target')) then
+        DT_LogVerbose('Ignore none attackable target')
         return
     end
 
@@ -139,14 +147,17 @@ function DT_LootReady()
         -- 2: LOOT_SLOT_MONEY - Gold/silver/copper coin
         -- 3: LOOT_SLOT_CURRENCY - Other currency amount, such as  [Valor Points]
 
-        if (slotType == LOOT_SLOT_ITEM) then
+        if (slotType == LOOT_SLOT_MONEY) then
+            DT_LogDebug('TODO: Money')
+
+        elseif (slotType == LOOT_SLOT_ITEM) then
             local itemId = currencyID
             if (itemId == nil) then
                 itemId = DT_GetLootId(itemSlot)
             end
 
             if (true) then
-                --print('--- > sources')
+                DT_LogVerbose('--- > sources')
                 local sources = {GetLootSourceInfo(itemSlot)}
                 for j = 1, #sources, 2
                 do
@@ -156,23 +167,13 @@ function DT_LootReady()
                         -- print(GetUnitName(unitId))
                         -- print(sources[j], unitId)
 
-                        DT_AddItem(itemId, itemName, lootQuantity, unitId)
+                        DT_AddItem(itemId, itemName, lootQuantity, lootQuality, unitId)
                     end
                 end
-                --print('--- < sources')
-
-                --DT_ChatMessage('- itemId', itemId)
-                --DT_ChatMessage('- itemName', itemName)
-                -- DT_ChatMessage('- lootQuantity', lootQuantity)
-                -- DT_ChatMessage('- currencyID', currencyID)        
-                -- DT_ChatMessage('- lootQuality', lootQuality)
-                -- DT_ChatMessage('- locked', locked)
-                -- DT_ChatMessage('- isQuestItem', isQuestItem)
-                -- DT_ChatMessage('- questId', questId)
-                -- DT_ChatMessage('- slotType', slotType)
+                DT_LogVerbose('--- < sources')
             end
         else
-            -- print('Ignore item', itemName)
+            DT_LogVerbose('Ignore item', itemName)
         end
     end
 end
@@ -221,7 +222,7 @@ function DT_CombatLogEventUnfiltered()
 end
 
 function DT_Main(self, event, ...)
-    -- print('EVENT', event, ...)
+    DT_LogTrace('EVENT', event, ...)
 
     if (event == 'ADDON_LOADED') then
         DT_AddonLoaded(...)

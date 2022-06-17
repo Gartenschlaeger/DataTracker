@@ -5,4 +5,5 @@
 ## Version: 1.0.0
 ## SavedVariables: DT_Options, DT_ItemDb, DT_UnitDb
 
+Logging.lua
 TestKai.lua
