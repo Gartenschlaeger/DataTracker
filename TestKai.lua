@@ -1,9 +1,24 @@
+
+-- Item database
 DT_ItemDb = {}
+
+-- Unit database
 DT_UnitDb = {}
 
+-- Zones database
+DT_ZoneDb = {}
+
+-- Addon options
 DT_Options = {}
 DT_Options['MinLogLevel'] = DT_LogLevel.None
 
+-- Current ZoneId. If nil call to DT_UpdateCurrentZone() is needed
+DT_CURRENT_ZONE_ID = nil
+
+-- Holds information if looting has already started because the event LOOT_READY occures multiple times
+DT_LootingStarted = false
+
+-- Returns the size for the given table.
 function DT_TableSize(table)
     local size = 0
     for _ in pairs(table) do
@@ -13,10 +28,12 @@ function DT_TableSize(table)
     return size
 end
 
+-- Initialisation of options. Called when the addon is loaded once
 function DT_InitOptions()
     DT_Options['MinLogLevel'] = DT_LogLevel.Debug
 end
 
+-- Called when the addon is fully loaded and saved values are loaded from disk.
 function DT_AddonLoaded(addonName)
     if (addonName == 'TestKai') then
         local itemsCount = DT_TableSize(DT_ItemDb)
@@ -28,30 +45,64 @@ function DT_AddonLoaded(addonName)
     end
 end
 
+-- Converts a unit guid to an id
 function DT_UnitGuidToId(unitGuid)
     return tonumber(select(6, strsplit('-', unitGuid)), 10)
+end
+
+-- Returns the itemId by slot link
+function DT_GetLootId(itemSlot)
+	local link = GetLootSlotLink(itemSlot)
+	if link then
+        DT_LogVerbose('DT_GetLootId, link = ', link)
+		local _, _, idCode = string.find(link, "|Hitem:(%d*):(%d*):(%d*):")
+		return tonumber(idCode) or -1
+	end
+
+	return 0
 end
 
 -- Called when a mob was killed and should be stored to db
 function DT_MobKill(unitId, unitName)
     DT_LogTrace('DT_MobKill', unitId, unitName)
 
+    if (DT_CURRENT_ZONE_ID == nil) then
+        DT_UpdateCurrentZone()
+    end
+
+    -- get unit info
     local unitInfo = DT_UnitDb[unitId]
     if (unitInfo == nil) then
         unitInfo = {}
         DT_UnitDb[unitId] = unitInfo
     end
 
+    -- update kill counter
     local kills = unitInfo['kills']
     if (kills == nil) then
         kills = 1
     else
         kills = kills + 1
     end
-
     unitInfo['kills'] = kills
 
-    DT_LogDebug('Kill: ' .. unitName .. ' (' .. unitId .. '), total kills: ' .. kills)
+    -- update zones
+    local zones = unitInfo['zones']
+    if (zones == nil) then
+        zones = {}
+        unitInfo['zones'] = zones
+    end
+
+    -- update zone kills counter
+    local zoneKills = zones[DT_CURRENT_ZONE_ID]
+    if (zoneKills == nil) then
+        zoneKills = 1
+    else
+        zoneKills = zoneKills + 1
+    end
+    zones[DT_CURRENT_ZONE_ID] = zoneKills
+
+    DT_LogDebug('Kill: ' .. unitName .. ' (' .. unitId .. '), total times killed: ' .. kills)
 end
 
 -- Called when copper was looted and should be added to db
@@ -106,8 +157,10 @@ function DT_AddItem(itemId, itemName, itemQuantity, itemQuality, unitId)
     DT_LogDebug('Item: ' .. itemName .. ' (' .. itemId .. '), total times looted: ' .. lootedCounter)
 end
 
--- occures when the target changes, used to store unit id and name
+-- Occures when the target changes, used to store unit id and name
 function DT_TargetChanged()
+    DT_LogTrace('DT_TargetChanged')
+
     if (UnitIsPlayer('target') or not UnitCanAttack('player', 'target')) then
         DT_LogVerbose('Ignore none attackable target')
         return
@@ -134,15 +187,19 @@ function DT_TargetChanged()
     end
 end
 
--- holds information if looting has already started because the event LOOT_READY occures multiple times
-DT_LootingStarted = false
-
 function DT_LootReady()
+    DT_LogTrace('DT_LootReady')
+
     if (DT_LootingStarted) then
         return
     end
 
     DT_LootingStarted = true
+
+    -- ensure current zone id is set
+    if (DT_CURRENT_ZONE_ID == nil) then
+        DT_UpdateCurrentZone()
+    end
 
     for itemSlot = 1, GetNumLootItems() do
         local _, itemName, lootQuantity, currencyID, lootQuality, locked, isQuestItem, questId = GetLootSlotInfo(itemSlot)
@@ -184,24 +241,18 @@ function DT_LootReady()
 end
 
 function DT_LootOpened()
-end
-
-function DT_GetLootId(slot)
-	local link = GetLootSlotLink(slot)
-	if link then
-        -- print('DT_GetLootId "', link, '"')
-		local _, _, idCode = string.find(link, "|Hitem:(%d*):(%d*):(%d*):")
-		return tonumber(idCode) or -1
-	end
-
-	return 0
+    DT_LogTrace('DT_LootOpened')
 end
 
 function DT_LootClosed()
+    DT_LogTrace('DT_LootClosed')
+
     DT_LootingStarted = false
 end
 
+-- Temporarilly storage of UnitId <-> IsLooting mapping to remove duplicates in looting db
 DT_AttackedUnits = {}
+
 function DT_CombatLogEventUnfiltered()
     local timestamp, subEvent, _, sourceGUID, sourceName, sourceFlags, sourceRaidFlags, destGUID, destName, destFlags, destRaidFlags, damage_spellid, overkill_spellname, school_spellSchool, resisted_amount, blocked_overkill = CombatLogGetCurrentEventInfo()
     -- print('CombatLogEventUnfiltered', destGUID, subEvent)
@@ -226,13 +277,45 @@ function DT_CombatLogEventUnfiltered()
 	end 
 end
 
-function DT_Main(self, event, ...)
-    DT_LogTrace('EVENT', event, ...)
+-- Updates the current zone id DT_CURRENT_ZONE_ID
+function DT_UpdateCurrentZone()
+    DT_LogTrace('DT_UpdateCurrentZone')
 
+    local zoneText = GetZoneText()
+    if (not zoneText or zoneText == '') then
+        DT_LogWarning('Invalid ZoneText, text = "' .. zoneText .. '"')
+        return
+    end
+
+	-- find zone ID in db if already known
+	local zoneId = nil
+	for id, name in pairs(DT_ZoneDb) do
+		if zoneText == name then
+			zoneId = id
+            DT_LogVerbose('Found existing match for Zone in db, zoneId = ' .. zoneId .. ', zoneText = ' .. zoneText)
+			break
+		end
+	end
+
+	-- if zone is unknown add it to db
+	if zoneId == nil then
+        zoneId = 1000 + DT_TableSize(DT_ZoneDb)
+        DT_LogVerbose('Write new ZoneText to db, zoneId = ' .. zoneId .. ', zoneText = ' .. zoneText)
+		DT_ZoneDb[zoneId] = zoneText
+	end
+
+	DT_CURRENT_ZONE_ID = zoneId
+    DT_LogDebug('DT_CURRENT_ZONE_ID = ' .. zoneId)
+end
+
+function DT_Main(self, event, ...)
+    --DT_LogTrace('EVENT', event, ...)
     if (event == 'ADDON_LOADED') then
         DT_AddonLoaded(...)
     elseif (event == 'PLAYER_TARGET_CHANGED') then
         DT_TargetChanged()
+    elseif (event == 'ZONE_CHANGED_NEW_AREA') then
+        DT_UpdateCurrentZone()
     elseif (event == 'LOOT_READY') then
         DT_LootReady()
     elseif (event == 'LOOT_OPENED') then
@@ -247,6 +330,7 @@ end
 local f = CreateFrame('Frame')
 f:RegisterEvent('ADDON_LOADED')
 f:RegisterEvent('PLAYER_TARGET_CHANGED')
+f:RegisterEvent('ZONE_CHANGED_NEW_AREA')
 f:RegisterEvent('LOOT_READY')
 f:RegisterEvent('LOOT_OPENED')
 f:RegisterEvent('LOOT_CLOSED')

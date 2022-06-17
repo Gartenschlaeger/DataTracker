@@ -3,7 +3,7 @@
 ## Notes: Test addon to figure out how addon development in WoW works.
 ## Author: Kai Gartenschläger
 ## Version: 1.0.0
-## SavedVariables: DT_Options, DT_ItemDb, DT_UnitDb
+## SavedVariables: DT_Options, DT_ItemDb, DT_UnitDb, DT_ZoneDb
 
 Logging.lua
 TestKai.lua
