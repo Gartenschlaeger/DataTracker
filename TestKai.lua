@@ -14,7 +14,7 @@ function DT_TableSize(table)
 end
 
 function DT_InitOptions()
-    DT_Options['MinLogLevel'] = DT_LogLevel.Info
+    DT_Options['MinLogLevel'] = DT_LogLevel.Debug
 end
 
 function DT_AddonLoaded(addonName)
@@ -54,7 +54,13 @@ function DT_MobKill(unitId, unitName)
     DT_LogDebug('Kill: ' .. unitName .. ' (' .. unitId .. '), total kills: ' .. kills)
 end
 
--- Called if a new item was looted and should be added to db
+-- Called when copper was looted and should be added to db
+function DT_AddGold(unitId, copperAmount)
+    DT_LogVerbose('', unitId, copperAmount)
+
+end
+
+-- Called when a new item was looted and should be added to db
 function DT_AddItem(itemId, itemName, itemQuantity, itemQuality, unitId)
     DT_LogVerbose('DT_AddItem', itemId, itemName, itemQuantity, itemQuality, unitId)
 
@@ -143,14 +149,9 @@ function DT_LootReady()
 
         local slotType = GetLootSlotType(itemSlot)
         -- 0: LOOT_SLOT_NONE - No contents
+
         -- 1: LOOT_SLOT_ITEM - A regular item
-        -- 2: LOOT_SLOT_MONEY - Gold/silver/copper coin
-        -- 3: LOOT_SLOT_CURRENCY - Other currency amount, such as  [Valor Points]
-
-        if (slotType == LOOT_SLOT_MONEY) then
-            DT_LogDebug('TODO: Money')
-
-        elseif (slotType == LOOT_SLOT_ITEM) then
+        if (slotType == LOOT_SLOT_ITEM) then
             local itemId = currencyID
             if (itemId == nil) then
                 itemId = DT_GetLootId(itemSlot)
@@ -164,16 +165,20 @@ function DT_LootReady()
                     local guidType = select(1, strsplit("-", sources[j]))
                     if guidType == 'Creature' then
                         local unitId = DT_UnitGuidToId(sources[j])
-                        -- print(GetUnitName(unitId))
-                        -- print(sources[j], unitId)
-
-                        DT_AddItem(itemId, itemName, lootQuantity, lootQuality, unitId)
+                        if (unitId and unitId > 0 and not isQuestItem) then
+                            DT_AddItem(itemId, itemName, lootQuantity, lootQuality, unitId)
+                        end
                     end
                 end
                 DT_LogVerbose('--- < sources')
             end
+
+        -- 2: LOOT_SLOT_MONEY - Gold/silver/copper coin
+        elseif (slotType == LOOT_SLOT_MONEY) then
+            -- DT_AddGold()
+
         else
-            DT_LogVerbose('Ignore item', itemName)
+            DT_LogVerbose('Ignore item, slot type:', slotType)
         end
     end
 end
