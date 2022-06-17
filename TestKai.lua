@@ -26,7 +26,7 @@ function DT_AddonLoaded(addonName)
     end
 end
 
-function DT_UnitGuidToUnitId(unitGuid)
+function DT_UnitGuidToId(unitGuid)
     return tonumber(select(6, strsplit('-', unitGuid)), 10)
 end
 
@@ -93,55 +93,38 @@ function DT_AddItem(itemId, itemName, itemQuantity, unitId)
     print('DataTracker Gegenstand: ' .. itemName .. ' (' .. itemId .. '), gelootet: ' .. lootedCounter)
 end
 
--- called then the target changes. 
--- should store the target unit id and name
+-- occures when the target changes, used to store unit id and name
 function DT_TargetChanged()
+    if (UnitIsPlayer('target') or not UnitCanAttack('player', 'target')) then
+        return
+    end
+
     local unitGuid = UnitGUID("target")
     local unitName = UnitName("target")
-    if (unitGuid ~= nil and unitName ~= nil) then
-        local unitType = select(1, strsplit('-', unitGuid))
-        if (unitType == 'Creature') then
-            local unitId = DT_UnitGuidToUnitId(unitGuid)
-            --print('TargetChanged', unitId, unitName)
 
-            local mobInfo = DT_UnitDb[unitId]
-            if (mobInfo == nil or type(mobInfo) ~= 'table') then
-                mobInfo = {}
-            end
+    if (unitGuid == nil or unitName == nil) then
+        return
+    end
 
-            mobInfo['name'] = unitName
+    local unitType = select(1, strsplit('-', unitGuid))
+    if (unitType == 'Creature') then
+        local unitId = DT_UnitGuidToId(unitGuid)
+
+        local mobInfo = DT_UnitDb[unitId]
+        if (mobInfo == nil) then
+            mobInfo = {}
             DT_UnitDb[unitId] = mobInfo
         end
+
+        mobInfo['name'] = unitName
     end
 end
 
-function DT_LootReady()
-    DT_HandleLoot()
-end
-
-function DT_LootOpened()
-end
-
-function DT_GetLootId(slot)
-	local link = GetLootSlotLink(slot)
-	if link then
-        -- print('DT_GetLootId "', link, '"')
-		local _, _, idCode = string.find(link, "|Hitem:(%d*):(%d*):(%d*):")
-		return tonumber(idCode) or -1
-	end
-
-	return 0
-end
-
+-- holds information if looting has already started because the event LOOT_READY occures multiple times
 DT_LootingStarted = false
 
-function DT_HandleLoot()
-    -- print('HandleLoot')
-
-    -- prevent to store the items multiple times
-    -- unfortunatelly blizzard is calling the event LOOT_READY multiple times for unknown reasons
+function DT_LootReady()
     if (DT_LootingStarted) then
-        -- print('WARN', 'already looted')
         return
     end
 
@@ -149,7 +132,7 @@ function DT_HandleLoot()
 
     for itemSlot = 1, GetNumLootItems() do
         local _, itemName, lootQuantity, currencyID, lootQuality, locked, isQuestItem, questId = GetLootSlotInfo(itemSlot)
-        
+
         local slotType = GetLootSlotType(itemSlot)
         -- 0: LOOT_SLOT_NONE - No contents
         -- 1: LOOT_SLOT_ITEM - A regular item
@@ -161,7 +144,7 @@ function DT_HandleLoot()
             if (itemId == nil) then
                 itemId = DT_GetLootId(itemSlot)
             end
-    
+
             if (true) then
                 --print('--- > sources')
                 local sources = {GetLootSourceInfo(itemSlot)}
@@ -169,7 +152,7 @@ function DT_HandleLoot()
                 do
                     local guidType = select(1, strsplit("-", sources[j]))
                     if guidType == 'Creature' then
-                        local unitId = tonumber(select(6, strsplit('-', sources[j])), 10)
+                        local unitId = DT_UnitGuidToId(sources[j])
                         -- print(GetUnitName(unitId))
                         -- print(sources[j], unitId)
 
@@ -194,6 +177,20 @@ function DT_HandleLoot()
     end
 end
 
+function DT_LootOpened()
+end
+
+function DT_GetLootId(slot)
+	local link = GetLootSlotLink(slot)
+	if link then
+        -- print('DT_GetLootId "', link, '"')
+		local _, _, idCode = string.find(link, "|Hitem:(%d*):(%d*):(%d*):")
+		return tonumber(idCode) or -1
+	end
+
+	return 0
+end
+
 function DT_LootClosed()
     DT_LootingStarted = false
 end
@@ -214,7 +211,7 @@ function DT_CombatLogEventUnfiltered()
 		elseif (guidType ~= "Player" and guidType ~= "Pet")
 		then
 			if (subEvent == 'UNIT_DIED' and destGUID ~= nil and DT_AttackedUnits[destGUID] == true) then
-                local unitId = DT_UnitGuidToUnitId(destGUID)
+                local unitId = DT_UnitGuidToId(destGUID)
                 --print('Mob kill', unitId, destName)
 				DT_AttackedUnits[destGUID] = nil
                 DT_MobKill(unitId, destName)
