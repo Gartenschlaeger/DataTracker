@@ -1,24 +1,41 @@
-print('DataTracker')
-
 --local zoneTextReal = GetRealZoneText();
 --local zoneText = GetZoneText()
 --local zoneTextMinimap = GetMinimapZoneText()
 --print(zoneTextReal, zoneText, zoneTextMinimap)
 
-TestKai_ItemDb = {} -- stored item informations
-TestKai_UnitDb = {} -- stored unit informations
+DT_ItemDb = {} -- stored item informations
+DT_UnitDb = {} -- stored unit informations
+DT_Options = {} -- stores options
 
-function TestKai_UnitGuidToUnitId(unitGuid)
+function DT_TableSize(table)
+    local size = 0
+    for _ in pairs(table) do
+        size = size + 1
+    end
+
+    return size
+end
+
+function DT_AddonLoaded(addonName)
+    -- print('DT_AddonLoaded', addonName)
+    if (addonName == 'TestKai') then
+        local itemsCount = DT_TableSize(DT_ItemDb)
+        local unitsCount = DT_TableSize(DT_UnitDb)
+
+        print('DataTracker loaded, ' .. itemsCount .. ' Gegenstände, ' .. unitsCount .. ' Gegner')
+    end
+end
+
+function DT_UnitGuidToUnitId(unitGuid)
     return tonumber(select(6, strsplit('-', unitGuid)), 10)
 end
 
 -- Called when a mob was killed and should be stored to db
-function TestKai_MobKill(unitId, unitName)
-
-    local unitInfo = TestKai_UnitDb[unitId]
+function DT_MobKill(unitId, unitName)
+    local unitInfo = DT_UnitDb[unitId]
     if (unitInfo == nil) then
         unitInfo = {}
-        TestKai_UnitDb[unitId] = unitInfo
+        DT_UnitDb[unitId] = unitInfo
     end
 
     local kills = unitInfo['kills']
@@ -34,12 +51,12 @@ function TestKai_MobKill(unitId, unitName)
 end
 
 -- Called if a new item was looted and should be added to db
-function TestKai_AddItem(itemId, itemName, itemQuantity, unitId)
+function DT_AddItem(itemId, itemName, itemQuantity, unitId)
     -- store item info
-    local itemInfo = TestKai_ItemDb[itemId]
+    local itemInfo = DT_ItemDb[itemId]
     if (itemInfo == nil) then
         itemInfo = {}
-        TestKai_ItemDb[itemId] = itemInfo
+        DT_ItemDb[itemId] = itemInfo
     end
 
     itemInfo['name'] = itemName
@@ -53,10 +70,10 @@ function TestKai_AddItem(itemId, itemName, itemQuantity, unitId)
     itemInfo['looted'] = lootedCounter
 
     -- store loot info
-    local unitInfo = TestKai_UnitDb[unitId]
+    local unitInfo = DT_UnitDb[unitId]
     if (unitInfo == nil) then
         unitInfo = {}
-        TestKai_UnitDb[unitId] = unitInfo
+        DT_UnitDb[unitId] = unitInfo
     end
 
     local unitLootedInfo = unitInfo['looted']
@@ -78,37 +95,37 @@ end
 
 -- called then the target changes. 
 -- should store the target unit id and name
-function TestKai_TargetChanged()
+function DT_TargetChanged()
     local unitGuid = UnitGUID("target")
     local unitName = UnitName("target")
     if (unitGuid ~= nil and unitName ~= nil) then
         local unitType = select(1, strsplit('-', unitGuid))
         if (unitType == 'Creature') then
-            local unitId = TestKai_UnitGuidToUnitId(unitGuid)
+            local unitId = DT_UnitGuidToUnitId(unitGuid)
             --print('TargetChanged', unitId, unitName)
 
-            local mobInfo = TestKai_UnitDb[unitId]
+            local mobInfo = DT_UnitDb[unitId]
             if (mobInfo == nil or type(mobInfo) ~= 'table') then
                 mobInfo = {}
             end
 
             mobInfo['name'] = unitName
-            TestKai_UnitDb[unitId] = mobInfo
+            DT_UnitDb[unitId] = mobInfo
         end
     end
 end
 
-function TestKai_LootReady()
-    TestKai_HandleLoot()
+function DT_LootReady()
+    DT_HandleLoot()
 end
 
-function TestKai_LootOpened()
+function DT_LootOpened()
 end
 
-function TestKai_GetLootId(slot)
+function DT_GetLootId(slot)
 	local link = GetLootSlotLink(slot)
 	if link then
-        -- print('TestKai_GetLootId "', link, '"')
+        -- print('DT_GetLootId "', link, '"')
 		local _, _, idCode = string.find(link, "|Hitem:(%d*):(%d*):(%d*):")
 		return tonumber(idCode) or -1
 	end
@@ -116,19 +133,19 @@ function TestKai_GetLootId(slot)
 	return 0
 end
 
-TestKai_LootingStarted = false
+DT_LootingStarted = false
 
-function TestKai_HandleLoot()
+function DT_HandleLoot()
     -- print('HandleLoot')
 
     -- prevent to store the items multiple times
     -- unfortunatelly blizzard is calling the event LOOT_READY multiple times for unknown reasons
-    if (TestKai_LootingStarted) then
+    if (DT_LootingStarted) then
         -- print('WARN', 'already looted')
         return
     end
 
-    TestKai_LootingStarted = true
+    DT_LootingStarted = true
 
     for itemSlot = 1, GetNumLootItems() do
         local _, itemName, lootQuantity, currencyID, lootQuality, locked, isQuestItem, questId = GetLootSlotInfo(itemSlot)
@@ -142,7 +159,7 @@ function TestKai_HandleLoot()
         if (slotType == LOOT_SLOT_ITEM) then
             local itemId = currencyID
             if (itemId == nil) then
-                itemId = TestKai_GetLootId(itemSlot)
+                itemId = DT_GetLootId(itemSlot)
             end
     
             if (true) then
@@ -156,20 +173,20 @@ function TestKai_HandleLoot()
                         -- print(GetUnitName(unitId))
                         -- print(sources[j], unitId)
 
-                        TestKai_AddItem(itemId, itemName, lootQuantity, unitId)
+                        DT_AddItem(itemId, itemName, lootQuantity, unitId)
                     end
                 end
                 --print('--- < sources')
 
-                --TestKai_ChatMessage('- itemId', itemId)
-                --TestKai_ChatMessage('- itemName', itemName)
-                -- TestKai_ChatMessage('- lootQuantity', lootQuantity)
-                -- TestKai_ChatMessage('- currencyID', currencyID)        
-                -- TestKai_ChatMessage('- lootQuality', lootQuality)
-                -- TestKai_ChatMessage('- locked', locked)
-                -- TestKai_ChatMessage('- isQuestItem', isQuestItem)
-                -- TestKai_ChatMessage('- questId', questId)
-                -- TestKai_ChatMessage('- slotType', slotType)
+                --DT_ChatMessage('- itemId', itemId)
+                --DT_ChatMessage('- itemName', itemName)
+                -- DT_ChatMessage('- lootQuantity', lootQuantity)
+                -- DT_ChatMessage('- currencyID', currencyID)        
+                -- DT_ChatMessage('- lootQuality', lootQuality)
+                -- DT_ChatMessage('- locked', locked)
+                -- DT_ChatMessage('- isQuestItem', isQuestItem)
+                -- DT_ChatMessage('- questId', questId)
+                -- DT_ChatMessage('- slotType', slotType)
             end
         else
             -- print('Ignore item', itemName)
@@ -177,12 +194,12 @@ function TestKai_HandleLoot()
     end
 end
 
-function TestKai_LootClosed()
-    TestKai_LootingStarted = false
+function DT_LootClosed()
+    DT_LootingStarted = false
 end
 
-TestKai_AttackedUnits = {}
-function TestKai_CombatLogEventUnfiltered()
+DT_AttackedUnits = {}
+function DT_CombatLogEventUnfiltered()
     local timestamp, subEvent, _, sourceGUID, sourceName, sourceFlags, sourceRaidFlags, destGUID, destName, destFlags, destRaidFlags, damage_spellid, overkill_spellname, school_spellSchool, resisted_amount, blocked_overkill = CombatLogGetCurrentEventInfo()
     -- print('CombatLogEventUnfiltered', destGUID, subEvent)
 
@@ -191,41 +208,44 @@ function TestKai_CombatLogEventUnfiltered()
 		local guidType = select(1, strsplit("-", destGUID))
 
         if ((subEvent == 'SWING_DAMAGE' or subEvent == 'SPELL_DAMAGE') and (sourceGUID == UnitGUID('player') or sourceGUID == UnitGUID('pet'))) then
-            TestKai_AttackedUnits[destGUID] = true
+            DT_AttackedUnits[destGUID] = true
         -- elseif (subEvent=="PARTY_KILL" and (MobInfoConfig.SaveAllPartyKills or 0) == 1) then
-        -- TestKai_AttackedUnits[destGUID] = true
+        -- DT_AttackedUnits[destGUID] = true
 		elseif (guidType ~= "Player" and guidType ~= "Pet")
 		then
-			if (subEvent == 'UNIT_DIED' and destGUID ~= nil and TestKai_AttackedUnits[destGUID] == true) then
-                local unitId = TestKai_UnitGuidToUnitId(destGUID)
+			if (subEvent == 'UNIT_DIED' and destGUID ~= nil and DT_AttackedUnits[destGUID] == true) then
+                local unitId = DT_UnitGuidToUnitId(destGUID)
                 --print('Mob kill', unitId, destName)
-				TestKai_AttackedUnits[destGUID] = nil
-                TestKai_MobKill(unitId, destName)
+				DT_AttackedUnits[destGUID] = nil
+                DT_MobKill(unitId, destName)
 			end
 		end
 	end 
 end
 
-function TestKai_Main(self, event, ...)
+function DT_Main(self, event, ...)
     -- print('EVENT', event, ...)
 
-    if (event == 'PLAYER_TARGET_CHANGED') then
-        TestKai_TargetChanged()
+    if (event == 'ADDON_LOADED') then
+        DT_AddonLoaded(...)
+    elseif (event == 'PLAYER_TARGET_CHANGED') then
+        DT_TargetChanged()
     elseif (event == 'LOOT_READY') then
-        TestKai_LootReady()
+        DT_LootReady()
     elseif (event == 'LOOT_OPENED') then
-        TestKai_LootOpened()
+        DT_LootOpened()
     elseif (event == 'LOOT_CLOSED') then
-        TestKai_LootClosed()
+        DT_LootClosed()
     elseif (event == 'COMBAT_LOG_EVENT_UNFILTERED') then
-        TestKai_CombatLogEventUnfiltered()
+        DT_CombatLogEventUnfiltered()
     end
 end
 
-local f = CreateFrame('Frame');
-f:RegisterEvent('PLAYER_TARGET_CHANGED');
+local f = CreateFrame('Frame')
+f:RegisterEvent('ADDON_LOADED')
+f:RegisterEvent('PLAYER_TARGET_CHANGED')
 f:RegisterEvent('LOOT_READY')
-f:RegisterEvent('LOOT_OPENED');
+f:RegisterEvent('LOOT_OPENED')
 f:RegisterEvent('LOOT_CLOSED')
 f:RegisterEvent('COMBAT_LOG_EVENT_UNFILTERED')
-f:SetScript('OnEvent', TestKai_Main)
+f:SetScript('OnEvent', DT_Main)
