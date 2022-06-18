@@ -31,8 +31,32 @@ end
 
 function DT_DatabaseBrowser_OnSearch()
     DT_LogTrace('DT_DatabaseBrowser_OnSearch')
+
+    DT_SearchResults = {}
+
+    local index = 1
+    local searchText = strtrim(DT_DatabaseBrowser_SearchBox:GetText())
+
+    if (searchText and strlen(searchText) > 0) then
+        for itemId, itemInfo in pairs(DT_ItemDb) do
+            local nameMatches = strfind(itemInfo.name, searchText, 1, true)
+            if (nameMatches) then
+                -- print(itemId, itemInfo.name)
+
+                local result = {}
+                result.itemId = itemId
+                result.itemName = itemInfo.name
+
+                DT_SearchResults[index] = result
+                index = index + 1
+            end
+        end
+    end
+
     DT_DatabaseBrowser_ScrollBar_Update()
 end
+
+DT_SearchResults = {}
 
 -- https://wowwiki-archive.fandom.com/wiki/Making_a_scrollable_list_using_FauxScrollFrameTemplate
 -- FauxScrollFrame_OnVerticalScroll(self, value, itemHeight, updateFunction)
@@ -44,17 +68,26 @@ local DT_RESULT_PIXEL_HEIGHT = 18
 function DT_DatabaseBrowser_ScrollBar_Update()
     DT_LogTrace('DT_DatabaseBrowser_ScrollBar_Update')
 
-    FauxScrollFrame_Update(DT_DatabaseBrowser_ScrollBar, 150, DT_RESULT_ITEMS_COUNT, DT_RESULT_PIXEL_HEIGHT)
+    local totalResults = DT_TableSize(DT_SearchResults)
+    FauxScrollFrame_Update(DT_DatabaseBrowser_ScrollBar, totalResults, DT_RESULT_ITEMS_COUNT, DT_RESULT_PIXEL_HEIGHT)
 
-    local offet = FauxScrollFrame_GetOffset(DT_DatabaseBrowser_ScrollBar)
+    local offset = FauxScrollFrame_GetOffset(DT_DatabaseBrowser_ScrollBar)
 	for i = 1, DT_RESULT_ITEMS_COUNT do
+        local result = DT_SearchResults[i + offset]
+
         local indexString = _G["DT_DatabaseBrowser_Entry"..i..'Index']
-        indexString:SetText('A ' .. i + offet)
-
         local valueString = _G["DT_DatabaseBrowser_Entry"..i..'Value']
-        valueString:SetText('B ' .. i + offet)
-
         local nameString = _G["DT_DatabaseBrowser_Entry"..i..'Name']
-        nameString:SetText('C ' .. i + offet)
+
+        if (result) then
+            indexString:SetText(result.itemName)
+            valueString:SetText(result.itemId)
+            nameString:SetText('') -- TODO: zone name
+        else
+            indexString:SetText('')
+            valueString:SetText('')
+            nameString:SetText('')
+        end
+
 	end
 end
