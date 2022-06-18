@@ -4,10 +4,14 @@ SLASH_DT_LOGLEVEL1 = "/dtll"
 
 function DT_SlashCommand_Show()
     DT_LogTrace('DT_SlashCommand_Show')
+
+    DT_DatabaseBrowser:Show()
 end
 
 function DT_SlashCommand_Hide()
     DT_LogTrace('DT_SlashCommand_Hide')
+    
+    DT_DatabaseBrowser:Hide()
 end
 
 function DT_SlashCommand_LogLevel(msg)

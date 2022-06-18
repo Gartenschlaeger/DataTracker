@@ -12,3 +12,6 @@ Logging.lua
 SavedVariables.lua
 SlashCommands.lua
 DataTracker.lua
+
+UI/DatabaseBrowser.lua
+UI/DatabaseBrowser.xml
