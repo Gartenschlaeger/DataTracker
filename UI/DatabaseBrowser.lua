@@ -36,10 +36,11 @@ function DT_DatabaseBrowser_OnSearch()
 
     local index = 1
     local searchText = strtrim(DT_DatabaseBrowser_SearchBox:GetText())
+    searchText = strlower(searchText)
 
     if (searchText and strlen(searchText) > 0) then
         for itemId, itemInfo in pairs(DT_ItemDb) do
-            local nameMatches = strfind(itemInfo.name, searchText, 1, true)
+            local nameMatches = strfind(strlower(itemInfo.name), searchText, 1, true)
             if (nameMatches) then
                 -- print(itemId, itemInfo.name)
 
