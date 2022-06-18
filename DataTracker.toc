@@ -1,9 +1,9 @@
 ## Interface: 90205
-## Title: TestKai
-## Notes: Test addon to figure out how addon development in WoW works.
+## Title: DataTracker
+## Notes: Addon to track looted items and fighted units.
 ## Author: Kai Gartenschläger
 ## Version: 1.0.0
 ## SavedVariables: DT_Options, DT_ItemDb, DT_UnitDb, DT_ZoneDb
 
 Logging.lua
-TestKai.lua
+DataTracker.lua

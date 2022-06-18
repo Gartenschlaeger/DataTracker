@@ -35,13 +35,13 @@ end
 
 -- Called when the addon is fully loaded and saved values are loaded from disk.
 function DT_AddonLoaded(addonName)
-    if (addonName == 'TestKai') then
+    if (addonName == 'DataTracker') then
         local itemsCount = DT_TableSize(DT_ItemDb)
         local unitsCount = DT_TableSize(DT_UnitDb)
 
         DT_InitOptions()
 
-        DT_LogInfo('DataTracker loaded, ' .. itemsCount .. ' Gegenstände, ' .. unitsCount .. ' Gegner')
+        DT_LogInfo('DataTracker loaded, ' .. itemsCount .. ' items, ' .. unitsCount .. ' units')
     end
 end
 
