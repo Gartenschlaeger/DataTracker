@@ -114,7 +114,7 @@ function DT_AddGold(unitId, lootedCopper)
         DT_UnitDb[unitId] = unitInfo
     end
 
-    local currentCopper = tonumber(unitInfo['copper'])
+    local currentCopper = tonumber(unitInfo['copper']) or 0
     local newCopper = currentCopper + lootedCopper
     DT_LogVerbose('DT_AddGold', unitInfo.name, currentCopper, ' -> ', newCopper)
 
