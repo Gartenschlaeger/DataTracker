@@ -10,3 +10,66 @@ To show or export the data, find the file DataTracker.lua in your interface dire
 ~~~
 /_retail_/WTF/Account/ACCOUNT_NAME/SavedVariables/DataTracker.lua
 ~~~
+
+The structure of the resulting file will look like bellow.
+
+~~~lua
+DT_ItemDb = {
+	[179315] = {
+		["looted"] = 18,
+		["name"] = "Schattenhafter Schenkel",
+		["quality"] = 1,
+	},
+	[172092] = {
+		["name"] = "Bleicher Knochen",
+		["looted"] = 123,
+		["quality"] = 1,
+	},
+	[774] = {
+		["looted"] = 1,
+		["name"] = "Malachit",
+		["quality"] = 2,
+	},
+    ..
+}
+DT_UnitDb = {
+	[158439] = {
+		["zones"] = {
+			[1005] = 8,
+		},
+		["kills"] = 8,
+		["name"] = "Verhüllte Arkanistin",
+		["looted"] = {
+			[173202] = 5,
+			[173204] = 1,
+			[177753] = 1,
+		},
+	},
+	[169123] = {
+		["kills"] = 43,
+		["name"] = "Goldrückengraser",
+		["looted"] = {
+			[172089] = 122,
+			[172097] = 2,
+			[175955] = 38,
+			[173877] = 5,
+			[172094] = 47,
+			[172096] = 7,
+			[172053] = 13,
+			[179315] = 11,
+			[172092] = 44,
+		},
+	},
+    ..
+}
+DT_ZoneDb = {
+	[1001] = "Orgrimmar",
+	[1003] = "Nördliches Brachland",
+	[1005] = "Revendreth",
+	[1000] = "Durotar",
+	[1002] = "Oribos",
+	[1004] = "Der Zwischenraum",
+    ..
+}
+
+~~~
