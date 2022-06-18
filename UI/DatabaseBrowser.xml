@@ -7,31 +7,35 @@
         enableMouse="true" 
         movable="true" 
         frameStrata="DIALOG" 
-        hidden="true" 
-        toplevel="true">
+        hidden="false" 
+        toplevel="true"
+        virtual="false">
         <Size>
-            <AbsDimension x="640" y="480" />
+            <AbsDimension x="800" y="538" />
         </Size>
         <Anchors>
             <Anchor point="CENTER" />
         </Anchors>
-        <Layers>
-            <Layer level="HIGHLIGHT">
-                <Button parent="UIParent" inherits="UIPanelButtonTemplate">
-                    <Size x="200" y="24" />
-                    <Anchors>
-                        <Anchor point="TOP">
-                            <Offset>
-                                <AbsDimension x="0" y="12"/>
-                            </Offset>
-                        </Anchor>
-                    </Anchors>
-                    <Scripts>
-                        <OnClick>print('click!!!')</OnClick>
-                    </Scripts>
-                </Button>
-            </Layer>
-        </Layers>
+        <Frames>
+            <EditBox name="DT_DatabaseBrowser_SearchBox" autoFocus="false" historyLines="1" inherits="SearchBoxTemplate" virtual="true">
+                <Size x="460" y="26"/>
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeTo="$parent" x="20" y="-35" />
+                </Anchors>
+                <Scripts>
+                    <OnEnterPressed function="DT_DatabaseBrowser_OnSearch" />
+                </Scripts>
+            </EditBox>
+            <Button name="DT_DatabaseBrowser_SearchBtn" inherits="UIPanelButtonTemplate" text="Suchen" virtual="true">
+                <Size x="96" y="24"/>
+                <Anchors>
+                    <Anchor point="RIGHT" relativeTo="DT_DatabaseBrowser_SearchBox" x="106" y="0"/>
+                </Anchors>
+                <Scripts>
+                    <OnClick function="DT_DatabaseBrowser_OnSearch" />
+                </Scripts>
+            </Button>
+        </Frames>
         <Scripts>
             <OnLoad function="DT_DatabaseBrowser_OnLoad" />
             <OnDragStart function="DT_DatabaseBrowser_OnDragStart" />

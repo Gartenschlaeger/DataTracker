@@ -3,11 +3,6 @@ function DT_DatabaseBrowser_OnLoad()
 
     DT_DatabaseBrowser.Title:SetText('DataTracker')
     DT_DatabaseBrowser:RegisterForDrag("LeftButton")
-
-    -- DT_DatabaseBrowserClose:SetScript("OnClick", function (self, button, down)
-    --     -- custom logic before closing the dialog
-    --     DT_DatabaseBrowser:Hide()
-    -- end)
 end
 
 function DT_DatabaseBrowser_OnDragStart(self)
@@ -30,4 +25,8 @@ end
 
 function DT_DatabaseBrowser_OnHide()
     DT_LogTrace('DT_DatabaseBrowser_OnHide')
+end
+
+function DT_DatabaseBrowser_OnSearch()
+    DT_LogTrace('DT_DatabaseBrowser_OnSearch')
 end
