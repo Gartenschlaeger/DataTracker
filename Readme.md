@@ -11,6 +11,19 @@ To show or export the data, find the file DataTracker.lua in your interface dire
 /_retail_/WTF/Account/ACCOUNT_NAME/SavedVariables/DataTracker.lua
 ~~~
 
+# Instalation
+
+The addon is not added yet to any official addon management registry.
+So to install it you can just download the code and copy the files to your addons directory which by default is the following path:
+
+~~~
+/_retail_/Interface/AddOns
+~~~
+
+> The addon was developed in WOW Shadowlands. Compatibility with Classic is not guaranteed.
+
+# Database Structure
+
 The structure of the resulting file will look like bellow.
 
 ~~~lua
