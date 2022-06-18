@@ -232,7 +232,7 @@ function DT_LootReady()
 
         -- 2: LOOT_SLOT_MONEY - Gold/silver/copper coin
         elseif (slotType == LOOT_SLOT_MONEY) then
-            -- DT_AddGold()
+            -- TODO: DT_AddGold()
 
         else
             DT_LogVerbose('Ignore item, slot type:', slotType)
@@ -255,7 +255,7 @@ DT_AttackedUnits = {}
 
 function DT_CombatLogEventUnfiltered()
     local timestamp, subEvent, _, sourceGUID, sourceName, sourceFlags, sourceRaidFlags, destGUID, destName, destFlags, destRaidFlags, damage_spellid, overkill_spellname, school_spellSchool, resisted_amount, blocked_overkill = CombatLogGetCurrentEventInfo()
-    -- print('CombatLogEventUnfiltered', destGUID, subEvent)
+    DT_LogTrace('DT_CombatLogEventUnfiltered', timestamp, subEvent, sourceGUID, sourceName, sourceFlags, sourceRaidFlags, destGUID, destName)
 
     if destGUID ~= nil
 	then
@@ -263,13 +263,15 @@ function DT_CombatLogEventUnfiltered()
 
         if ((subEvent == 'SWING_DAMAGE' or subEvent == 'SPELL_DAMAGE') and (sourceGUID == UnitGUID('player') or sourceGUID == UnitGUID('pet'))) then
             DT_AttackedUnits[destGUID] = true
-        -- elseif (subEvent=="PARTY_KILL" and (MobInfoConfig.SaveAllPartyKills or 0) == 1) then
+
+        -- TODO: PARTY_KILL
+        -- elseif (subEvent=="PARTY_KILL") then
         -- DT_AttackedUnits[destGUID] = true
+
 		elseif (guidType ~= "Player" and guidType ~= "Pet")
 		then
 			if (subEvent == 'UNIT_DIED' and destGUID ~= nil and DT_AttackedUnits[destGUID] == true) then
                 local unitId = DT_UnitGuidToId(destGUID)
-                --print('Mob kill', unitId, destName)
 				DT_AttackedUnits[destGUID] = nil
                 DT_MobKill(unitId, destName)
 			end
