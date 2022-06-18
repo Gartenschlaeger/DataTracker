@@ -10,4 +10,5 @@ Localization\en.lua
 Localization\de.lua
 Logging.lua
 SavedVariables.lua
+SlashCommands.lua
 DataTracker.lua

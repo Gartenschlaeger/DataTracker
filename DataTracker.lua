@@ -50,6 +50,7 @@ function DT_AddonLoaded(addonName)
 
         DT_InitOptions()
         DT_InitOptionsPanel()
+        DT_InitSlashCommands()
 
         DT_LogInfo('DataTracker loaded, ' .. itemsCount .. ' items, ' .. unitsCount .. ' units')
     end
