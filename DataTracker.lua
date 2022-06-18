@@ -39,6 +39,7 @@ function DT_AddonLoaded(addonName)
         local unitsCount = DT_TableSize(DT_UnitDb)
 
         DT_InitOptions()
+        DT_InitializeOptionsPanel()
 
         DT_LogInfo('DataTracker loaded, ' .. itemsCount .. ' items, ' .. unitsCount .. ' units')
     end
@@ -397,6 +398,33 @@ function DT_Main(self, event, ...)
     elseif (event == 'COMBAT_LOG_EVENT_UNFILTERED') then
         DT_CombatLogEventUnfiltered()
     end
+end
+
+function DT_InitializeOptionsPanel()
+	local panel = CreateFrame("Frame")
+	panel.name = "DataTracker"
+
+    -- debug logs checkbox
+	local enableDebugLoggingCheckbox = 
+        CreateFrame("CheckButton", nil, panel, "InterfaceOptionsCheckButtonTemplate")
+
+        enableDebugLoggingCheckbox:SetPoint("TOPLEFT", 20, -20)
+        enableDebugLoggingCheckbox.Text:SetText("Debug Logs")
+        enableDebugLoggingCheckbox.SetValue = function(_, value)
+            local isActivated = (tonumber(value) == 1)
+		    if (isActivated) then
+                DT_Options.MinLogLevel = DT_LogLevel.Debug
+                DT_LogInfo('Debug logs enabled')
+            else
+                DT_Options.MinLogLevel = DT_LogLevel.Info
+                DT_LogInfo('Debug logs disabled')
+            end
+	    end
+
+        local debugLogsEnabled = DT_Options.MinLogLevel == DT_LogLevel.Debug
+        enableDebugLoggingCheckbox:SetChecked(debugLogsEnabled)
+
+	InterfaceOptions_AddCategory(panel)
 end
 
 local f = CreateFrame('Frame')
