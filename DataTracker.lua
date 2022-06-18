@@ -6,8 +6,11 @@ DT_LootingStarted = false
 
 -- Initialisation of options. Called when the addon is loaded once
 function DT_InitOptions()
-    if (DT_Options['MinLogLevel'] == nil) then
-       DT_Options['MinLogLevel'] = DT_LogLevel.Info
+    if (DT_Options.MinLogLevel == nil) then
+       DT_Options.MinLogLevel = DT_LogLevel.Info
+    end
+    if (DT_Options.ShowMinimapButton == nil) then
+        DT_Options.ShowMinimapButton = true
     end
 end
 
@@ -16,20 +19,25 @@ function DT_InitOptionsPanel()
 	panel.name = "DataTracker"
 
     -- debug logs checkbox
-	local enableDebugLoggingCheckbox = DT_AddCheckbox(panel, 20, -20, 'Debug logs')
-    enableDebugLoggingCheckbox.SetValue = function(_, value)
-        local isActivated = (tonumber(value) == 1)
-        if (isActivated) then
-            DT_Options.MinLogLevel = DT_LogLevel.Debug
-            DT_LogInfo('Debug logs enabled')
-        else
-            DT_Options.MinLogLevel = DT_LogLevel.Info
-            DT_LogInfo('Debug logs disabled')
-        end
-	end
+	local cbDebugLogs = DT_AddCheckbox(panel, 20, -20, 'Debug logs',
+        function(isEnabled)
+            if (isEnabled) then
+                DT_Options.MinLogLevel = DT_LogLevel.Debug
+                DT_LogInfo('Debug logs enabled')
+            else
+                DT_Options.MinLogLevel = DT_LogLevel.Info
+                DT_LogInfo('Debug logs disabled')
+            end
+        end)
+
+    local cbMinimap = DT_AddCheckbox(panel, 20, -45, 'Show minimap button',
+        function(isEnabled)
+            DT_Options.ShowMinimapButton = isEnabled
+        end)
 
     -- initial values
-    enableDebugLoggingCheckbox:SetChecked(DT_Options.MinLogLevel == DT_LogLevel.Debug)
+    cbDebugLogs:SetChecked(DT_Options.MinLogLevel == DT_LogLevel.Debug)
+    cbMinimap:SetChecked(DT_Options.ShowMinimapButton)
 
 	InterfaceOptions_AddCategory(panel)
 end
