@@ -202,7 +202,8 @@ function DT_LootReady()
     end
 
     for itemSlot = 1, GetNumLootItems() do
-        local _, itemName, lootQuantity, currencyID, lootQuality, locked, isQuestItem, questId = GetLootSlotInfo(itemSlot)
+        local _, itemName, lootQuantity, currencyID, lootQuality, locked, 
+            isQuestItem, questId = GetLootSlotInfo(itemSlot)
 
         local slotType = GetLootSlotType(itemSlot)
         -- 0: LOOT_SLOT_NONE - No contents
@@ -254,14 +255,27 @@ end
 DT_AttackedUnits = {}
 
 function DT_CombatLogEventUnfiltered()
-    local timestamp, subEvent, _, sourceGUID, sourceName, sourceFlags, sourceRaidFlags, destGUID, destName, destFlags, destRaidFlags, damage_spellid, overkill_spellname, school_spellSchool, resisted_amount, blocked_overkill = CombatLogGetCurrentEventInfo()
-    DT_LogTrace('DT_CombatLogEventUnfiltered', timestamp, subEvent, sourceGUID, sourceName, sourceFlags, sourceRaidFlags, destGUID, destName)
+    local timestamp, subEvent, _, sourceGUID, sourceName, sourceFlags, sourceRaidFlags,
+        destGUID, destName, destFlags, destRaidFlags,
+        damage_spellid, overkill_spellname, school_spellSchool, resisted_amount,
+        blocked_overkill = CombatLogGetCurrentEventInfo()
+
+    DT_LogTrace('DT_CombatLogEventUnfiltered',
+        timestamp, subEvent, sourceGUID, sourceName, sourceFlags, sourceRaidFlags, destGUID, destName)
 
     if destGUID ~= nil
 	then
 		local guidType = select(1, strsplit("-", destGUID))
+        local isDamageSubEvent = subEvent == 'SWING_DAMAGE' or subEvent == 'SPELL_DAMAGE';
+        local isPlayerAttack = sourceGUID == UnitGUID('player')
+        local isPetAttack = sourceGUID == UnitGUID('pet')
 
-        if ((subEvent == 'SWING_DAMAGE' or subEvent == 'SPELL_DAMAGE') and (sourceGUID == UnitGUID('player') or sourceGUID == UnitGUID('pet'))) then
+        DT_LogVerbose(
+            'isDamageSubEvent:', isDamageSubEvent,
+            'isPlayerAttack:', isPlayerAttack,
+            'isPetAttack:', isPetAttack)
+
+        if (isDamageSubEvent and (isPlayerAttack or isPetAttack)) then
             DT_AttackedUnits[destGUID] = true
 
         -- TODO: PARTY_KILL
