@@ -1,4 +1,3 @@
-
 -- Item database
 DT_ItemDb = {}
 
@@ -106,9 +105,22 @@ function DT_MobKill(unitId, unitName)
 end
 
 -- Called when copper was looted and should be added to db
-function DT_AddGold(unitId, copperAmount)
-    DT_LogVerbose('', unitId, copperAmount)
+function DT_AddGold(unitId, lootedCopper)
+    DT_LogVerbose('DT_AddGold', unitId, lootedCopper)
 
+    local unitInfo = DT_UnitDb[unitId]
+    if (unitInfo == nil) then
+        unitInfo = {}
+        DT_UnitDb[unitId] = unitInfo
+    end
+
+    local currentCopper = tonumber(unitInfo['copper'])
+    local newCopper = currentCopper + lootedCopper
+    DT_LogVerbose('DT_AddGold', unitInfo.name, currentCopper, ' -> ', newCopper)
+
+    unitInfo['copper'] = newCopper
+
+    DT_LogDebug('Copper: ', unitInfo.name, ', total copper:', newCopper)
 end
 
 -- Called when a new item was looted and should be added to db
@@ -187,6 +199,36 @@ function DT_TargetChanged()
     end
 end
 
+function DT_ParseMoneyFromLootName(lootName)
+    local startIndex = 0
+    local lootedCopper = 0
+
+    startIndex = string.find(lootName, ' ' .. DT_TXT_GOLD)
+    if startIndex then
+        local g = tonumber(string.sub(lootName,0,startIndex-1)) or 0
+		lootName = string.sub(lootName,startIndex+5,string.len(lootName))
+		lootedCopper = lootedCopper + ((g or 0) * COPPER_PER_GOLD)
+        DT_LogVerbose('DT_ParseCopperFromLootnameText, Processing Gold', g)
+	end
+
+	startIndex = string.find(lootName, ' ' .. DT_TXT_SILVER)
+	if startIndex then
+		local s = tonumber(string.sub(lootName,0,startIndex-1)) or 0
+		lootName = string.sub(lootName,startIndex+7,string.len(lootName))
+		lootedCopper = lootedCopper + ((s or 0) * COPPER_PER_SILVER)
+        DT_LogVerbose('DT_ParseCopperFromLootnameText, Processing Silver', s)
+	end
+
+	startIndex = string.find(lootName, ' ' .. DT_TXT_COPPER)
+	if startIndex then
+		local c = tonumber(string.sub(lootName,0,startIndex-1)) or 0
+		lootedCopper = lootedCopper + (c or 0)
+        DT_LogVerbose('DT_ParseCopperFromLootnameText, Processing Copper', c)
+	end
+
+	return lootedCopper
+end
+
 function DT_LootReady()
     DT_LogTrace('DT_LootReady')
 
@@ -202,7 +244,7 @@ function DT_LootReady()
     end
 
     for itemSlot = 1, GetNumLootItems() do
-        local _, itemName, lootQuantity, currencyID, lootQuality, locked, 
+        local _, lootName, lootQuantity, currencyID, lootQuality, locked, 
             isQuestItem, questId = GetLootSlotInfo(itemSlot)
 
         local slotType = GetLootSlotType(itemSlot)
@@ -224,7 +266,7 @@ function DT_LootReady()
                     if guidType == 'Creature' then
                         local unitId = DT_UnitGuidToId(sources[j])
                         if (unitId and unitId > 0 and not isQuestItem) then
-                            DT_AddItem(itemId, itemName, lootQuantity, lootQuality, unitId)
+                            DT_AddItem(itemId, lootName, lootQuantity, lootQuality, unitId)
                         end
                     end
                 end
@@ -233,8 +275,22 @@ function DT_LootReady()
 
         -- 2: LOOT_SLOT_MONEY - Gold/silver/copper coin
         elseif (slotType == LOOT_SLOT_MONEY) then
-            -- TODO: DT_AddGold()
+            local lootedCopper = DT_ParseMoneyFromLootName(lootName)
+            if (lootedCopper) then
+                DT_LogVerbose('LOOT_SLOT_MONEY', lootedCopper)
 
+                local sources = {GetLootSourceInfo(itemSlot)}
+                for j = 1, #sources, 2
+                do
+                    local guidType = select(1, strsplit("-", sources[j]))
+                    if guidType == 'Creature' then
+                        local unitId = DT_UnitGuidToId(sources[j])
+                        if (unitId and unitId > 0 and not isQuestItem) then
+                            DT_AddGold(unitId, lootedCopper)
+                        end
+                    end
+                end
+            end
         else
             DT_LogVerbose('Ignore item, slot type:', slotType)
         end
@@ -321,7 +377,7 @@ function DT_UpdateCurrentZone()
 	end
 
 	DT_CURRENT_ZONE_ID = zoneId
-    DT_LogDebug('DT_CURRENT_ZONE_ID = ' .. zoneId)
+    DT_LogDebug('ZoneID changed to ' .. zoneText .. ' (' .. zoneId .. ')')
 end
 
 function DT_Main(self, event, ...)
