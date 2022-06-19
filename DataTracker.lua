@@ -155,6 +155,8 @@ function DT_AddItem(itemId, itemName, itemQuantity, itemQuality, unitId)
     if (itemInfo == nil) then
         itemInfo = {}
         DT_ItemDb[itemId] = itemInfo
+
+        DT_LogInfo(DT_TXT_NEW_ITEM .. ': ' .. itemName)
     end
 
     itemInfo['name'] = itemName
@@ -216,6 +218,8 @@ function DT_TargetChanged()
         if (mobInfo == nil) then
             mobInfo = {}
             DT_UnitDb[unitId] = mobInfo
+
+            DT_LogInfo(DT_TXT_NEW_UNIT .. ': ' .. unitName)
         end
 
         local classification = UnitClassification('target')
@@ -392,6 +396,8 @@ function DT_UpdateCurrentZone()
         zoneId = 1000 + DT_TableSize(DT_ZoneDb)
         DT_LogVerbose('Write new ZoneText to db, zoneId = ' .. zoneId .. ', zoneText = ' .. zoneText)
 		DT_ZoneDb[zoneId] = zoneText
+
+        DT_LogInfo(DT_TXT_NEW_ZONE .. ': ' .. zoneText)
 	end
 
 	DT_CURRENT_ZONE_ID = zoneId
