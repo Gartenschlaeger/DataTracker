@@ -1,6 +1,10 @@
 clean:
-	rm -rf dist
+	rm -rf DataTracker
+	rm -f datatracker.zip
 	
 build: clean
-	mkdir dist
-	zip dist/datatracker.zip *.toc *.lua **/*.lua **/*.xml
+	mkdir -p DataTracker
+	cp *.lua *.toc *.md DataTracker
+	cp -R Localization DataTracker
+	cp -R UI DataTracker
+	zip -r datatracker.zip DataTracker
