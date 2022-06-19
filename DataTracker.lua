@@ -338,7 +338,7 @@ function DT_CombatLogEventUnfiltered()
         local isPetAttack = sourceGUID == UnitGUID('pet')
 
         DT_LogVerbose('DT_CombatLogEventUnfiltered', subEvent, sourceGUID, sourceName, destGUID, destName)
-        -- print('isDmg:', DT_BoolToNumber(isDamageSubEvent), ', PlayerAtk:', DT_BoolToNumber(isPlayerAttack), ', PetAtk:', DT_BoolToNumber(isPetAttack), ', guidType:', guidType, ', sEvent:', subEvent)
+        -- DT_LogDebug('isDmg:', DT_BoolToNumber(isDamageSubEvent), ', PlayerAtk:', DT_BoolToNumber(isPlayerAttack), ', PetAtk:', DT_BoolToNumber(isPetAttack), ', guidType:', guidType, ', sEvent:', subEvent)
 
         if (isDamageSubEvent and (isPlayerAttack or isPetAttack)) then
             DT_AttackedUnits[destGUID] = true
@@ -348,7 +348,7 @@ function DT_CombatLogEventUnfiltered()
             DT_AttackedUnits[destGUID] = nil
             local unitId = DT_UnitGuidToId(destGUID)
             DT_MobKill(unitId, destName)
-            print('KILL', unitId)
+            -- DT_LogDebug('KILL', unitId)
         end
 	end
 end

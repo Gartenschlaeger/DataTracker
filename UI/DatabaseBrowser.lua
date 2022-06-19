@@ -42,7 +42,7 @@ function DT_DatabaseBrowser_OnSearch()
         for itemId, itemInfo in pairs(DT_ItemDb) do
             local nameMatches = strfind(strlower(itemInfo.name), searchText, 1, true)
             if (nameMatches) then
-                -- print(itemId, itemInfo.name)
+                -- DT_LogDebug(itemId, itemInfo.name)
 
                 local result = {}
                 result.itemId = itemId
