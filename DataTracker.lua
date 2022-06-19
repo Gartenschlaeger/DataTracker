@@ -178,7 +178,7 @@ function DT_AddItem(itemId, itemName, itemQuantity, itemQuality, unitId)
     end
     unitLootedInfo[itemId] = unitItemLootedCounter
 
-    DT_LogDebug('Item: ' .. itemName .. ' (' .. itemId .. '), total times looted: ' .. lootedCounter)
+    DT_LogDebug('Item: ' .. itemQuantity .. ' ' .. itemName .. ' (' .. itemId .. '), total times looted: ' .. lootedCounter)
 end
 
 -- Occures when the target changes, used to store unit id and name
@@ -241,13 +241,14 @@ function DT_ParseMoneyFromLootName(lootName)
 	return lootedCopper
 end
 
+-- Called when loot window is open and loot is ready
 function DT_LootReady()
     DT_LogTrace('DT_LootReady')
 
+    -- ignore if event is already handled
     if (DT_LootingStarted) then
         return
     end
-
     DT_LootingStarted = true
 
     -- ensure current zone id is set
@@ -256,10 +257,9 @@ function DT_LootReady()
     end
 
     for itemSlot = 1, GetNumLootItems() do
-        local _, lootName, lootQuantity, currencyID, lootQuality, locked, 
-            isQuestItem, questId = GetLootSlotInfo(itemSlot)
-
+        local lootIcon, lootName, lootQuantity, currencyID, lootQuality, locked, isQuestItem, questId = GetLootSlotInfo(itemSlot)
         local slotType = GetLootSlotType(itemSlot)
+
         -- 0: LOOT_SLOT_NONE - No contents
 
         -- 1: LOOT_SLOT_ITEM - A regular item
@@ -272,13 +272,14 @@ function DT_LootReady()
             if (true) then
                 DT_LogVerbose('--- > sources')
                 local sources = {GetLootSourceInfo(itemSlot)}
-                for j = 1, #sources, 2
+                for sourceIndex = 1, #sources, 2
                 do
-                    local guidType = select(1, strsplit("-", sources[j]))
-                    if guidType == 'Creature' then
-                        local unitId = DT_UnitGuidToId(sources[j])
+                    local sourceGuid = select(1, strsplit("-", sources[sourceIndex]))
+                    if sourceGuid == 'Creature' then
+                        local unitId = DT_UnitGuidToId(sources[sourceIndex])
+                        local sourceQuantity = tonumber(sources[sourceIndex + 1])
                         if (unitId and unitId > 0 and not isQuestItem) then
-                            DT_AddItem(itemId, lootName, lootQuantity, lootQuality, unitId)
+                            DT_AddItem(itemId, lootName, sourceQuantity, lootQuality, unitId)
                         end
                     end
                 end
