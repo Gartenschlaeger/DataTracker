@@ -323,14 +323,12 @@ end
 -- Temporarilly storage of UnitId <-> IsLooting mapping to remove duplicates in looting db
 DT_AttackedUnits = {}
 
+-- Occures for any combat log
 function DT_CombatLogEventUnfiltered()
     local timestamp, subEvent, _, sourceGUID, sourceName, sourceFlags, sourceRaidFlags,
         destGUID, destName, destFlags, destRaidFlags,
         damage_spellid, overkill_spellname, school_spellSchool, resisted_amount,
         blocked_overkill = CombatLogGetCurrentEventInfo()
-
-    DT_LogTrace('DT_CombatLogEventUnfiltered',
-        timestamp, subEvent, sourceGUID, sourceName, sourceFlags, sourceRaidFlags, destGUID, destName)
 
     if destGUID ~= nil
 	then
@@ -339,27 +337,20 @@ function DT_CombatLogEventUnfiltered()
         local isPlayerAttack = sourceGUID == UnitGUID('player')
         local isPetAttack = sourceGUID == UnitGUID('pet')
 
-        DT_LogVerbose(
-            'isDamageSubEvent:', isDamageSubEvent,
-            'isPlayerAttack:', isPlayerAttack,
-            'isPetAttack:', isPetAttack)
+        DT_LogVerbose('DT_CombatLogEventUnfiltered', subEvent, sourceGUID, sourceName, destGUID, destName)
+        -- print('isDmg:', DT_BoolToNumber(isDamageSubEvent), ', PlayerAtk:', DT_BoolToNumber(isPlayerAttack), ', PetAtk:', DT_BoolToNumber(isPetAttack), ', guidType:', guidType, ', sEvent:', subEvent)
 
         if (isDamageSubEvent and (isPlayerAttack or isPetAttack)) then
             DT_AttackedUnits[destGUID] = true
-
-        -- TODO: PARTY_KILL
-        -- elseif (subEvent=="PARTY_KILL") then
-        -- DT_AttackedUnits[destGUID] = true
-
-		elseif (guidType ~= "Player" and guidType ~= "Pet")
-		then
-			if (subEvent == 'UNIT_DIED' and destGUID ~= nil and DT_AttackedUnits[destGUID] == true) then
-                local unitId = DT_UnitGuidToId(destGUID)
-				DT_AttackedUnits[destGUID] = nil
-                DT_MobKill(unitId, destName)
-			end
-		end
-	end 
+        elseif (subEvent=="PARTY_KILL") then
+            DT_AttackedUnits[destGUID] = true
+	    elseif (subEvent == 'UNIT_DIED' and guidType == "Creature" and DT_AttackedUnits[destGUID] == true) then
+            DT_AttackedUnits[destGUID] = nil
+            local unitId = DT_UnitGuidToId(destGUID)
+            DT_MobKill(unitId, destName)
+            print('KILL', unitId)
+        end
+	end
 end
 
 -- Updates the current zone id DT_CURRENT_ZONE_ID

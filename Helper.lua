@@ -19,3 +19,11 @@ function DT_AddCheckbox(panel, x, y, text, callback)
 
     return checkbox
 end
+
+function DT_BoolToNumber(booleanValue)
+    if (booleanValue) then
+        return 1
+    end
+
+    return 0
+end
