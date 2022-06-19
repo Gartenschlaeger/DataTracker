@@ -1,0 +1,7 @@
+package-as: DataTracker
+enable-nolib-creation: no
+
+ignore:
+    - .vscode
+    - .gitignore
+    - Makefile
