@@ -73,6 +73,17 @@ function DT_GetLootId(itemSlot)
 	return 0
 end
 
+function DT_ResolveUnitClassificationId(unitClassification)
+    local classificationId = DT_UnitClassifications[unitClassification]
+    if (classificationId == nil) then
+        classificationId = 1000 + DT_TableSize(DT_UnitClassifications)
+        DT_UnitClassifications[unitClassification] = classificationId
+        DT_LogDebug('New classification ' .. unitClassification .. ' (' .. classificationId .. ')')
+    end
+
+    return classificationId
+end
+
 -- Called when a mob was killed and should be stored to db
 function DT_MobKill(unitId, unitName)
     DT_LogTrace('DT_MobKill', unitId, unitName)
@@ -207,7 +218,10 @@ function DT_TargetChanged()
             DT_UnitDb[unitId] = mobInfo
         end
 
+        local classification = UnitClassification('target')
+
         mobInfo['name'] = unitName
+        mobInfo['clf'] = DT_ResolveUnitClassificationId(classification)
     end
 end
 
