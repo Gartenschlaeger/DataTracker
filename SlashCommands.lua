@@ -1,39 +1,39 @@
 SLASH_DT_SHOW1 = "/dts"
-function DT_SlashCommand_Show()
-    DT_LogTrace('DT_SlashCommand_Show')
-    
+local function SlashCommand_Show()
+    DataTracker:LogTrace('DT_SlashCommand_Show')
+
     DT_DatabaseBrowser:Show()
 end
 
 SLASH_DT_HIDE1 = "/dth"
-function DT_SlashCommand_Hide()
-    DT_LogTrace('DT_SlashCommand_Hide')
-    
+local function SlashCommand_Hide()
+    DataTracker:LogTrace('DT_SlashCommand_Hide')
+
     DT_DatabaseBrowser:Hide()
 end
 
 SLASH_DT_LOGLEVEL1 = "/dtll"
-function DT_SlashCommand_LogLevel(msg)
-    DT_LogTrace('DT_SlashCommand_DebugLogs', msg)
-    
+local function SlashCommand_LogLevel(msg)
+    DataTracker:LogTrace('DT_SlashCommand_DebugLogs', msg)
+
     local logLevel = tonumber(msg)
-    for n, v in pairs(DT_LogLevel) do
+    for n, v in pairs(DataTracker.LogLevel) do
         if (logLevel == n or logLevel == v) then
             DT_Options.MinLogLevel = logLevel
-            DT_LogInfo('Changed min log level to ' .. n)
+            DataTracker:LogInfo('Changed min log level to ' .. n)
         end
     end
 end
 
 SLASH_DT_UIDEBUG1 = '/dtuidebug'
-function DT_SlashCommand_UIDebug()
+local function SlashCommand_UIDebug()
     LoadAddOn('Blizzard_DebugTools')
     FrameStackTooltip_Toggle()
 end
 
-function DT_InitSlashCommands()
-    SlashCmdList.DT_SHOW = DT_SlashCommand_Show
-    SlashCmdList.DT_HIDE = DT_SlashCommand_Hide
-    SlashCmdList.DT_LOGLEVEL = DT_SlashCommand_LogLevel
-    SlashCmdList.DT_UIDEBUG = DT_SlashCommand_UIDebug
+function DataTracker:InitSlashCommands()
+    SlashCmdList.DT_SHOW = SlashCommand_Show
+    SlashCmdList.DT_HIDE = SlashCommand_Hide
+    SlashCmdList.DT_LOGLEVEL = SlashCommand_LogLevel
+    SlashCmdList.DT_UIDEBUG = SlashCommand_UIDebug
 end

@@ -1,3 +1,5 @@
+DataTracker = {}
+
 -- Item database
 DT_ItemDb = {}
 
@@ -10,4 +12,3 @@ DT_ZoneDb = {}
 
 -- Addon options
 DT_Options = {}
-DT_Options['MinLogLevel'] = DT_LogLevel.None

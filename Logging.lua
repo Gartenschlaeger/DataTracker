@@ -1,4 +1,4 @@
-DT_LogLevel = {
+DataTracker.LogLevel = {
     None = 0,
 
     Info = 1,
@@ -12,36 +12,36 @@ DT_LogLevel = {
 }
 
 -- Logs a Trace message to the chat
-function DT_LogTrace(msg, ...)
-    if (DT_Options['MinLogLevel'] and DT_Options['MinLogLevel'] >= DT_LogLevel.Trace) then
-        print('[TRAC]', msg, ...)
+function DataTracker:LogTrace(msg, ...)
+    if (DT_Options['MinLogLevel'] and DT_Options['MinLogLevel'] >= DataTracker.LogLevel.Trace) then
+        print('[DT]', msg, ...)
     end
 end
 
 -- Logs a Verbose message to the chat
-function DT_LogVerbose(msg, ...)
-    if (DT_Options['MinLogLevel'] and DT_Options['MinLogLevel'] >= DT_LogLevel.Verbose) then
-        print('[VERB]', msg, ...)
+function DataTracker:LogVerbose(msg, ...)
+    if (DT_Options['MinLogLevel'] and DT_Options['MinLogLevel'] >= DataTracker.LogLevel.Verbose) then
+        print('[DT]', msg, ...)
     end
 end
 
 -- Logs a Debug message to the chat
-function DT_LogDebug(msg, ...)
-    if (DT_Options['MinLogLevel'] and DT_Options['MinLogLevel'] >= DT_LogLevel.Debug) then
-        print('[DEBG]', msg, ...)
+function DataTracker:LogDebug(msg, ...)
+    if (DT_Options['MinLogLevel'] and DT_Options['MinLogLevel'] >= DataTracker.LogLevel.Debug) then
+        print('[DT]', msg, ...)
     end
 end
 
 -- Logs a Warning message to the chat
-function DT_LogWarning(msg, ...)
-    if (DT_Options['MinLogLevel'] and DT_Options['MinLogLevel'] >= DT_LogLevel.Warning) then
-        print('[WARN]', msg, ...)
+function DataTracker:LogWarning(msg, ...)
+    if (DT_Options['MinLogLevel'] and DT_Options['MinLogLevel'] >= DataTracker.LogLevel.Warning) then
+        print('[DT]', msg, ...)
     end
 end
 
 -- Logs a Info message to the chat
-function DT_LogInfo(msg, ...)
-    if (DT_Options['MinLogLevel'] and DT_Options['MinLogLevel'] >= DT_LogLevel.Info) then
+function DataTracker:LogInfo(msg, ...)
+    if (DT_Options['MinLogLevel'] and DT_Options['MinLogLevel'] >= DataTracker.LogLevel.Info) then
         print(msg, ...)
     end
 end

@@ -1,5 +1,5 @@
 -- Returns the size for the given table.
-function DT_TableSize(table)
+function DataTracker:GetTableSize(table)
     local size = 0
     for _ in pairs(table) do
         size = size + 1
@@ -9,7 +9,7 @@ function DT_TableSize(table)
 end
 
 -- Creates a Checkbox control
-function DT_AddCheckbox(panel, x, y, text, callback)
+function DataTracker:AddCheckbox(panel, x, y, text, callback)
     local checkbox = CreateFrame("CheckButton", nil, panel, 'InterfaceOptionsCheckButtonTemplate')
     checkbox:SetPoint("TOPLEFT", x, y)
     checkbox.Text:SetText(text)
@@ -20,10 +20,15 @@ function DT_AddCheckbox(panel, x, y, text, callback)
     return checkbox
 end
 
-function DT_BoolToNumber(booleanValue)
+function DataTracker:BoolToNumber(booleanValue)
     if (booleanValue) then
         return 1
     end
 
     return 0
+end
+
+-- Converts a unit guid to an id
+function DataTracker:UnitGuidToId(unitGuid)
+    return tonumber(select(6, strsplit('-', unitGuid)), 10)
 end

@@ -1,5 +1,5 @@
 function DT_DatabaseBrowser_OnLoad()
-    DT_LogTrace('DT_DatabaseBrowser_OnLoad')
+    DataTracker:LogTrace('DT_DatabaseBrowser_OnLoad')
 
     DT_DatabaseBrowser.Title:SetText('DataTracker')
     DT_DatabaseBrowser:RegisterForDrag("LeftButton")
@@ -8,7 +8,7 @@ function DT_DatabaseBrowser_OnLoad()
 end
 
 function DT_DatabaseBrowser_OnDragStart(self)
-    DT_LogTrace('DT_DatabaseBrowser_OnDragStart')
+    DataTracker:LogTrace('DT_DatabaseBrowser_OnDragStart')
 
     if not self.isLocked then
         self:StartMoving()
@@ -16,21 +16,21 @@ function DT_DatabaseBrowser_OnDragStart(self)
 end
 
 function DT_DatabaseBrowser_OnDragStop(self)
-    DT_LogTrace('DT_DatabaseBrowser_OnDragStop')
+    DataTracker:LogTrace('DT_DatabaseBrowser_OnDragStop')
 
     self:StopMovingOrSizing()
 end
 
 function DT_DatabaseBrowser_OnShow()
-    DT_LogTrace('DT_DatabaseBrowser_OnShow')
+    DataTracker:LogTrace('DT_DatabaseBrowser_OnShow')
 end
 
 function DT_DatabaseBrowser_OnHide()
-    DT_LogTrace('DT_DatabaseBrowser_OnHide')
+    DataTracker:LogTrace('DT_DatabaseBrowser_OnHide')
 end
 
 function DT_DatabaseBrowser_OnSearch()
-    DT_LogTrace('DT_DatabaseBrowser_OnSearch')
+    DataTracker:LogTrace('DT_DatabaseBrowser_OnSearch')
 
     DT_SearchResults = {}
 
@@ -42,7 +42,7 @@ function DT_DatabaseBrowser_OnSearch()
         for itemId, itemInfo in pairs(DT_ItemDb) do
             local nameMatches = strfind(strlower(itemInfo.name), searchText, 1, true)
             if (nameMatches) then
-                -- DT_LogDebug(itemId, itemInfo.name)
+                -- DataTracker:LogDebug(itemId, itemInfo.name)
 
                 local result = {}
                 result.itemId = itemId
@@ -67,9 +67,9 @@ local DT_RESULT_ITEMS_COUNT = 25
 local DT_RESULT_PIXEL_HEIGHT = 18
 
 function DT_DatabaseBrowser_ScrollBar_Update()
-    DT_LogTrace('DT_DatabaseBrowser_ScrollBar_Update')
+    DataTracker:LogTrace('DT_DatabaseBrowser_ScrollBar_Update')
 
-    local totalResults = DT_TableSize(DT_SearchResults)
+    local totalResults = DataTracker:GetTableSize(DT_SearchResults)
     FauxScrollFrame_Update(DT_DatabaseBrowser_ScrollBar, totalResults, DT_RESULT_ITEMS_COUNT, DT_RESULT_PIXEL_HEIGHT)
 
     local offset = FauxScrollFrame_GetOffset(DT_DatabaseBrowser_ScrollBar)
