@@ -1,4 +1,4 @@
-# WOW DataTracker Addon
+# WOW Addon DataTracker
 
 DataTracker is a WOW Addon to track looted items and fighted units in an ingame database.
 The data can be used later for a graphical UI to search for items or units.
@@ -13,7 +13,7 @@ To show or export the data, find the file DataTracker.lua in your interface dire
 
 > The addon was developed in WOW Shadowlands. Compatibility with Classic is not guaranteed.
 
-# Instalation
+# Installation
 
 The addon is available on CurseForge https://www.curseforge.com/wow/addons/datatracker
 
