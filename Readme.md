@@ -17,8 +17,8 @@ To show or export the data, find the file DataTracker.lua in your interface dire
 
 The addon is available on CurseForge https://www.curseforge.com/wow/addons/datatracker
 
-You can also install it manually, by downloading one of the release packages and copying it to our addon path:
-thats usually: `/_retail_/Interface/AddOns`.
+You can also install it manually, by downloading one of the release packages and copying it to your addon path.
+Thats usually: `/_retail_/Interface/AddOns`.
 
 # Database Structure
 
