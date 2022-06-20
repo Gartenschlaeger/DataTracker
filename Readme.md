@@ -18,7 +18,7 @@ To show or export the data, find the file DataTracker.lua in your interface dire
 The addon is available on CurseForge https://www.curseforge.com/wow/addons/datatracker
 
 You can also install it manually, by downloading one of the release packages and copying it to your addon path.
-Thats usually: `/_retail_/Interface/AddOns`.
+Thats usually `/_retail_/Interface/AddOns`
 
 # Database Structure
 
@@ -30,16 +30,6 @@ DT_ItemDb = {
 		["looted"] = 18,
 		["name"] = "Schattenhafter Schenkel",
 		["quality"] = 1,
-	},
-	[172092] = {
-		["name"] = "Bleicher Knochen",
-		["looted"] = 123,
-		["quality"] = 1,
-	},
-	[774] = {
-		["looted"] = 1,
-		["name"] = "Malachit",
-		["quality"] = 2,
 	},
     ..
 }
@@ -56,30 +46,12 @@ DT_UnitDb = {
 			[177753] = 1,
 		},
 	},
-	[169123] = {
-		["kills"] = 43,
-		["name"] = "Goldrückengraser",
-		["looted"] = {
-			[172089] = 122,
-			[172097] = 2,
-			[175955] = 38,
-			[173877] = 5,
-			[172094] = 47,
-			[172096] = 7,
-			[172053] = 13,
-			[179315] = 11,
-			[172092] = 44,
-		},
-	},
     ..
 }
 DT_ZoneDb = {
 	[1001] = "Orgrimmar",
 	[1003] = "Nördliches Brachland",
 	[1005] = "Revendreth",
-	[1000] = "Durotar",
-	[1002] = "Oribos",
-	[1004] = "Der Zwischenraum",
     ..
 }
 
