@@ -1,7 +1,9 @@
-DT_TXT_GOLD        = 'Gold';
-DT_TXT_SILVER      = 'Silver';
-DT_TXT_COPPER      = 'Copper';
+local l = {}
+DataTracker.l18n = l
 
-DT_TXT_NEW_UNIT    = 'New unit';
-DT_TXT_NEW_ZONE    = 'New zone';
-DT_TXT_NEW_ITEM    = 'New item';
+l.GOLD        = 'Gold'
+l.SILVER      = 'Silver'
+l.COPPER      = 'Copper'
+l.NEW_UNIT    = 'New unit'
+l.NEW_ZONE    = 'New zone'
+l.NEW_ITEM    = 'New item'

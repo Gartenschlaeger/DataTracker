@@ -164,7 +164,7 @@ local function AddItem(itemId, itemName, itemQuantity, itemQuality, unitId)
         itemInfo = {}
         DT_ItemDb[itemId] = itemInfo
 
-        DataTracker:LogInfo(DT_TXT_NEW_ITEM .. ': ' .. itemName)
+        DataTracker:LogInfo(DataTracker.l18n.NEW_ITEM .. ': ' .. itemName)
     end
 
     itemInfo['nam'] = itemName
@@ -227,7 +227,7 @@ local function OnTargetChanged()
             mobInfo = {}
             DT_UnitDb[unitId] = mobInfo
 
-            DataTracker:LogInfo(DT_TXT_NEW_UNIT .. ': ' .. unitName)
+            DataTracker:LogInfo(DataTracker.l18n.NEW_UNIT .. ': ' .. unitName)
         end
 
         local classification = UnitClassification('target')
@@ -241,7 +241,7 @@ local function ParseMoneyFromLootName(lootName)
     local startIndex = 0
     local lootedCopper = 0
 
-    startIndex = string.find(lootName, ' ' .. DT_TXT_GOLD)
+    startIndex = string.find(lootName, ' ' .. DataTracker.l18n.GOLD)
     if startIndex then
         local g = tonumber(string.sub(lootName,0,startIndex-1)) or 0
 		lootName = string.sub(lootName,startIndex+5,string.len(lootName))
@@ -249,7 +249,7 @@ local function ParseMoneyFromLootName(lootName)
         DataTracker:LogVerbose('ParseMoneyFromLootName, Processing Gold', g)
 	end
 
-	startIndex = string.find(lootName, ' ' .. DT_TXT_SILVER)
+	startIndex = string.find(lootName, ' ' .. DataTracker.l18n.SILVER)
 	if startIndex then
 		local s = tonumber(string.sub(lootName,0,startIndex-1)) or 0
 		lootName = string.sub(lootName,startIndex+7,string.len(lootName))
@@ -257,7 +257,7 @@ local function ParseMoneyFromLootName(lootName)
         DataTracker:LogVerbose('ParseMoneyFromLootName, Processing Silver', s)
 	end
 
-	startIndex = string.find(lootName, ' ' .. DT_TXT_COPPER)
+	startIndex = string.find(lootName, ' ' .. DataTracker.l18n.COPPER)
 	if startIndex then
 		local c = tonumber(string.sub(lootName,0,startIndex-1)) or 0
 		lootedCopper = lootedCopper + (c or 0)
@@ -435,7 +435,7 @@ function DataTracker:UpdateCurrentZone()
         DataTracker:LogVerbose('Write new ZoneText to db, zoneId = ' .. zoneId .. ', zoneText = ' .. zoneText)
 		DT_ZoneDb[zoneId] = zoneText
 
-        DataTracker:LogInfo(DT_TXT_NEW_ZONE .. ': ' .. zoneText)
+        DataTracker:LogInfo(DataTracker.l18n.NEW_ZONE .. ': ' .. zoneText)
 	end
 
 	DataTracker.CurrentZoneId = zoneId

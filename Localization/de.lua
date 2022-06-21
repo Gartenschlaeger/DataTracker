@@ -2,10 +2,11 @@ if (GetLocale() ~= 'deDE') then
     return
 end
 
-DT_TXT_GOLD        = 'Gold';
-DT_TXT_SILVER      = 'Silber';
-DT_TXT_COPPER      = 'Kupfer';
+local l = DataTracker.l18n
 
-DT_TXT_NEW_UNIT    = 'Neuer Gegner';
-DT_TXT_NEW_ZONE    = 'Neue Zone';
-DT_TXT_NEW_ITEM    = 'Neuer Gegenstand';
+l.GOLD        = 'Gold';
+l.SILVER      = 'Silber';
+l.COPPER      = 'Kupfer';
+l.NEW_UNIT    = 'Neuer Gegner';
+l.NEW_ZONE    = 'Neue Zone';
+l.NEW_ITEM    = 'Neuer Gegenstand';
