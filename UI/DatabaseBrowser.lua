@@ -40,13 +40,11 @@ function DT_DatabaseBrowser_OnSearch()
 
     if (searchText and strlen(searchText) > 0) then
         for itemId, itemInfo in pairs(DT_ItemDb) do
-            local nameMatches = strfind(strlower(itemInfo.name), searchText, 1, true)
+            local nameMatches = strfind(strlower(itemInfo['nam']), searchText, 1, true)
             if (nameMatches) then
-                -- DataTracker:LogDebug(itemId, itemInfo.name)
-
                 local result = {}
-                result.itemId = itemId
-                result.itemName = itemInfo.name
+                result['itemId'] = itemId
+                result['itemName'] = itemInfo['nam']
 
                 DT_SearchResults[index] = result
                 index = index + 1

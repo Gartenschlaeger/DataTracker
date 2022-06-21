@@ -10,37 +10,47 @@ local function OnTooltipSetUnit(tooltip)
             if (unitInfo) then
                 local shouldAddAnEmptyLine = true
 
-                local killsCount = tonumber(unitInfo.kills) or 0
-                if (killsCount > 0) then
+                local timesLooted = tonumber(unitInfo['ltd']) or 0
+                if (timesLooted > 0) then
                     if (shouldAddAnEmptyLine) then
                         tooltip:AddLine(' ')
                         shouldAddAnEmptyLine = false
                     end
 
-                    tooltip:AddDoubleLine('Kills', killsCount, 1, 1, 1, 1, 1, 1)
+                    tooltip:AddDoubleLine('Looted', timesLooted, 1, 1, 1, 1, 1, 1)
                 end
 
-                local copper = tonumber(unitInfo['copper']) or 0
-                if (killsCount > 0 and copper > 0) then
+                local timesKilled = tonumber(unitInfo['kls']) or 0
+                if (timesKilled > 0) then
                     if (shouldAddAnEmptyLine) then
                         tooltip:AddLine(' ')
                         shouldAddAnEmptyLine = false
                     end
 
-                    tooltip:AddDoubleLine('Copper', copper / killsCount, 1, 1, 1, 1, 1, 1)
+                    tooltip:AddDoubleLine('Killed', timesKilled, 1, 1, 1, 1, 1, 1)
                 end
 
-                local lootInfos = unitInfo['looted']
+                local copper = tonumber(unitInfo['cop']) or 0
+                if (timesLooted > 0 and copper > 0) then
+                    if (shouldAddAnEmptyLine) then
+                        tooltip:AddLine(' ')
+                        shouldAddAnEmptyLine = false
+                    end
+
+                    tooltip:AddDoubleLine('Copper', math.floor(copper / timesLooted), 1, 1, 1, 1, 1, 1)
+                end
+
+                local lootInfos = unitInfo['its']
                 if (lootInfos) then
                     shouldAddAnEmptyLine = true
                     for itemId, itemsAmount in pairs(lootInfos) do
                         local itemInfo = DT_ItemDb[itemId]
                         if (itemInfo) then
-                            local itemQuality = tonumber(itemInfo['quality'])
+                            local itemQuality = tonumber(itemInfo['qlt'])
                             --if (itemQuality > 0) then
                                 local percentage = 0
-                                if (killsCount > 0) then
-                                    percentage = itemsAmount / killsCount
+                                if (timesLooted > 0) then
+                                    percentage = itemsAmount / timesLooted
                                     if (percentage > 1) then
                                         percentage = 1
                                     end
@@ -49,11 +59,6 @@ local function OnTooltipSetUnit(tooltip)
                                     if (percentage < 1) then
                                         percentage = 1
                                     end
-
-                                    -- DataTracker:LogDebug(
-                                    --     'killsCount', killsCount,
-                                    --     'itemsAmount', itemsAmount,
-                                    --     'percentage', percentage)
                                 end
 
                                 local r, g, b, _ = GetItemQualityColor(itemQuality)
@@ -63,7 +68,7 @@ local function OnTooltipSetUnit(tooltip)
                                     shouldAddAnEmptyLine = false
                                 end
 
-                                tooltip:AddDoubleLine(itemInfo['name'], percentage .. '%', r, g, b, 1, 1, 1)
+                                tooltip:AddDoubleLine(itemInfo['nam'], percentage .. '%', r, g, b, 1, 1, 1)
                             --end
                         end
                     end

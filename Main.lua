@@ -1,4 +1,6 @@
-DataTracker = {}
+local _, ns = ...
+
+DataTracker = ns
 
 -- Item database
 DT_ItemDb = {}
