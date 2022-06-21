@@ -37,7 +37,7 @@ local function OnTooltipSetUnit(tooltip)
                         shouldAddAnEmptyLine = false
                     end
 
-                    tooltip:AddDoubleLine('Copper', math.floor(copper / timesLooted), 1, 1, 1, 1, 1, 1)
+                    tooltip:AddDoubleLine('Avg. coins', GetCoinTextureString(math.floor(copper / timesLooted)), 1, 1, 1, 1, 1, 1)
                 end
 
                 local lootInfos = unitInfo['its']
