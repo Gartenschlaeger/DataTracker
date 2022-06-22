@@ -27,8 +27,8 @@ local function TrackLootedCopper(unitId, lootedCopper)
 end
 
 -- Called when a new item was looted and should be added to db
-local function TrackItem(itemId, itemName, itemQuantity, itemQuality, unitId)
-    DataTracker:LogVerbose('TrackItem', itemId, itemName, itemQuantity, itemQuality, unitId)
+local function TrackItem(itemId, itemName, itemQuantity, itemQuality, unitId, isSkinningItem)
+    DataTracker:LogVerbose('TrackItem', itemId, itemName, itemQuantity, itemQuality, unitId, isSkinningItem)
 
     -- store item info
     local itemInfo = DT_ItemDb[itemId]
@@ -41,14 +41,7 @@ local function TrackItem(itemId, itemName, itemQuantity, itemQuality, unitId)
 
     itemInfo['nam'] = itemName
     itemInfo['qlt'] = itemQuality
-
-    local lootedCounter = itemInfo['ltd']
-    if (lootedCounter == nil) then
-        lootedCounter = itemQuantity
-    else
-        lootedCounter = lootedCounter + itemQuantity
-    end
-    itemInfo['ltd'] = lootedCounter
+    --itemInfo['ltd'] = (itemInfo['ltd'] or 0) + itemQuantity
 
     -- store loot info
     local unitInfo = DT_UnitDb[unitId]
@@ -57,17 +50,26 @@ local function TrackItem(itemId, itemName, itemQuantity, itemQuality, unitId)
         DT_UnitDb[unitId] = unitInfo
     end
 
-    local unitItemsInfo = unitInfo['its']
-    if (unitItemsInfo == nil) then
-        unitItemsInfo = {}
-        unitInfo['its'] = unitItemsInfo
+    local unitItemsInfo
+    if (isSkinningItem) then
+        unitItemsInfo = unitInfo['its_sk']
+        if (unitItemsInfo == nil) then
+            unitItemsInfo = {}
+            unitInfo['its_sk'] = unitItemsInfo
+        end
+    else
+        unitItemsInfo = unitInfo['its']
+        if (unitItemsInfo == nil) then
+            unitItemsInfo = {}
+            unitInfo['its'] = unitItemsInfo
+        end
     end
 
     local unitItemLootedCounter = unitItemsInfo[itemId]
     if (unitItemLootedCounter == nil) then
-        unitItemLootedCounter = itemQuantity
+        unitItemLootedCounter = 1 --itemQuantity
     else
-        unitItemLootedCounter = unitItemLootedCounter + itemQuantity
+        unitItemLootedCounter = unitItemLootedCounter + 1 --itemQuantity
     end
     unitItemsInfo[itemId] = unitItemLootedCounter
 
@@ -75,8 +77,8 @@ local function TrackItem(itemId, itemName, itemQuantity, itemQuality, unitId)
 end
 
 -- Increments the loot counter for the given unitId
-function DataTracker:IncrementLootCounter(unitId)
-    DataTracker:LogTrace('IncrementLootCounter', unitId)
+local function IncrementLootCounter(unitId, isSkinning)
+    DataTracker:LogDebug('IncrementLootCounter', unitId, isSkinning)
 
     local unitInfo = DT_UnitDb[unitId]
     if (unitInfo == nil) then
@@ -86,7 +88,11 @@ function DataTracker:IncrementLootCounter(unitId)
 
     DataTracker:LogDebug('LootCount: ' .. (unitInfo['nam'] or '') .. ' (ID = ' .. unitId .. ')')
 
-    unitInfo['ltd'] = (unitInfo['ltd'] or 0) + 1
+    if (isSkinning) then
+        unitInfo['ltd_sk'] = (unitInfo['ltd_sk'] or 0) + 1
+    else
+        unitInfo['ltd'] = (unitInfo['ltd'] or 0) + 1
+    end
 end
 
 -- Returns the itemId by slot link
@@ -137,6 +143,9 @@ local tmp_isLooting = false
 -- Holds the looting informations for already attacked units to avoid collecting twice
 local tmp_lootedUnits = {}
 
+-- true, if player has successfully used skinning and the loot window is expected to have the skinned loot
+local tmp_hasSkinned = false
+
 local function GetLootingInformations(unitGuid, unitId)
     local lootingInfos = tmp_lootedUnits[unitGuid]
     local exists = lootingInfos ~= nil
@@ -147,12 +156,18 @@ local function GetLootingInformations(unitGuid, unitId)
             unitId = unitId,
             -- time when looting was started first time
             time = GetTime(),
-            -- tracked items
+
+            -- general items
             items = {},
+            -- items from skinning
+            skinningItems = {},
+
             -- was copper already tracked?
             hasCopperTracked = false,
+
             -- was the looting counter already incremented for this unit?
-            lootingCounterWasIncremented = false
+            lootingCounterWasIncremented = false,
+            skinningCounterWasIncremented = false
         }
 
         tmp_lootedUnits[unitGuid] = lootingInfos
@@ -163,6 +178,10 @@ end
 
 local function ProcessItemLootSlot(itemSlot)
     local _, lootName, _, currencyID, lootQuality, _, isQuestItem, _ = GetLootSlotInfo(itemSlot)
+
+    if (tmp_hasSkinned) then
+        DataTracker:LogDebug('Skinning loot')
+    end
 
     local itemId = currencyID
     if (itemId == nil) then
@@ -177,18 +196,26 @@ local function ProcessItemLootSlot(itemSlot)
             local unitId = DataTracker:UnitGuidToId(guid)
 
             local lootingInfos = GetLootingInformations(guid, unitId)
-            local lootedItems = lootingInfos['items']
+
+            local lootedItems
+            if (tmp_hasSkinned) then
+                lootedItems = lootingInfos.skinningItems
+            else
+                lootedItems = lootingInfos.items
+            end
+
             if (lootedItems[itemId] == nil) then
                 local sourceQuantity = tonumber(sources[sourceIndex + 1])
                 if (unitId and unitId > 0) then
                     if (not isQuestItem) then
-                        TrackItem(itemId, lootName, sourceQuantity, lootQuality, unitId)
+                        TrackItem(itemId, lootName, sourceQuantity, lootQuality, unitId, tmp_hasSkinned)
                     end
 
                     lootedItems[itemId] = sourceQuantity
 
-                    if (not lootingInfos.lootingCounterWasIncremented) then
-                        DataTracker:IncrementLootCounter(unitId)
+                    if (not lootingInfos.lootingCounterWasIncremented or 
+                        (tmp_hasSkinned and not lootingInfos.skinningCounterWasIncremented)) then
+                        IncrementLootCounter(unitId, tmp_hasSkinned)
                         lootingInfos.lootingCounterWasIncremented = true
                     end
                 end
@@ -228,7 +255,7 @@ local function ProcessMoneyLoolSlot(itemSlot)
                             lootingInfos.hasCopperTracked = true
 
                             if (not lootingInfos.lootingCounterWasIncremented) then
-                                DataTracker:IncrementLootCounter(unitId)
+                                IncrementLootCounter(unitId, false)
                                 lootingInfos.lootingCounterWasIncremented = true
                             end
                         end
@@ -236,6 +263,12 @@ local function ProcessMoneyLoolSlot(itemSlot)
                 end
             end
         end
+    end
+end
+
+function DataTracker:OnUnitSpellcastSucceeded(unitTarget, castGUID, spellID)
+    if (unitTarget == 'player' and spellID == 8613) then
+        tmp_hasSkinned = true
     end
 end
 
@@ -270,6 +303,7 @@ function DataTracker:OnLootClosed()
     DataTracker:LogVerbose('OnLootClosed')
 
     tmp_isLooting = false
+    tmp_hasSkinned = false
 
     -- cleanup looted units table
     local currentTime = GetTime()

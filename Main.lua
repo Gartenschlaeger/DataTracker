@@ -36,6 +36,8 @@ function DataTracker.OnEvent(self, event, ...)
         DataTracker:OnTargetChanged()
     elseif (event == 'ZONE_CHANGED_NEW_AREA') then
         DataTracker:UpdateCurrentZone()
+    elseif (event == 'UNIT_SPELLCAST_SUCCEEDED') then
+        DataTracker:OnUnitSpellcastSucceeded(...)
     elseif (event == 'LOOT_READY') then
         DataTracker:OnLootReady()
     elseif (event == 'LOOT_CLOSED') then
@@ -53,4 +55,5 @@ f:RegisterEvent('LOOT_READY')
 f:RegisterEvent('LOOT_OPENED')
 f:RegisterEvent('LOOT_CLOSED')
 f:RegisterEvent('COMBAT_LOG_EVENT_UNFILTERED')
+f:RegisterEvent('UNIT_SPELLCAST_SUCCEEDED')
 f:SetScript('OnEvent', DataTracker.OnEvent)

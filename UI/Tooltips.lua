@@ -1,5 +1,31 @@
 local tooltipWasModified = nil
 
+local function CalculatePercentage(timesLooted, foundItems)
+    if (timesLooted <= 0) then
+        return 0
+    end
+
+    local percentage = foundItems / timesLooted
+    if (percentage > 1) then
+        percentage = 1
+    end
+
+    percentage = math.floor(percentage * 100)
+    if (percentage < 1) then
+        percentage = 1
+    end
+
+    return percentage
+end
+
+local function FormatPercentage(percentage)
+    if (percentage > 0) then
+        return percentage .. '%'
+    end
+
+    return ''
+end
+
 local function OnTooltipSetUnit(tooltip)
     local _, unit = tooltip:GetUnit();
     if (unit) then
@@ -51,7 +77,7 @@ local function OnTooltipSetUnit(tooltip)
                     tooltip:AddDoubleLine('Coins', GetCoinTextureString(minCopper) .. ' / ' .. GetCoinTextureString(maxCopper), 1, 1, 1, 1, 1, 1)
                 end
 
-                -- items
+                -- general items
                 local lootInfos = unitInfo['its']
                 if (lootInfos) then
                     shouldAddAnEmptyLine = true
@@ -60,18 +86,7 @@ local function OnTooltipSetUnit(tooltip)
                         if (itemInfo) then
                             local itemQuality = tonumber(itemInfo['qlt'])
                             --if (itemQuality > 0) then
-                                local percentage = 0
-                                if (timesLooted > 0) then
-                                    percentage = itemsAmount / timesLooted
-                                    if (percentage > 1) then
-                                        percentage = 1
-                                    end
-
-                                    percentage = math.floor(percentage * 100)
-                                    if (percentage < 1) then
-                                        percentage = 1
-                                    end
-                                end
+                                local percentage = CalculatePercentage(timesLooted, itemsAmount)
 
                                 local r, g, b, _ = GetItemQualityColor(itemQuality)
 
@@ -80,8 +95,32 @@ local function OnTooltipSetUnit(tooltip)
                                     shouldAddAnEmptyLine = false
                                 end
 
-                                tooltip:AddDoubleLine(itemInfo['nam'], percentage .. '%', r, g, b, 1, 1, 1)
+                                tooltip:AddDoubleLine(itemInfo['nam'], FormatPercentage(percentage), r, g, b, 1, 1, 1)
                             --end
+                        end
+                    end
+                end
+
+                -- skinning items
+                local itemsSkinning = unitInfo['its_sk']
+                if (itemsSkinning) then
+                    shouldAddAnEmptyLine = true
+                    local ltd_sk = tonumber(unitInfo['ltd_sk']) or 0
+
+                    for itemId, itemCount in pairs(itemsSkinning) do
+                        local itemInfo = DT_ItemDb[itemId]
+                        if (itemInfo) then
+                            local percentage = CalculatePercentage(ltd_sk, itemCount)
+
+                            local itemQuality = tonumber(itemInfo['qlt'])
+                            local r, g, b, _ = GetItemQualityColor(itemQuality)
+
+                            if (shouldAddAnEmptyLine) then
+                                tooltip:AddLine(' ')
+                                shouldAddAnEmptyLine = false
+                            end
+
+                            tooltip:AddDoubleLine(itemInfo['nam'], FormatPercentage(percentage), r, g, b, 1, 1, 1)
                         end
                     end
                 end
