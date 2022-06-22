@@ -47,7 +47,7 @@ local function OnTooltipSetUnit(tooltip)
                 end
 
                 -- money: min/max
-                if (minCopper and maxCopper) then
+                if (minCopper and maxCopper and minCopper ~= maxCopper) then
                     tooltip:AddDoubleLine('Coins', GetCoinTextureString(minCopper) .. ' / ' .. GetCoinTextureString(maxCopper), 1, 1, 1, 1, 1, 1)
                 end
 
