@@ -200,7 +200,7 @@ local function ProcessMoneyLoolSlot(itemSlot)
         local sources = {GetLootSourceInfo(itemSlot)}
         local sourcesCount = #sources
 
-        -- track copper only if we have exactly one source 
+        -- track copper only if we have exactly one source
         -- otherwise its the sum of all and we don't know which unit has dropped how much
         -- to avoid invalid calculations we skip in case of multiple units
         if (sourcesCount == 2) then

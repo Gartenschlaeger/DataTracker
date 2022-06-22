@@ -1,6 +1,6 @@
--- Called when a mob was killed and should be stored to db
-function DataTracker:MobKill(unitId, unitName)
-    DataTracker:LogTrace('MobKill', unitId, unitName)
+-- Increments the kill counter
+function DataTracker:TrackKill(unitId, unitName)
+    DataTracker:LogTrace('TrackKill', unitId, unitName)
 
     if (DataTracker.CurrentZoneId == nil) then
         DataTracker:UpdateCurrentZone()
@@ -27,11 +27,11 @@ function DataTracker:MobKill(unitId, unitName)
     -- update zone kills counter
     zones[DataTracker.CurrentZoneId] = (zones[DataTracker.CurrentZoneId] or 0) + 1
 
-    DataTracker:LogDebug('MobKill: ' .. unitName .. ' (ID = ' .. unitId .. '), total kills = ' .. totalKills)
+    DataTracker:LogDebug('Kill: ' .. unitName .. ' (ID = ' .. unitId .. '), total kills = ' .. totalKills)
 end
 
--- Temporarilly storage of UnitId <-> IsLooting mapping to remove duplicates in looting db
-local AttackedUnits = {}
+-- Temporarilly storage of attacked unit guids
+local tmp_attackedUnitGuids = {}
 
 -- Occures for any combat log
 function DataTracker:OnCombatLogEventUnfiltered()
@@ -50,13 +50,13 @@ function DataTracker:OnCombatLogEventUnfiltered()
         DataTracker:LogVerbose('OnCombatLogEventUnfiltered', subEvent, sourceGUID, sourceName, destGUID, destName)
 
         if (isDamageSubEvent and (isPlayerAttack or isPetAttack)) then
-            AttackedUnits[destGUID] = true
+            tmp_attackedUnitGuids[destGUID] = true
         elseif (subEvent=="PARTY_KILL") then
-            AttackedUnits[destGUID] = true
-	    elseif (subEvent == 'UNIT_DIED' and guidType == "Creature" and AttackedUnits[destGUID] == true) then
-            AttackedUnits[destGUID] = nil
+            tmp_attackedUnitGuids[destGUID] = true
+	    elseif (subEvent == 'UNIT_DIED' and guidType == "Creature" and tmp_attackedUnitGuids[destGUID] == true) then
+            tmp_attackedUnitGuids[destGUID] = nil
             local unitId = DataTracker:UnitGuidToId(destGUID)
-            DataTracker:MobKill(unitId, destName)
+            DataTracker:TrackKill(unitId, destName)
         end
 	end
 end
