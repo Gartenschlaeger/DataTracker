@@ -137,6 +137,33 @@ local tmp_isLooting = false
 -- Holds the looting informations for already attacked units to avoid collecting twice
 local tmp_lootedUnits = {}
 
+local function GetLootingInformations(unitGuid, unitId)
+    local lootingInfos = tmp_lootedUnits[unitGuid]
+    local exists = lootingInfos ~= nil
+
+    if (lootingInfos == nil) then
+        lootingInfos = {
+            -- id of unit
+            unitId = unitId,
+            -- time when looting was started first time
+            time = GetTime(),
+            -- tracked items
+            items = {},
+            -- was copper already tracked?
+            hasCopperTracked = false,
+            -- was the looting counter already incremented for this unit?
+            lootingCounterWasIncremented = false
+        }
+
+        tmp_lootedUnits[unitGuid] = lootingInfos
+    end
+
+    -- looting info was just created so there was no loot earlier tracked for this unit
+    lootingInfos.isNew = exists
+
+    return lootingInfos
+end
+
 local function ProcessItemLootSlot(itemSlot)
     local _, lootName, _, currencyID, lootQuality, _, isQuestItem, _ = GetLootSlotInfo(itemSlot)
 
@@ -147,25 +174,12 @@ local function ProcessItemLootSlot(itemSlot)
 
     local sources = {GetLootSourceInfo(itemSlot)}
     for sourceIndex = 1, #sources, 2 do
-        local unitGuid = sources[sourceIndex]
-        local unitId = DataTracker:UnitGuidToId(sources[sourceIndex])
+        local guid = sources[sourceIndex]
+        local guidType = select(1, strsplit("-", guid))
+        if guidType == 'Creature' then
+            local unitId = DataTracker:UnitGuidToId(guid)
 
-        local sourceType = select(1, strsplit("-", unitGuid))
-        if sourceType == 'Creature' then
-
-            local lootingInfos = tmp_lootedUnits[unitGuid]
-            local hasAlreadyTracked = lootingInfos ~= nil
-
-            if (lootingInfos == nil) then
-                lootingInfos = {
-                    unitId = unitId,
-                    time = GetTime(),
-                    items = {},
-                }
-
-                tmp_lootedUnits[unitGuid] = lootingInfos
-            end
-
+            local lootingInfos = GetLootingInformations(guid, unitId)
             local lootedItems = lootingInfos['items']
             if (lootedItems[itemId] == nil) then
                 local sourceQuantity = tonumber(sources[sourceIndex + 1])
@@ -176,7 +190,7 @@ local function ProcessItemLootSlot(itemSlot)
 
                     lootedItems[itemId] = sourceQuantity
 
-                    if (not hasAlreadyTracked) then
+                    if (not lootingInfos.isNew) then
                         DataTracker:IncrementLootCounter(unitId)
                         lootingInfos.lootingCounterWasIncremented = true
                     end
@@ -205,11 +219,17 @@ local function ProcessMoneyLoolSlot(itemSlot)
         -- to avoid invalid calculations we skip in case of multiple units
         if (sourcesCount == 2) then
             for j = 1, sourcesCount, 2 do
-                local guidType = select(1, strsplit("-", sources[j]))
+                local unitGuid = sources[j]
+                local guidType = select(1, strsplit("-", unitGuid))
+
                 if guidType == 'Creature' then
                     local unitId = DataTracker:UnitGuidToId(sources[j])
                     if (unitId and unitId > 0) then
-                        TrackLootedCopper(unitId, lootedCopper)
+                        local lootingInfos = GetLootingInformations(unitGuid, unitId)
+                        if (not lootingInfos.hasCopperTracked) then
+                            TrackLootedCopper(unitId, lootedCopper)
+                            lootingInfos.hasCopperTracked = true
+                        end
                     end
                 end
             end

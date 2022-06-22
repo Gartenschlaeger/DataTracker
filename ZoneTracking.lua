@@ -1,7 +1,7 @@
 -- Current ZoneId. If nil call to UpdateCurrentZone() is needed
 DataTracker.CurrentZoneId = nil
 
--- Updates the current zone id
+-- Updates the field DataTracker.CurrentZoneId
 function DataTracker:UpdateCurrentZone()
     self:LogTrace('UpdateCurrentZone')
 

@@ -1,3 +1,4 @@
+-- Returns the classificationId for the given classification name
 local function ResolveUnitClassificationId(unitClassification)
     local classificationId = DT_UnitClassifications[unitClassification]
     if (classificationId == nil) then
@@ -9,7 +10,7 @@ local function ResolveUnitClassificationId(unitClassification)
     return classificationId
 end
 
--- Occures when the target changes, used to store unit id and name
+-- Occures when the target is changed (used to store units in db)
 function DataTracker:OnTargetChanged()
     DataTracker:LogTrace('OnTargetChanged')
 
