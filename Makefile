@@ -1,7 +1,7 @@
 clean:
 	rm -rf DataTracker
 	rm -f datatracker.zip
-	
+
 build: clean
 	mkdir -p DataTracker
 	cp *.lua *.toc *.md DataTracker

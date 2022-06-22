@@ -6,12 +6,21 @@
 ## SavedVariables: DT_Options, DT_ItemDb, DT_UnitDb, DT_ZoneDb, DT_UnitClassifications
 
 Main.lua
+Options.lua
+
 Localization\en.lua
 Localization\de.lua
+
 Logging.lua
 Helper.lua
-DataTracker.lua
+
 SlashCommands.lua
 UI/DatabaseBrowser.lua
 UI/DatabaseBrowser.xml
 UI/Tooltips.lua
+UI/OptionsPanel.lua
+
+ZoneTracking.lua
+UnitTracking.lua
+UnitKillTracking.lua
+LootTracking.lua
