@@ -1,6 +1,6 @@
 -- Called when copper was looted and should be added to db
-local function AddGold(unitId, lootedCopper)
-    DataTracker:LogVerbose('AddGold', unitId, lootedCopper)
+local function TrackLootedCopper(unitId, lootedCopper)
+    DataTracker:LogVerbose('TrackLootedCopper', unitId, lootedCopper)
 
     local unitInfo = DT_UnitDb[unitId]
     if (unitInfo == nil) then
@@ -23,12 +23,12 @@ local function AddGold(unitId, lootedCopper)
         unitInfo['mxc'] = maxCopper
     end
 
-    DataTracker:LogDebug('AddGold: ' .. lootedCopper .. ', (' .. unitInfo['nam'] .. ' ID = ' .. unitId .. ')')
+    DataTracker:LogDebug('Copper: ' .. lootedCopper .. ', (' .. unitInfo['nam'] .. ' ID = ' .. unitId .. ')')
 end
 
 -- Called when a new item was looted and should be added to db
-local function AddItem(itemId, itemName, itemQuantity, itemQuality, unitId)
-    DataTracker:LogVerbose('AddItem', itemId, itemName, itemQuantity, itemQuality, unitId)
+local function TrackItem(itemId, itemName, itemQuantity, itemQuality, unitId)
+    DataTracker:LogVerbose('TrackItem', itemId, itemName, itemQuantity, itemQuality, unitId)
 
     -- store item info
     local itemInfo = DT_ItemDb[itemId]
@@ -71,7 +71,7 @@ local function AddItem(itemId, itemName, itemQuantity, itemQuality, unitId)
     end
     unitItemsInfo[itemId] = unitItemLootedCounter
 
-    DataTracker:LogDebug('AddItem: ' .. itemQuantity .. ' ' .. itemName .. ' (ID = ' .. itemId .. '), ' .. unitInfo['nam'] .. ' (ID = ' .. unitId .. ')')
+    DataTracker:LogDebug('Item: ' .. itemQuantity .. ' ' .. itemName .. ' (ID = ' .. itemId .. '), ' .. unitInfo['nam'] .. ' (ID = ' .. unitId .. ')')
 end
 
 -- Increments the loot counter for the given unitId
@@ -171,7 +171,7 @@ local function ProcessItemLootSlot(itemSlot)
                 local sourceQuantity = tonumber(sources[sourceIndex + 1])
                 if (unitId and unitId > 0) then
                     if (not isQuestItem) then
-                        AddItem(itemId, lootName, sourceQuantity, lootQuality, unitId)
+                        TrackItem(itemId, lootName, sourceQuantity, lootQuality, unitId)
                     end
 
                     lootedItems[itemId] = sourceQuantity
@@ -191,17 +191,26 @@ end
 local function ProcessMoneyLoolSlot(itemSlot)
     local _, lootName = GetLootSlotInfo(itemSlot)
 
+    -- unfortunately the looted copper amount is part of the text for so we need to parse it
     local lootedCopper = ParseMoneyFromLootName(lootName)
+
     if (lootedCopper) then
         DataTracker:LogVerbose('LOOT_SLOT_MONEY', lootedCopper)
 
         local sources = {GetLootSourceInfo(itemSlot)}
-        for j = 1, #sources, 2 do
-            local guidType = select(1, strsplit("-", sources[j]))
-            if guidType == 'Creature' then
-                local unitId = DataTracker:UnitGuidToId(sources[j])
-                if (unitId and unitId > 0) then
-                    AddGold(unitId, lootedCopper)
+        local sourcesCount = #sources
+
+        -- track copper only if we have exactly one source 
+        -- otherwise its the sum of all and we don't know which unit has dropped how much
+        -- to avoid invalid calculations we skip in case of multiple units
+        if (sourcesCount == 2) then
+            for j = 1, sourcesCount, 2 do
+                local guidType = select(1, strsplit("-", sources[j]))
+                if guidType == 'Creature' then
+                    local unitId = DataTracker:UnitGuidToId(sources[j])
+                    if (unitId and unitId > 0) then
+                        TrackLootedCopper(unitId, lootedCopper)
+                    end
                 end
             end
         end
