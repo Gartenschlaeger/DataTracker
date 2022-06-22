@@ -8,11 +8,20 @@ local function AddGold(unitId, lootedCopper)
         DT_UnitDb[unitId] = unitInfo
     end
 
-    local currentCopper = tonumber(unitInfo['cop']) or 0
-    local newCopper = currentCopper + lootedCopper
-    DataTracker:LogVerbose('AddGold', unitInfo['nam'], currentCopper, ' -> ', newCopper)
+    local totalLootedCopper = (unitInfo['cop'] or 0) + lootedCopper
+    unitInfo['cop'] = totalLootedCopper
 
-    unitInfo['cop'] = newCopper
+    local minCopper = unitInfo['mnc']
+    if (minCopper == nil or minCopper > lootedCopper) then
+        minCopper = lootedCopper
+        unitInfo['mnc'] = minCopper
+    end
+
+    local maxCopper = unitInfo['mxc']
+    if (maxCopper == nil or maxCopper < lootedCopper) then
+        maxCopper = lootedCopper
+        unitInfo['mxc'] = maxCopper
+    end
 
     DataTracker:LogDebug('AddGold: ' .. lootedCopper .. ', (' .. unitInfo['nam'] .. ' ID = ' .. unitId .. ')')
 end
@@ -66,7 +75,7 @@ local function AddItem(itemId, itemName, itemQuantity, itemQuality, unitId)
 end
 
 -- Increments the loot counter for the given unitId
-local function IncrementLootCounter(unitId)
+function DataTracker:IncrementLootCounter(unitId)
     DataTracker:LogTrace('IncrementLootCounter', unitId)
 
     local unitInfo = DT_UnitDb[unitId]
@@ -149,9 +158,9 @@ local function ProcessItemLootSlot(itemSlot)
 
             if (lootingInfos == nil) then
                 lootingInfos = {
-                    ['unitId'] = unitId,
-                    ['time'] = GetTime(),
-                    ['items'] = {},
+                    unitId = unitId,
+                    time = GetTime(),
+                    items = {},
                 }
 
                 tmp_lootedUnits[unitGuid] = lootingInfos
@@ -168,7 +177,8 @@ local function ProcessItemLootSlot(itemSlot)
                     lootedItems[itemId] = sourceQuantity
 
                     if (not hasAlreadyTracked) then
-                        IncrementLootCounter(unitId)
+                        DataTracker:IncrementLootCounter(unitId)
+                        lootingInfos.lootingCounterWasIncremented = true
                     end
                 end
             end
@@ -234,6 +244,10 @@ function DataTracker:OnLootClosed()
     local currentTime = GetTime()
     for unitGuid, info in pairs(tmp_lootedUnits) do
         if (currentTime - info.time > 60) then
+            if (not info.lootingCounterWasIncremented) then
+                DataTracker:IncrementLootCounter(info.unitId)
+            end
+
             tmp_lootedUnits[unitGuid] = nil
             DataTracker:LogVerbose('Cleaned up looted unit ' .. unitGuid)
         end
