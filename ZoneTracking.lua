@@ -27,7 +27,7 @@ function DataTracker:UpdateCurrentZone()
         self:LogVerbose('Write new ZoneText to db, zoneId = ' .. zoneId .. ', zoneText = ' .. zoneText)
 		DT_ZoneDb[zoneId] = zoneText
 
-        self:LogInfo(DataTracker.l18n.NEW_ZONE .. ': ' .. zoneText)
+        self:LogInfo(DataTracker.i18n.NEW_ZONE .. ': ' .. zoneText)
 	end
 
 	self.CurrentZoneId = zoneId

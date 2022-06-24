@@ -3,14 +3,12 @@ function DataTracker:InitOptionsPanel()
 	panel.name = "DataTracker"
 
     -- debug logs checkbox
-	local cbDebugLogs = DataTracker:AddCheckbox(panel, 20, -20, 'Debug logs',
+	local cbDebugLogs = DataTracker:AddCheckbox(panel, 20, -20, DataTracker.i18n.DEBUG_LOGS,
         function(isEnabled)
             if (isEnabled) then
                 DT_Options.MinLogLevel = DataTracker.LogLevel.Debug
-                DataTracker:LogInfo('Debug logs enabled')
             else
                 DT_Options.MinLogLevel = DataTracker.LogLevel.Info
-                DataTracker:LogInfo('Debug logs disabled')
             end
         end)
 

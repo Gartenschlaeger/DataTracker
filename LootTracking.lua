@@ -40,7 +40,7 @@ local function TrackItem(itemId, itemName, itemQuantity, itemQuality, unitId, is
         itemInfo = {}
         DT_ItemDb[itemId] = itemInfo
 
-        DataTracker:LogInfo(DataTracker.l18n.NEW_ITEM .. ': ' .. itemName)
+        DataTracker:LogInfo(DataTracker.i18n.NEW_ITEM .. ': ' .. itemName)
     end
 
     itemInfo.nam = itemName
@@ -132,7 +132,7 @@ local function ParseMoneyFromLootName(lootName)
     local startIndex = 0
     local lootedCopper = 0
 
-    startIndex = string.find(lootName, ' ' .. DataTracker.l18n.GOLD)
+    startIndex = string.find(lootName, ' ' .. DataTracker.i18n.GOLD)
     if startIndex then
         local g = tonumber(string.sub(lootName,0,startIndex-1)) or 0
 		lootName = string.sub(lootName,startIndex+5,string.len(lootName))
@@ -140,7 +140,7 @@ local function ParseMoneyFromLootName(lootName)
         DataTracker:LogVerbose('ParseMoneyFromLootName, Processing Gold', g)
 	end
 
-	startIndex = string.find(lootName, ' ' .. DataTracker.l18n.SILVER)
+	startIndex = string.find(lootName, ' ' .. DataTracker.i18n.SILVER)
 	if startIndex then
 		local s = tonumber(string.sub(lootName,0,startIndex-1)) or 0
 		lootName = string.sub(lootName,startIndex+7,string.len(lootName))
@@ -148,7 +148,7 @@ local function ParseMoneyFromLootName(lootName)
         DataTracker:LogVerbose('ParseMoneyFromLootName, Processing Silver', s)
 	end
 
-	startIndex = string.find(lootName, ' ' .. DataTracker.l18n.COPPER)
+	startIndex = string.find(lootName, ' ' .. DataTracker.i18n.COPPER)
 	if startIndex then
 		local c = tonumber(string.sub(lootName,0,startIndex-1)) or 0
 		lootedCopper = lootedCopper + (c or 0)

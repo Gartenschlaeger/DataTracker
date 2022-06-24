@@ -35,7 +35,7 @@ function DataTracker:OnTargetChanged()
             mobInfo = {}
             DT_UnitDb[unitId] = mobInfo
 
-            DataTracker:LogInfo(DataTracker.l18n.NEW_UNIT .. ': ' .. unitName)
+            DataTracker:LogInfo(DataTracker.i18n.NEW_UNIT .. ': ' .. unitName)
         end
 
         local classification = UnitClassification('target')

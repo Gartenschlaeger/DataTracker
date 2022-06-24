@@ -18,7 +18,7 @@ local function OnTooltipSetUnit(tooltip)
                         shouldAddAnEmptyLine = false
                     end
 
-                    tooltip:AddDoubleLine('Looted', timesLooted, 1, 1, 1, 1, 1, 1)
+                    tooltip:AddDoubleLine(DataTracker.i18n.TT_LOOTED, timesLooted, 1, 1, 1, 1, 1, 1)
                 end
 
                 -- times killed
@@ -29,26 +29,29 @@ local function OnTooltipSetUnit(tooltip)
                         shouldAddAnEmptyLine = false
                     end
 
-                    tooltip:AddDoubleLine('Killed', timesKilled, 1, 1, 1, 1, 1, 1)
+                    tooltip:AddDoubleLine(DataTracker.i18n.TT_KILLS, timesKilled, 1, 1, 1, 1, 1, 1)
                 end
 
-                local totalCopper = tonumber(unitInfo['cop']) or 0
+                --local totalCopper = tonumber(unitInfo['cop']) or 0
                 local minCopper = tonumber(unitInfo['mnc']) or 0
                 local maxCopper = tonumber(unitInfo['mxc']) or 0
 
                 -- money: avg
-                if (timesLooted > 0 and totalCopper > 0) then
-                    if (shouldAddAnEmptyLine) then
-                        tooltip:AddLine(' ')
-                        shouldAddAnEmptyLine = false
-                    end
+                -- if (timesLooted > 0 and totalCopper > 0) then
+                --     if (shouldAddAnEmptyLine) then
+                --         tooltip:AddLine(' ')
+                --         shouldAddAnEmptyLine = false
+                --     end
 
-                    tooltip:AddDoubleLine('Avg. coins', GetCoinTextureString(math.floor(totalCopper / timesLooted)), 1, 1, 1, 1, 1, 1)
-                end
+                --     tooltip:AddDoubleLine('Avg. coins', GetCoinTextureString(math.floor(totalCopper / timesLooted)), 1, 1, 1, 1, 1, 1)
+                -- end
 
                 -- money: min/max
-                if (minCopper and maxCopper and minCopper ~= maxCopper) then
-                    tooltip:AddDoubleLine('Coins', GetCoinTextureString(minCopper) .. ' / ' .. GetCoinTextureString(maxCopper), 1, 1, 1, 1, 1, 1)
+                if (minCopper and minCopper > 0) then
+                    tooltip:AddDoubleLine(DataTracker.i18n.TT_MIN_COP, GetCoinTextureString(minCopper), 1, 1, 1, 1, 1, 1)
+                end
+                if (maxCopper and maxCopper > 0) then
+                    tooltip:AddDoubleLine(DataTracker.i18n.TT_MAX_COP, GetCoinTextureString(maxCopper), 1, 1, 1, 1, 1, 1)
                 end
 
                 -- general items
@@ -59,7 +62,7 @@ local function OnTooltipSetUnit(tooltip)
                         local itemInfo = DT_ItemDb[itemId]
                         if (itemInfo) then
                             local itemQuality = tonumber(itemInfo['qlt'])
-                            --if (itemQuality > 0) then
+                            if (itemQuality > 0) then
                                 local percentage = DataTracker:CalculatePercentage(timesLooted, timesItemWasLooted)
                                 local r, g, b, _ = GetItemQualityColor(itemQuality)
 
@@ -69,7 +72,7 @@ local function OnTooltipSetUnit(tooltip)
                                 end
 
                                 tooltip:AddDoubleLine(itemInfo['nam'], DataTracker:FormatPercentage(percentage), r, g, b, 1, 1, 1)
-                            --end
+                            end
                         end
                     end
                 end
