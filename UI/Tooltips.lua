@@ -81,13 +81,12 @@ local function OnTooltipSetUnit(tooltip)
                 local lootInfos = unitInfo['its']
                 if (lootInfos) then
                     shouldAddAnEmptyLine = true
-                    for itemId, itemsAmount in pairs(lootInfos) do
+                    for itemId, timesItemWasLooted in pairs(lootInfos) do
                         local itemInfo = DT_ItemDb[itemId]
                         if (itemInfo) then
                             local itemQuality = tonumber(itemInfo['qlt'])
                             --if (itemQuality > 0) then
-                                local percentage = CalculatePercentage(timesLooted, itemsAmount)
-
+                                local percentage = CalculatePercentage(timesLooted, timesItemWasLooted)
                                 local r, g, b, _ = GetItemQualityColor(itemQuality)
 
                                 if (shouldAddAnEmptyLine) then

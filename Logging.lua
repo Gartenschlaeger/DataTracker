@@ -25,9 +25,14 @@ function DataTracker:LogVerbose(msg, ...)
     end
 end
 
+-- true if debug logging is enabled
+function DataTracker:IsDebugLogEnabled()
+    return  DT_Options['MinLogLevel'] and DT_Options['MinLogLevel'] >= DataTracker.LogLevel.Debug
+end
+
 -- Logs a Debug message to the chat
 function DataTracker:LogDebug(msg, ...)
-    if (DT_Options['MinLogLevel'] and DT_Options['MinLogLevel'] >= DataTracker.LogLevel.Debug) then
+    if (DataTracker:IsDebugLogEnabled()) then
         print('[DT]', msg, ...)
     end
 end
