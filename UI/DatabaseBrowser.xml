@@ -9,19 +9,19 @@
 				<Texture name="$parentHighlight" file="Interface\QuestFrame\UI-QuestTitleHighlight" alphaMode="ADD" setAllPoints="true" hidden="true" />
 			</Layer>
 			<Layer level="ARTWORK">
-				<FontString name="$parentIndex" inherits="GameFontNormalSmall" justifyH="LEFT">
+				<FontString name="$parentVal1" inherits="GameFontNormalSmall" justifyH="LEFT">
 					<Size x="450" y="12"/>
 					<Anchors>
 						<Anchor point="LEFT"> <Offset x="0" y="0"/></Anchor>
 					</Anchors>
 				</FontString>
-				<FontString name="$parentValue" inherits="GameFontNormalSmall" justifyH="LEFT">
+				<FontString name="$parentVal2" inherits="GameFontNormalSmall" justifyH="LEFT">
 					<Size x="50" y="12"/>
 					<Anchors>
 						<Anchor point="LEFT"> <Offset x="450" y="0"/></Anchor>
 					</Anchors>
 				</FontString>
-				<FontString name="$parentName" inherits="GameFontNormalSmall" justifyH="LEFT">
+				<FontString name="$parentVal3" inherits="GameFontNormalSmall" justifyH="LEFT">
 					<Size x="250" y="12"/>
 					<Anchors>
 						<Anchor point="LEFT"> <Offset x="500" y="0"/></Anchor>
@@ -54,7 +54,7 @@
         </Anchors>
 
         <Frames>
-            <EditBox name="DT_DatabaseBrowser_SearchBox" autoFocus="false" historyLines="1" inherits="SearchBoxTemplate">
+            <EditBox name="DT_DatabaseBrowser_SearchBox" autoFocus="true" historyLines="1" inherits="SearchBoxTemplate">
                 <Size x="460" y="26"/>
                 <Anchors>
                     <Anchor point="TOPLEFT" relativeTo="$parent" x="20" y="-35" />
