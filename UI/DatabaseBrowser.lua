@@ -102,8 +102,11 @@ function DT_DatabaseBrowser_ScrollBar_Update(self)
 
         if (result) then
             btn:Enable()
-            fsVal1:SetText(result.itemName)
+
+            local textureId = GetItemIcon(result.itemId)
+            local texture = '|T' .. textureId .. ':22|t'
             fsVal1:SetTextColor(result.color.r, result.color.g, result.color.b)
+            fsVal1:SetText(texture .. ' ' .. result.itemName)
         else
             btn:Disable()
             fsVal1:SetText('')
