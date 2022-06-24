@@ -114,7 +114,9 @@ local function LoadItemDetails(itemIndex)
     title:SetTextColor(itemResult.color.r, itemResult.color.g, itemResult.color.b)
 
     local totalResults = 0
-    for _, unitInfos in pairs(DT_UnitDb) do
+    for unitId, unitInfos in pairs(DT_UnitDb) do
+
+        local result = nil
 
         -- find by general loot items
         local unitItems = unitInfos.its
@@ -123,9 +125,9 @@ local function LoadItemDetails(itemIndex)
                 if (itemResult.itemId == itemId) then
                     totalResults = totalResults + 1
 
-                    local result = {
+                    result = {
                         unitName = unitInfos.nam,
-                        zoneName = 'TODO',
+                        zoneName = '',
                         percent = '100%'
                     }
 
@@ -142,9 +144,10 @@ local function LoadItemDetails(itemIndex)
                 if (itemResult.itemId == itemId) then
                     totalResults = totalResults + 1
 
-                    local result = {
+                    result = {
+                        unitId = unitId,
                         unitName = unitInfos.nam,
-                        zoneName = 'TODO',
+                        zoneName = '',
                         percent = '100%'
                     }
 
@@ -153,6 +156,14 @@ local function LoadItemDetails(itemIndex)
                 end
             end
         end
+
+        if (result and unitInfos.zns) then
+            for zoneId, _ in pairs(unitInfos.zns) do
+                local text = DataTracker:GetZoneText(zoneId)
+                result.zoneName = result.zoneName .. ' ' .. text
+            end
+        end
+
     end
 
     -- print(totalResults)

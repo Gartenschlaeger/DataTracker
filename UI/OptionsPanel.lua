@@ -14,14 +14,14 @@ function DataTracker:InitOptionsPanel()
             end
         end)
 
-    local cbMinimap = DataTracker:AddCheckbox(panel, 20, -45, 'Show minimap button',
-        function(isEnabled)
-            DT_Options.ShowMinimapButton = isEnabled
-        end)
+    -- local cbMinimap = DataTracker:AddCheckbox(panel, 20, -45, 'Show minimap button',
+    --     function(isEnabled)
+    --         DT_Options.ShowMinimapButton = isEnabled
+    --     end)
 
     -- initial values
     cbDebugLogs:SetChecked(DT_Options.MinLogLevel == DataTracker.LogLevel.Debug)
-    cbMinimap:SetChecked(DT_Options.ShowMinimapButton)
+    --cbMinimap:SetChecked(DT_Options.ShowMinimapButton)
 
 	InterfaceOptions_AddCategory(panel)
 end

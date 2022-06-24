@@ -14,11 +14,13 @@ Localization\de.lua
 Logging.lua
 Helper.lua
 
-SlashCommands.lua
+UI/Helper.lua
 UI/DatabaseBrowser.lua
 UI/DatabaseBrowser.xml
 UI/Tooltips.lua
 UI/OptionsPanel.lua
+
+SlashCommands.lua
 
 ZoneTracking.lua
 UnitTracking.lua

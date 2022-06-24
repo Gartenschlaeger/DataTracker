@@ -44,3 +44,8 @@ function DataTracker:OnTargetChanged()
         mobInfo['clf'] = ResolveUnitClassificationId(classification)
     end
 end
+
+-- Converts a unit guid to an id
+function DataTracker:UnitGuidToId(unitGuid)
+    return tonumber(select(6, strsplit('-', unitGuid)), 10)
+end

@@ -33,3 +33,13 @@ function DataTracker:UpdateCurrentZone()
 	self.CurrentZoneId = zoneId
     self:LogDebug('Changed zone to ' .. zoneText .. ' (ID = ' .. zoneId .. ')')
 end
+
+---@param zoneId number
+function DataTracker:GetZoneText(zoneId)
+	local zone = DT_ZoneDb[zoneId]
+	if (zone) then
+		return zone
+	end
+
+	return nil
+end
