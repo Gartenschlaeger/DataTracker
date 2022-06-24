@@ -2,14 +2,14 @@ SLASH_DT_SHOW1 = "/dts"
 local function SlashCommand_Show()
     DataTracker:LogTrace('DT_SlashCommand_Show')
 
-    DT_DatabaseBrowser:Show()
+    DT_DatabaseBrowserFrame:Show()
 end
 
 SLASH_DT_HIDE1 = "/dth"
 local function SlashCommand_Hide()
     DataTracker:LogTrace('DT_SlashCommand_Hide')
 
-    DT_DatabaseBrowser:Hide()
+    DT_DatabaseBrowserFrame:Hide()
 end
 
 SLASH_DT_LOGLEVEL1 = "/dtll"
