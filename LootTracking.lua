@@ -12,22 +12,22 @@ local function TrackLootedCopper(unitId, lootedCopper)
         DT_UnitDb[unitId] = unitInfo
     end
 
-    local totalLootedCopper = (unitInfo['cop'] or 0) + lootedCopper
-    unitInfo['cop'] = totalLootedCopper
+    local totalLootedCopper = (unitInfo.cop or 0) + lootedCopper
+    unitInfo.cop = totalLootedCopper
 
-    local minCopper = unitInfo['mnc']
+    local minCopper = unitInfo.mnc
     if (minCopper == nil or minCopper > lootedCopper) then
         minCopper = lootedCopper
-        unitInfo['mnc'] = minCopper
+        unitInfo.mnc = minCopper
     end
 
-    local maxCopper = unitInfo['mxc']
+    local maxCopper = unitInfo.mxc
     if (maxCopper == nil or maxCopper < lootedCopper) then
         maxCopper = lootedCopper
-        unitInfo['mxc'] = maxCopper
+        unitInfo.mxc = maxCopper
     end
 
-    DataTracker:LogDebug('Copper: ' .. lootedCopper .. ', (' .. unitInfo['nam'] .. ' ID = ' .. unitId .. ')')
+    DataTracker:LogDebug('Copper: ' .. lootedCopper .. ', (' .. unitInfo.nam .. ' ID = ' .. unitId .. ')')
 end
 
 -- Called when a new item was looted and should be added to db
@@ -43,8 +43,8 @@ local function TrackItem(itemId, itemName, itemQuantity, itemQuality, unitId, is
         DataTracker:LogInfo(DataTracker.l18n.NEW_ITEM .. ': ' .. itemName)
     end
 
-    itemInfo['nam'] = itemName
-    itemInfo['qlt'] = itemQuality
+    itemInfo.nam = itemName
+    itemInfo.qlt = itemQuality
 
     -- store loot info
     local unitInfo = DT_UnitDb[unitId]
@@ -55,16 +55,16 @@ local function TrackItem(itemId, itemName, itemQuantity, itemQuality, unitId, is
 
     local unitItemsInfo
     if (isSkinningItem) then
-        unitItemsInfo = unitInfo['its_sk']
+        unitItemsInfo = unitInfo.its_sk
         if (unitItemsInfo == nil) then
             unitItemsInfo = {}
-            unitInfo['its_sk'] = unitItemsInfo
+            unitInfo.its_sk = unitItemsInfo
         end
     else
-        unitItemsInfo = unitInfo['its']
+        unitItemsInfo = unitInfo.its
         if (unitItemsInfo == nil) then
             unitItemsInfo = {}
-            unitInfo['its'] = unitItemsInfo
+            unitInfo.its = unitItemsInfo
         end
     end
 
@@ -84,7 +84,7 @@ local function TrackItem(itemId, itemName, itemQuantity, itemQuality, unitId, is
             prefix = 'G:Item'
         end
 
-        DataTracker:LogDebug(prefix ..  ': ' .. itemQuantity .. ' ' .. itemName .. ' (ID = ' .. itemId .. '), ' .. (unitInfo['nam'] or '') .. ' (ID = ' .. unitId .. ')')
+        DataTracker:LogDebug(prefix ..  ': ' .. itemQuantity .. ' ' .. itemName .. ' (ID = ' .. itemId .. '), ' .. (unitInfo.nam or '') .. ' (ID = ' .. unitId .. ')')
     end
 end
 
@@ -92,6 +92,7 @@ end
 local function IncrementLootCounter(lootingInfos)
     DataTracker:LogTrace('IncrementLootCounter', lootingInfos.unitId, lootingInfos.skinningStarted)
 
+    -- get unit info
     local unitInfo = DT_UnitDb[lootingInfos.unitId]
     if (unitInfo == nil) then
         DataTracker:LogWarning('Cannot find unit with id ' .. lootingInfos.unitId)
@@ -99,11 +100,19 @@ local function IncrementLootCounter(lootingInfos)
     end
 
     if (lootingInfos.skinningStarted) then
-        unitInfo['ltd_sk'] = (unitInfo['ltd_sk'] or 0) + 1
-        DataTracker:LogDebug('S:Count: ' .. (unitInfo['nam'] or '') .. ' (ID = ' .. lootingInfos.unitId .. ')')
+        if (not lootingInfos.skinningCounterIncreased) then
+            unitInfo.ltd_sk = (unitInfo.ltd_sk or 0) + 1
+            lootingInfos.skinningCounterIncreased = true
+
+            DataTracker:LogDebug('S:Count: ' .. (unitInfo.nam or '') .. ' (ID = ' .. lootingInfos.unitId .. ')')
+        end
     else
-        unitInfo['ltd'] = (unitInfo['ltd'] or 0) + 1
-        DataTracker:LogDebug('L:Count: ' .. (unitInfo['nam'] or '') .. ' (ID = ' .. lootingInfos.unitId .. ')')
+        if (not lootingInfos.lootingCounterWasIncremented) then
+            unitInfo.ltd = (unitInfo.ltd or 0) + 1
+            lootingInfos.lootingCounterWasIncremented = true
+
+            DataTracker:LogDebug('L:Count: ' .. (unitInfo.nam or '') .. ' (ID = ' .. lootingInfos.unitId .. ')')
+        end
     end
 end
 
@@ -258,10 +267,7 @@ local function ProcessMoneyLoolSlot(itemSlot)
                             TrackLootedCopper(unitId, lootedCopper)
                             lootingInfos.hasCopperTracked = true
 
-                            if (not lootingInfos.lootingCounterWasIncremented) then
-                                IncrementLootCounter(lootingInfos)
-                                lootingInfos.lootingCounterWasIncremented = true
-                            end
+                            IncrementLootCounter(lootingInfos)
                         end
                     end
                 end
