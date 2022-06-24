@@ -15,6 +15,10 @@ function DataTracker:BoolToNumber(booleanValue)
     return 0
 end
 
+---Calculates the percentage for loot
+---@param timesLooted number
+---@param foundItems number
+---@return number
 function DataTracker:CalculatePercentage(timesLooted, foundItems)
     if (timesLooted <= 0) then
         return 0
@@ -33,6 +37,9 @@ function DataTracker:CalculatePercentage(timesLooted, foundItems)
     return percentage
 end
 
+---formats a percentage value
+---@param percentage number percentage value between 1 and 100
+---@return string
 function DataTracker:FormatPercentage(percentage)
     if (percentage > 0) then
         return percentage .. '%'

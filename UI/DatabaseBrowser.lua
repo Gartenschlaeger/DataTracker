@@ -98,10 +98,18 @@ function DT_DatabaseBrowser_OnBack(self)
     DatabaseBrowserFrame.itemDetails:Hide()
 end
 
+local function createUnitResult(unitId, unitName)
+    return {
+        unitId = unitId,
+        unitName = unitName,
+        zoneName = '',
+        percent = ''
+    }
+end
+
 local function LoadItemDetails(itemIndex)
     local itemResult = DT_SearchResults[itemIndex]
 
-    -- TODO: show where the item can be found (zone, unit, chance)
     DataTracker:LogTrace(itemResult.itemName, itemResult.itemId)
 
     DT_SearchUnitResults = {}
@@ -115,53 +123,40 @@ local function LoadItemDetails(itemIndex)
 
     local totalResults = 0
     for unitId, unitInfos in pairs(DT_UnitDb) do
-
         local result = nil
 
-        -- find by general loot items
+        -- general loot items
         local unitItems = unitInfos.its
         if (unitItems) then
             for itemId, _ in pairs(unitItems) do
                 if (itemResult.itemId == itemId) then
-                    totalResults = totalResults + 1
-
-                    result = {
-                        unitName = unitInfos.nam,
-                        zoneName = '',
-                        percent = '100%'
-                    }
-
-                    DT_SearchUnitResults[totalResults] = result
+                    result = createUnitResult(unitId, unitInfos.nam)
                     break
                 end
             end
         end
 
-        -- find in skinning loot
+        -- skinning loot
         local unitItems = unitInfos.its_sk
         if (unitItems) then
             for itemId, _ in pairs(unitItems) do
                 if (itemResult.itemId == itemId) then
-                    totalResults = totalResults + 1
-
-                    result = {
-                        unitId = unitId,
-                        unitName = unitInfos.nam,
-                        zoneName = '',
-                        percent = '100%'
-                    }
-
-                    DT_SearchUnitResults[totalResults] = result
+                    result = createUnitResult(unitId, unitInfos.nam)
                     break
                 end
             end
         end
 
-        if (result and unitInfos.zns) then
-            for zoneId, _ in pairs(unitInfos.zns) do
-                local text = DataTracker:GetZoneText(zoneId)
-                result.zoneName = result.zoneName .. ' ' .. text
+        if (result) then
+            if (unitInfos.zns) then
+                for zoneId, _ in pairs(unitInfos.zns) do
+                    local text = DataTracker:GetZoneText(zoneId)
+                    result.zoneName = result.zoneName .. ' ' .. text
+                end
             end
+
+            totalResults = totalResults + 1
+            DT_SearchUnitResults[totalResults] = result
         end
 
     end
