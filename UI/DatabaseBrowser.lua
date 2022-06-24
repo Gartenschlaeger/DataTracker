@@ -1,14 +1,13 @@
-local function debugTable(tbl)
-    for k,v in pairs(tbl) do
-        print(k, type(v))
-    end
-end
-
 local DT_RESULT_ITEMS_COUNT = 18
 local DT_RESULT_PIXEL_HEIGHT = 25
 
 ---@type Frame
 local DatabaseBrowserFrame
+
+local function LocalizeUI()
+    DT_DatabaseBrowser_SearchBtn:SetText(DataTracker.i18n.UI_SEARCH)
+    DT_DatabaseBrowser_BackBtn:SetText(DataTracker.i18n.UI_BACK)
+end
 
 function DT_DatabaseBrowser_OnLoad(self)
     DataTracker:LogTrace('DT_DatabaseBrowser_OnLoad')
@@ -17,6 +16,8 @@ function DT_DatabaseBrowser_OnLoad(self)
     DatabaseBrowserFrame = DT_DatabaseBrowserFrame
     DatabaseBrowserFrame.Title:SetText('DataTracker')
     DatabaseBrowserFrame:RegisterForDrag("LeftButton")
+
+    LocalizeUI()
 
     -- disable by default
     for i = 1, DT_RESULT_ITEMS_COUNT do

@@ -106,7 +106,7 @@
                             <OnEnterPressed function="DT_DatabaseBrowser_OnSearch" />
                         </Scripts>
                     </EditBox>
-                    <Button name="DT_DatabaseBrowser_SearchBtn" inherits="UIPanelButtonTemplate" text="Suchen" virtual="true">
+                    <Button name="DT_DatabaseBrowser_SearchBtn" inherits="UIPanelButtonTemplate" virtual="false">
                         <Size x="95" y="22"/>
                         <Anchors>
                             <Anchor point="RIGHT" relativeTo="DT_DatabaseBrowser_SearchBox" x="100" y="0"/>
@@ -238,7 +238,7 @@
                     </Layer>
                 </Layers>
                 <Frames>
-                    <Button name="$parentBack" inherits="UIPanelButtonTemplate" text="Zurück" virtual="true">
+                    <Button name="DT_DatabaseBrowser_BackBtn" inherits="UIPanelButtonTemplate" virtual="false">
                         <Size x="96" y="24"/>
                         <Anchors>
                             <Anchor point="TOPRIGHT" x="0" y="0"/>
