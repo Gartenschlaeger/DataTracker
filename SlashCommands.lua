@@ -31,9 +31,19 @@ local function SlashCommand_UIDebug()
     FrameStackTooltip_Toggle()
 end
 
+SLASH_DT_REMUNIT1 = '/dtru'
+function SlashCommand_DataTrackerRemoveUnit(unitId)
+    local id = tonumber(unitId)
+    if (id) then
+       DT_UnitDb[id] = nil
+       DataTracker:LogInfo('Removed unit with id ' .. id)
+    end
+end
+
 function DataTracker:InitSlashCommands()
     SlashCmdList.DT_SHOW = SlashCommand_Show
     SlashCmdList.DT_HIDE = SlashCommand_Hide
     SlashCmdList.DT_LOGLEVEL = SlashCommand_LogLevel
     SlashCmdList.DT_UIDEBUG = SlashCommand_UIDebug
+    SlashCmdList.DT_REMUNIT = SlashCommand_DataTrackerRemoveUnit
 end
