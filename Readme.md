@@ -26,32 +26,33 @@ The structure of the resulting file will look like bellow.
 
 ```lua
 DT_ItemDb = {
-	[179315] = {
-		["looted"] = 18,
-		["name"] = "Schattenhafter Schenkel",
-		["quality"] = 1,
+	[<Item ID>] = {
+		["nam"] = <Item Name>,
+		["qlt"] = <Item Quality>,
 	},
     ..
 }
 DT_UnitDb = {
-	[158439] = {
-		["zones"] = {
-			[1005] = 8,
+	[<Unit ID>] = {
+		["zns"] = {
+			[<Zone ID>] = <Kills>,
 		},
-		["kills"] = 8,
-		["name"] = "Verhüllte Arkanistin",
-		["looted"] = {
-			[173202] = 5,
-			[173204] = 1,
-			[177753] = 1,
+		["kls"] = <Kills>,
+		["clf"] = <Classification>,
+		["mnc"] = <Min Copper>,
+		["mxc"] = <Max Copper>,
+		["nam"] = <Unit Name>,
+		["cop"] = <Copper>,
+		["ltd"] = <Looting counter>,
+		["its"] = {
+			[<Item ID>] = <Looting counter>,
+			..
 		},
 	},
     ..
 }
 DT_ZoneDb = {
-	[1001] = "Orgrimmar",
-	[1003] = "Nördliches Brachland",
-	[1005] = "Revendreth",
+	[<Zone ID>] = <Zone Name>,
     ..
 }
 
