@@ -1,6 +1,6 @@
 clean:
 	rm -rf DataTracker
-	rm -f datatracker.zip
+	rm -f *.zip
 
 build: clean
 	mkdir -p DataTracker
