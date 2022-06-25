@@ -24,7 +24,8 @@ function DataTracker:OnAddonLoaded(addonName)
         DataTracker:InitSlashCommands()
         DataTracker:InitTooltipHooks()
 
-        DataTracker:LogInfo('DataTracker loaded, ' .. itemsCount .. ' items, ' .. unitsCount .. ' units')
+        local loadingMessage = string.format(DataTracker.i18n.LOADING_MSG, itemsCount, unitsCount)
+        DataTracker:LogInfo(loadingMessage)
     end
 end
 

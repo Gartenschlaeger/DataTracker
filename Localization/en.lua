@@ -2,6 +2,8 @@ local l = {}
 DataTracker.i18n = l
 
 -- General
+l.LOADING_MSG = 'DataTracker loaded, %u items, %u units'
+
 l.GOLD        = 'Gold'
 l.SILVER      = 'Silver'
 l.COPPER      = 'Copper'
@@ -10,7 +12,7 @@ l.NEW_UNIT    = 'New unit'
 l.NEW_ZONE    = 'New zone'
 l.NEW_ITEM    = 'New item'
 
--- General
+-- OptionsPanel
 l.DEBUG_LOGS  = "Enable debug logs"
 
 -- DatabaseBrowser

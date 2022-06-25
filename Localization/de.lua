@@ -5,6 +5,8 @@ end
 local l = DataTracker.i18n
 
 -- General
+l.LOADING_MSG = 'DataTracker wurde geladen, %u Gegenstände, %u Gegner'
+
 l.GOLD        = 'Gold';
 l.SILVER      = 'Silber';
 l.COPPER      = 'Kupfer';
@@ -13,7 +15,7 @@ l.NEW_UNIT    = 'Neuer Gegner';
 l.NEW_ZONE    = 'Neue Zone';
 l.NEW_ITEM    = 'Neuer Gegenstand';
 
--- General
+-- OptionsPanel
 l.DEBUG_LOGS  = 'Diagnoselogs aktivieren'
 
 -- DatabaseBrowser
