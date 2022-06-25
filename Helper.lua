@@ -20,7 +20,7 @@ end
 ---@param foundItems number
 ---@return number
 function DataTracker:CalculatePercentage(timesLooted, foundItems)
-    if (timesLooted <= 0) then
+    if (not timesLooted or timesLooted <= 0) then
         return 0
     end
 

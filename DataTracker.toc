@@ -14,7 +14,7 @@ Localization\de.lua
 Logging.lua
 Helper.lua
 
-UI/Helper.lua
+UI/UIHelper.lua
 UI/DatabaseBrowser.lua
 UI/DatabaseBrowser.xml
 UI/Tooltips.lua

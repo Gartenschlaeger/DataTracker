@@ -11,67 +11,70 @@ local function OnTooltipSetUnit(tooltip)
                 local shouldAddAnEmptyLine = true
 
                 -- times looted
-                local timesLooted = tonumber(unitInfo['ltd']) or 0
-                if (timesLooted > 0) then
-                    if (shouldAddAnEmptyLine) then
-                        tooltip:AddLine(' ')
-                        shouldAddAnEmptyLine = false
-                    end
+                if (DT_Options.Tooltip.ShowLooted) then
+                    local timesLooted = tonumber(unitInfo['ltd']) or 0
+                    if (timesLooted > 0) then
+                        if (shouldAddAnEmptyLine) then
+                            tooltip:AddLine(' ')
+                            shouldAddAnEmptyLine = false
+                        end
 
-                    tooltip:AddDoubleLine(DataTracker.i18n.TT_LOOTED, timesLooted, 1, 1, 1, 1, 1, 1)
+                        tooltip:AddDoubleLine(DataTracker.i18n.TT_LOOTED, timesLooted, 1, 1, 1, 1, 1, 1)
+                    end
                 end
 
                 -- times killed
-                local timesKilled = tonumber(unitInfo['kls']) or 0
-                if (timesKilled > 0) then
-                    if (shouldAddAnEmptyLine) then
-                        tooltip:AddLine(' ')
-                        shouldAddAnEmptyLine = false
+                if (DT_Options.Tooltip.ShowKills) then
+                    local timesKilled = tonumber(unitInfo['kls']) or 0
+                    if (timesKilled > 0) then
+                        if (shouldAddAnEmptyLine) then
+                            tooltip:AddLine(' ')
+                            shouldAddAnEmptyLine = false
+                        end
+
+                        tooltip:AddDoubleLine(DataTracker.i18n.TT_KILLS, timesKilled, 1, 1, 1, 1, 1, 1)
                     end
-
-                    tooltip:AddDoubleLine(DataTracker.i18n.TT_KILLS, timesKilled, 1, 1, 1, 1, 1, 1)
                 end
-
-                --local totalCopper = tonumber(unitInfo['cop']) or 0
-                local minCopper = tonumber(unitInfo['mnc']) or 0
-                local maxCopper = tonumber(unitInfo['mxc']) or 0
-
-                -- money: avg
-                -- if (timesLooted > 0 and totalCopper > 0) then
-                --     if (shouldAddAnEmptyLine) then
-                --         tooltip:AddLine(' ')
-                --         shouldAddAnEmptyLine = false
-                --     end
-
-                --     tooltip:AddDoubleLine('Avg. coins', GetCoinTextureString(math.floor(totalCopper / timesLooted)), 1, 1, 1, 1, 1, 1)
-                -- end
 
                 -- money: min/max
-                if (minCopper and minCopper > 0) then
-                    tooltip:AddDoubleLine(DataTracker.i18n.TT_MIN_COP, GetCoinTextureString(minCopper), 1, 1, 1, 1, 1, 1)
-                end
-                if (maxCopper and maxCopper > 0) then
-                    tooltip:AddDoubleLine(DataTracker.i18n.TT_MAX_COP, GetCoinTextureString(maxCopper), 1, 1, 1, 1, 1, 1)
+                if (DT_Options.Tooltip.ShowMoney) then
+                    local minCopper = tonumber(unitInfo['mnc']) or 0
+                    local maxCopper = tonumber(unitInfo['mxc']) or 0
+                    if (minCopper and minCopper > 0) then
+                        tooltip:AddDoubleLine(DataTracker.i18n.TT_MIN_COP, GetCoinTextureString(minCopper), 1, 1, 1, 1, 1, 1)
+                    end
+                    if (maxCopper and maxCopper > 0) then
+                        tooltip:AddDoubleLine(DataTracker.i18n.TT_MAX_COP, GetCoinTextureString(maxCopper), 1, 1, 1, 1, 1, 1)
+                    end
                 end
 
                 -- general items
-                local lootInfos = unitInfo['its']
-                if (lootInfos) then
-                    shouldAddAnEmptyLine = true
-                    for itemId, timesItemWasLooted in pairs(lootInfos) do
-                        local itemInfo = DT_ItemDb[itemId]
-                        if (itemInfo) then
-                            local itemQuality = tonumber(itemInfo['qlt'])
-                            if (itemQuality > 0) then
-                                local percentage = DataTracker:CalculatePercentage(timesLooted, timesItemWasLooted)
-                                local r, g, b, _ = GetItemQualityColor(itemQuality)
+                if (DT_Options.Tooltip.ShowItems) then
+                    local minQuality = 1
+                    if (DT_Options.Tooltip.ShowTrashItems) then
+                        minQuality = 0
+                    end
 
-                                if (shouldAddAnEmptyLine) then
-                                    tooltip:AddLine(' ')
-                                    shouldAddAnEmptyLine = false
+                    local lootInfos = unitInfo['its']
+                    if (lootInfos) then
+                        local ltd = tonumber(unitInfo['ltd']) or 0
+
+                        shouldAddAnEmptyLine = true
+                        for itemId, timesItemWasLooted in pairs(lootInfos) do
+                            local itemInfo = DT_ItemDb[itemId]
+                            if (itemInfo) then
+                                local itemQuality = tonumber(itemInfo['qlt'])
+                                if (itemQuality >= minQuality) then
+                                    local percentage = DataTracker:CalculatePercentage(ltd, timesItemWasLooted)
+                                    local r, g, b, _ = GetItemQualityColor(itemQuality)
+    
+                                    if (shouldAddAnEmptyLine) then
+                                        tooltip:AddLine(' ')
+                                        shouldAddAnEmptyLine = false
+                                    end
+    
+                                    tooltip:AddDoubleLine(itemInfo['nam'], DataTracker:FormatPercentage(percentage), r, g, b, 1, 1, 1)
                                 end
-
-                                tooltip:AddDoubleLine(itemInfo['nam'], DataTracker:FormatPercentage(percentage), r, g, b, 1, 1, 1)
                             end
                         end
                     end
