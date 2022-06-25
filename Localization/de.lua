@@ -16,13 +16,13 @@ l.NEW_ZONE = 'Neue Zone';
 l.NEW_ITEM = 'Neuer Gegenstand';
 
 -- OptionsPanel
-l.OP_DEBUG_LOGS          = 'Diagnoselogs aktivieren'
-l.OP_TT_HEADER           = 'Tooltip'
-l.OP_TT_SHOW_KILLS       = 'Getötet'
-l.OP_TT_SHOW_LOOTED      = 'Gelootet'
-l.OP_TT_SHOW_MONEY       = 'Gold'
-l.OP_TT_SHOW_ITEMS       = 'Gegenstände'
-l.OP_TT_SHOW_TRASH_ITEMS = 'Graue Gegenstände'
+l.OP_DEBUG_LOGS      = 'Diagnoselogs aktivieren'
+l.OP_TT_HEADER       = 'Tooltip'
+l.OP_TT_SHOW_KILLS   = 'Getötet'
+l.OP_TT_SHOW_LOOTED  = 'Gelootet'
+l.OP_TT_SHOW_MONEY   = 'Gold'
+l.OP_TT_SHOW_ITEMS   = 'Gegenstände'
+l.OP_TT_MIN_ITEM_QLT = 'Min. Qualität'
 
 -- DatabaseBrowser
 l.UI_SEARCH = 'Suche'

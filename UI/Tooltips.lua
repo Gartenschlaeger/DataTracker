@@ -52,11 +52,6 @@ local function OnTooltipSetUnit(tooltip)
 
                 -- general items
                 if (DT_Options.Tooltip.ShowItems) then
-                    local minQuality = 1
-                    if (DT_Options.Tooltip.ShowTrashItems) then
-                        minQuality = 0
-                    end
-
                     local lootInfos = unitInfo['its']
                     if (lootInfos) then
                         local ltd = tonumber(unitInfo['ltd']) or 0
@@ -66,7 +61,7 @@ local function OnTooltipSetUnit(tooltip)
                             local itemInfo = DT_ItemDb[itemId]
                             if (itemInfo) then
                                 local itemQuality = tonumber(itemInfo['qlt'])
-                                if (itemQuality >= minQuality) then
+                                if (itemQuality >= DT_Options.Tooltip.MinQualityLevel) then
                                     local percentage = DataTracker:CalculatePercentage(ltd, timesItemWasLooted)
                                     local r, g, b, _ = GetItemQualityColor(itemQuality)
 

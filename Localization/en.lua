@@ -13,13 +13,13 @@ l.NEW_ZONE = 'New zone'
 l.NEW_ITEM = 'New item'
 
 -- OptionsPanel
-l.OP_DEBUG_LOGS          = "Enable debug logs"
-l.OP_TT_HEADER           = 'Tooltip'
-l.OP_TT_SHOW_KILLS       = 'Show kills'
-l.OP_TT_SHOW_LOOTED      = 'Show times looted'
-l.OP_TT_SHOW_MONEY       = 'Show money'
-l.OP_TT_SHOW_ITEMS       = 'Show items'
-l.OP_TT_SHOW_TRASH_ITEMS = 'Show trash items'
+l.OP_DEBUG_LOGS      = "Enable debug logs"
+l.OP_TT_HEADER       = 'Tooltip'
+l.OP_TT_SHOW_KILLS   = 'Show kills'
+l.OP_TT_SHOW_LOOTED  = 'Show times looted'
+l.OP_TT_SHOW_MONEY   = 'Show money'
+l.OP_TT_SHOW_ITEMS   = 'Show items'
+l.OP_TT_MIN_ITEM_QLT = 'Min. item quality'
 
 -- DatabaseBrowser
 l.UI_SEARCH = 'Search'
