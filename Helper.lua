@@ -29,11 +29,6 @@ function DataTracker:CalculatePercentage(timesLooted, foundItems)
         percentage = 1
     end
 
-    percentage = math.floor(percentage * 100)
-    if (percentage < 1) then
-        percentage = 1
-    end
-
     return percentage
 end
 
@@ -41,9 +36,15 @@ end
 ---@param percentage number percentage value between 1 and 100
 ---@return string
 function DataTracker:FormatPercentage(percentage)
+    local result = ''
     if (percentage > 0) then
-        return percentage .. '%'
+        local p = percentage * 100
+        if (p < 1) then
+            result = string.format('%.2f', p) .. ' %'
+        else
+            result = string.format('%u', p) .. ' %'
+        end
     end
 
-    return ''
+    return result
 end
