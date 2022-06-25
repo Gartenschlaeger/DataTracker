@@ -1,4 +1,9 @@
--- Initialisation of options. Called when the addon is loaded once
+local function Cleanup()
+    DT_Options.ShowMinimapButton = nil
+    DT_Options.Tooltip.ShowTrashItems = nil
+end
+
+-- Initialization of options. Called once the addon is loading.
 function DataTracker:InitOptions()
     if (DT_Options.MinLogLevel == nil) then
         DT_Options.MinLogLevel = DataTracker.LogLevel.Info
@@ -10,11 +15,12 @@ function DataTracker:InitOptions()
     DT_Options.Tooltip.ShowMoney = DT_Options.Tooltip.ShowMoney or true
     DT_Options.Tooltip.ShowItems = DT_Options.Tooltip.ShowItems or true
 
-    DT_Options.Tooltip.ShowTrashItems = nil
     if (DT_Options.Tooltip.MinQualityLevel == nil) then
         DT_Options.Tooltip.MinQualityLevel = 2
     end
     if (DT_Options.Tooltip.MinQualityLevel < 0 or DT_Options.Tooltip.MinQualityLevel > 6) then
         DT_Options.Tooltip.MinQualityLevel = 2
     end
+
+    Cleanup()
 end
