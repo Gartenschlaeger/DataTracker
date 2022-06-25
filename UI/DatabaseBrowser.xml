@@ -45,7 +45,7 @@
         <Layers>
             <Layer level="ARTWORK">
                 <FontString name="$parentVal1" inherits="GameFontNormalSmall" justifyH="LEFT">
-                    <Size x="400" y="25"/>
+                    <Size x="350" y="25"/>
                     <Anchors>
                         <Anchor point="LEFT">
                             <Offset x="0" y="0"/>
@@ -53,14 +53,14 @@
                     </Anchors>
                 </FontString>
                 <FontString name="$parentVal2" inherits="GameFontNormalSmall" justifyH="LEFT">
-                    <Size x="300" y="25"/>
+                    <Size x="350" y="25"/>
                     <Anchors>
                         <Anchor point="LEFT">
-                            <Offset x="400" y="0"/>
+                            <Offset x="350" y="0"/>
                         </Anchor>
                     </Anchors>
                 </FontString>
-                <FontString name="$parentVal3" inherits="GameFontNormalSmall" justifyH="LEFT">
+                <FontString name="$parentVal3" inherits="GameFontNormalSmall" justifyH="RIGHT">
                     <Size x="50" y="25"/>
                     <Anchors>
                         <Anchor point="LEFT">

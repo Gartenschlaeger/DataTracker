@@ -99,12 +99,12 @@ function DT_DatabaseBrowser_OnBack(self)
     DatabaseBrowserFrame.itemDetails:Hide()
 end
 
-local function createUnitResult(unitId, unitName)
+local function createUnitResult(unitId, unitName, percent)
     return {
         unitId = unitId,
         unitName = unitName,
         zoneName = '',
-        percent = ''
+        percent = percent
     }
 end
 
@@ -123,34 +123,38 @@ local function LoadItemDetails(itemIndex)
     title:SetTextColor(itemResult.color.r, itemResult.color.g, itemResult.color.b)
 
     local totalResults = 0
-    for unitId, unitInfos in pairs(DT_UnitDb) do
+    for unitId, unitInfo in pairs(DT_UnitDb) do
         local result = nil
 
         -- general loot items
-        local unitItems = unitInfos.its
-        if (unitItems) then
-            for itemId, _ in pairs(unitItems) do
+        local its = unitInfo.its
+        if (its) then
+            local ltd = tonumber(unitInfo['ltd']) or 0
+            for itemId, timesLooted in pairs(its) do
                 if (itemResult.itemId == itemId) then
-                    result = createUnitResult(unitId, unitInfos.nam)
+                    local percent = DataTracker:CalculatePercentage(ltd, timesLooted)
+                    result = createUnitResult(unitId, unitInfo.nam, DataTracker:FormatPercentage(percent))
                     break
                 end
             end
         end
 
         -- skinning loot
-        local unitItems = unitInfos.its_sk
+        local unitItems = unitInfo.its_sk
         if (unitItems) then
-            for itemId, _ in pairs(unitItems) do
+            local ltd_sk = tonumber(unitInfo['ltd_sk']) or 0
+            for itemId, timesLooted in pairs(unitItems) do
                 if (itemResult.itemId == itemId) then
-                    result = createUnitResult(unitId, unitInfos.nam)
+                    local percent = DataTracker:CalculatePercentage(ltd_sk, timesLooted)
+                    result = createUnitResult(unitId, unitInfo.nam, DataTracker:FormatPercentage(percent))
                     break
                 end
             end
         end
 
         if (result) then
-            if (unitInfos.zns) then
-                for zoneId, _ in pairs(unitInfos.zns) do
+            if (unitInfo.zns) then
+                for zoneId, _ in pairs(unitInfo.zns) do
                     local text = DataTracker:GetZoneText(zoneId)
                     result.zoneName = result.zoneName .. ' ' .. text
                 end
