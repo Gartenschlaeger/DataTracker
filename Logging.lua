@@ -27,7 +27,7 @@ end
 
 -- true if debug logging is enabled
 function DataTracker:IsDebugLogEnabled()
-    return  DT_Options['MinLogLevel'] and DT_Options['MinLogLevel'] >= DataTracker.LogLevel.Debug
+    return DT_Options['MinLogLevel'] and DT_Options['MinLogLevel'] >= DataTracker.LogLevel.Debug
 end
 
 -- Logs a Debug message to the chat

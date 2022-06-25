@@ -35,14 +35,11 @@ local tmp_attackedUnitGuids = {}
 
 -- Occures for any combat log
 function DataTracker:OnCombatLogEventUnfiltered()
-    local timestamp, subEvent, _, sourceGUID, sourceName, sourceFlags, sourceRaidFlags,
-        destGUID, destName, destFlags, destRaidFlags,
-        damage_spellid, overkill_spellname, school_spellSchool, resisted_amount,
-        blocked_overkill = CombatLogGetCurrentEventInfo()
+    local timestamp, subEvent, _, sourceGUID, sourceName, sourceFlags, sourceRaidFlags, destGUID, destName, destFlags, destRaidFlags, damage_spellid, overkill_spellname, school_spellSchool, resisted_amount, blocked_overkill = CombatLogGetCurrentEventInfo()
 
     if destGUID ~= nil
-	then
-		local guidType = select(1, strsplit("-", destGUID))
+    then
+        local guidType = select(1, strsplit("-", destGUID))
         local isDamageSubEvent = subEvent == 'SWING_DAMAGE' or subEvent == 'SPELL_DAMAGE';
         local isPlayerAttack = sourceGUID == UnitGUID('player')
         local isPetAttack = sourceGUID == UnitGUID('pet')
@@ -51,12 +48,12 @@ function DataTracker:OnCombatLogEventUnfiltered()
 
         if (isDamageSubEvent and (isPlayerAttack or isPetAttack)) then
             tmp_attackedUnitGuids[destGUID] = true
-        elseif (subEvent=="PARTY_KILL") then
+        elseif (subEvent == "PARTY_KILL") then
             tmp_attackedUnitGuids[destGUID] = true
-	    elseif (subEvent == 'UNIT_DIED' and guidType == "Creature" and tmp_attackedUnitGuids[destGUID] == true) then
+        elseif (subEvent == 'UNIT_DIED' and guidType == "Creature" and tmp_attackedUnitGuids[destGUID] == true) then
             tmp_attackedUnitGuids[destGUID] = nil
             local unitId = DataTracker:UnitGuidToId(destGUID)
             DataTracker:TrackKill(unitId, destName)
         end
-	end
+    end
 end

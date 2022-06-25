@@ -35,8 +35,8 @@ SLASH_DT_REMUNIT1 = '/dtru'
 function SlashCommand_DataTrackerRemoveUnit(unitId)
     local id = tonumber(unitId)
     if (id) then
-       DT_UnitDb[id] = nil
-       DataTracker:LogInfo('Removed unit with id ' .. id)
+        DT_UnitDb[id] = nil
+        DataTracker:LogInfo('Removed unit with id ' .. id)
     end
 end
 

@@ -1,7 +1,7 @@
 -- Initialisation of options. Called when the addon is loaded once
 function DataTracker:InitOptions()
     if (DT_Options.MinLogLevel == nil) then
-       DT_Options.MinLogLevel = DataTracker.LogLevel.Info
+        DT_Options.MinLogLevel = DataTracker.LogLevel.Info
     end
 
     DT_Options.Tooltip = DT_Options.Tooltip or {}

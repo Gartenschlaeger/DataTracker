@@ -7,9 +7,9 @@ The resulting database is saved to a lua file which could be also imported to a 
 
 To show or export the data, find the file DataTracker.lua in your interface directory:
 
-~~~
+```
 /_retail_/WTF/Account/ACCOUNT_NAME/SavedVariables/DataTracker.lua
-~~~
+```
 
 > The addon was developed in WOW Shadowlands. Compatibility with Classic is not guaranteed.
 
@@ -24,7 +24,7 @@ Thats usually `/_retail_/Interface/AddOns`
 
 The structure of the resulting file will look like bellow.
 
-~~~lua
+```lua
 DT_ItemDb = {
 	[179315] = {
 		["looted"] = 18,
@@ -55,4 +55,4 @@ DT_ZoneDb = {
     ..
 }
 
-~~~
+```

@@ -84,7 +84,10 @@ local function TrackItem(itemId, itemName, itemQuantity, itemQuality, unitId, is
             prefix = 'G:Item'
         end
 
-        DataTracker:LogDebug(prefix ..  ': ' .. itemQuantity .. ' ' .. itemName .. ' (ID = ' .. itemId .. '), ' .. (unitInfo.nam or '') .. ' (ID = ' .. unitId .. ')')
+        DataTracker:LogDebug(prefix ..
+            ': ' ..
+            itemQuantity ..
+            ' ' .. itemName .. ' (ID = ' .. itemId .. '), ' .. (unitInfo.nam or '') .. ' (ID = ' .. unitId .. ')')
     end
 end
 
@@ -118,14 +121,14 @@ end
 
 -- Returns the itemId by slot link
 local function GetLootId(itemSlot)
-	local link = GetLootSlotLink(itemSlot)
-	if link then
+    local link = GetLootSlotLink(itemSlot)
+    if link then
         DataTracker:LogVerbose('GetLootId, link = ', link)
-		local _, _, idCode = string.find(link, "|Hitem:(%d*):(%d*):(%d*):")
-		return tonumber(idCode) or -1
-	end
+        local _, _, idCode = string.find(link, "|Hitem:(%d*):(%d*):(%d*):")
+        return tonumber(idCode) or -1
+    end
 
-	return 0
+    return 0
 end
 
 local function ParseMoneyFromLootName(lootName)
@@ -134,28 +137,28 @@ local function ParseMoneyFromLootName(lootName)
 
     startIndex = string.find(lootName, ' ' .. DataTracker.i18n.GOLD)
     if startIndex then
-        local g = tonumber(string.sub(lootName,0,startIndex-1)) or 0
-		lootName = string.sub(lootName,startIndex+5,string.len(lootName))
-		lootedCopper = lootedCopper + ((g or 0) * COPPER_PER_GOLD)
+        local g = tonumber(string.sub(lootName, 0, startIndex - 1)) or 0
+        lootName = string.sub(lootName, startIndex + 5, string.len(lootName))
+        lootedCopper = lootedCopper + ((g or 0) * COPPER_PER_GOLD)
         DataTracker:LogVerbose('ParseMoneyFromLootName, Processing Gold', g)
-	end
+    end
 
-	startIndex = string.find(lootName, ' ' .. DataTracker.i18n.SILVER)
-	if startIndex then
-		local s = tonumber(string.sub(lootName,0,startIndex-1)) or 0
-		lootName = string.sub(lootName,startIndex+7,string.len(lootName))
-		lootedCopper = lootedCopper + ((s or 0) * COPPER_PER_SILVER)
+    startIndex = string.find(lootName, ' ' .. DataTracker.i18n.SILVER)
+    if startIndex then
+        local s = tonumber(string.sub(lootName, 0, startIndex - 1)) or 0
+        lootName = string.sub(lootName, startIndex + 7, string.len(lootName))
+        lootedCopper = lootedCopper + ((s or 0) * COPPER_PER_SILVER)
         DataTracker:LogVerbose('ParseMoneyFromLootName, Processing Silver', s)
-	end
+    end
 
-	startIndex = string.find(lootName, ' ' .. DataTracker.i18n.COPPER)
-	if startIndex then
-		local c = tonumber(string.sub(lootName,0,startIndex-1)) or 0
-		lootedCopper = lootedCopper + (c or 0)
+    startIndex = string.find(lootName, ' ' .. DataTracker.i18n.COPPER)
+    if startIndex then
+        local c = tonumber(string.sub(lootName, 0, startIndex - 1)) or 0
+        lootedCopper = lootedCopper + (c or 0)
         DataTracker:LogVerbose('ParseMoneyFromLootName, Processing Copper', c)
-	end
+    end
 
-	return lootedCopper
+    return lootedCopper
 end
 
 -- Determines if looting is in progress to avoid to handle the event twice
@@ -206,7 +209,7 @@ local function ProcessItemLootSlot(itemSlot)
         itemId = GetLootId(itemSlot)
     end
 
-    local sources = {GetLootSourceInfo(itemSlot)}
+    local sources = { GetLootSourceInfo(itemSlot) }
     for sourceIndex = 1, #sources, 2 do
         local guid = sources[sourceIndex]
         local guidType = select(1, strsplit("-", guid))
@@ -248,7 +251,7 @@ local function ProcessMoneyLoolSlot(itemSlot)
     if (lootedCopper) then
         DataTracker:LogVerbose('LOOT_SLOT_MONEY', lootedCopper)
 
-        local sources = {GetLootSourceInfo(itemSlot)}
+        local sources = { GetLootSourceInfo(itemSlot) }
         local sourcesCount = #sources
 
         -- track copper only if we have exactly one source

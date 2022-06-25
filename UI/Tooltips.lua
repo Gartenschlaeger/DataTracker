@@ -41,10 +41,12 @@ local function OnTooltipSetUnit(tooltip)
                     local minCopper = tonumber(unitInfo['mnc']) or 0
                     local maxCopper = tonumber(unitInfo['mxc']) or 0
                     if (minCopper and minCopper > 0) then
-                        tooltip:AddDoubleLine(DataTracker.i18n.TT_MIN_COP, GetCoinTextureString(minCopper), 1, 1, 1, 1, 1, 1)
+                        tooltip:AddDoubleLine(DataTracker.i18n.TT_MIN_COP, GetCoinTextureString(minCopper), 1, 1, 1, 1, 1
+                            , 1)
                     end
                     if (maxCopper and maxCopper > 0) then
-                        tooltip:AddDoubleLine(DataTracker.i18n.TT_MAX_COP, GetCoinTextureString(maxCopper), 1, 1, 1, 1, 1, 1)
+                        tooltip:AddDoubleLine(DataTracker.i18n.TT_MAX_COP, GetCoinTextureString(maxCopper), 1, 1, 1, 1, 1
+                            , 1)
                     end
                 end
 
@@ -67,13 +69,14 @@ local function OnTooltipSetUnit(tooltip)
                                 if (itemQuality >= minQuality) then
                                     local percentage = DataTracker:CalculatePercentage(ltd, timesItemWasLooted)
                                     local r, g, b, _ = GetItemQualityColor(itemQuality)
-    
+
                                     if (shouldAddAnEmptyLine) then
                                         tooltip:AddLine(' ')
                                         shouldAddAnEmptyLine = false
                                     end
-    
-                                    tooltip:AddDoubleLine(itemInfo['nam'], DataTracker:FormatPercentage(percentage), r, g, b, 1, 1, 1)
+
+                                    tooltip:AddDoubleLine(itemInfo['nam'], DataTracker:FormatPercentage(percentage), r, g
+                                        , b, 1, 1, 1)
                                 end
                             end
                         end
@@ -99,7 +102,8 @@ local function OnTooltipSetUnit(tooltip)
                                 shouldAddAnEmptyLine = false
                             end
 
-                            tooltip:AddDoubleLine(itemInfo['nam'], DataTracker:FormatPercentage(percentage), r, g, b, 1, 1, 1)
+                            tooltip:AddDoubleLine(itemInfo['nam'], DataTracker:FormatPercentage(percentage), r, g, b, 1,
+                                1, 1)
                         end
                     end
                 end

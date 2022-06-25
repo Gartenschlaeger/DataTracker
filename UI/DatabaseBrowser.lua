@@ -209,7 +209,7 @@ function DT_DatabaseBrowser_ScrollBar_Update()
 
     --print('totalResults:', totalResults, 'from:', offset, 'to:', offset + DT_RESULT_ITEMS_COUNT)
 
-	for i = 1, DT_RESULT_ITEMS_COUNT do
+    for i = 1, DT_RESULT_ITEMS_COUNT do
         local result = DT_SearchResults[i + offset]
 
         local btn = _G['DT_DatabaseBrowser_Entry' .. i]
@@ -235,5 +235,5 @@ function DT_DatabaseBrowser_ScrollBar_Update()
             fsVal2:SetText('')
             fsVal3:SetText('')
         end
-	end
+    end
 end
