@@ -61,7 +61,7 @@
                     </Anchors>
                 </FontString>
                 <FontString name="$parentVal3" inherits="GameFontNormalSmall" justifyH="RIGHT">
-                    <Size x="50" y="25"/>
+                    <Size x="45" y="25"/>
                     <Anchors>
                         <Anchor point="LEFT">
                             <Offset x="700" y="0"/>

@@ -99,13 +99,23 @@ function DT_DatabaseBrowser_OnBack(self)
     DatabaseBrowserFrame.itemDetails:Hide()
 end
 
-local function createUnitResult(unitId, unitName, percent)
+local function createUnitResult(unitId, unitName, percent, colorR, colorG, colorB)
     return {
         unitId = unitId,
         unitName = unitName,
         zoneName = '',
-        percent = percent
+        percent = percent,
+        color = { r = colorR, g = colorG, b = colorB }
     }
+end
+
+local function GetUnitColor(classification)
+    if (classification == DT_UnitClassifications['rare']) then
+        return { r = 0, g = 0.63, b = 1 }
+    elseif (classification == DT_UnitClassifications['elite']) then
+        return { r = 1, g = 0.81, b = 0 }
+    end
+    return { r = 1, g = 1, b = 1 }
 end
 
 local function LoadItemDetails(itemIndex)
@@ -133,7 +143,10 @@ local function LoadItemDetails(itemIndex)
             for itemId, timesLooted in pairs(its) do
                 if (itemResult.itemId == itemId) then
                     local percent = DataTracker:CalculatePercentage(ltd, timesLooted)
-                    result = createUnitResult(unitId, unitInfo.nam, DataTracker:FormatPercentage(percent))
+                    local color = GetUnitColor(unitInfo.clf)
+                    result = createUnitResult(unitId, unitInfo.nam,
+                        DataTracker:FormatPercentage(percent),
+                        color.r, color.g, color.b)
                     break
                 end
             end
@@ -146,7 +159,10 @@ local function LoadItemDetails(itemIndex)
             for itemId, timesLooted in pairs(unitItems) do
                 if (itemResult.itemId == itemId) then
                     local percent = DataTracker:CalculatePercentage(ltd_sk, timesLooted)
-                    result = createUnitResult(unitId, unitInfo.nam, DataTracker:FormatPercentage(percent))
+                    local color = GetUnitColor(unitInfo.clf)
+                    result = createUnitResult(unitId, unitInfo.nam,
+                        DataTracker:FormatPercentage(percent),
+                        color.r, color.g, color.b)
                     break
                 end
             end
@@ -185,15 +201,22 @@ function DT_DatabaseBrowser_ScrollBarLoc_Update()
         local result = DT_SearchUnitResults[i + offset]
 
         local btn = _G['DT_DatabaseBrowser_EntryLoc' .. i]
+
+        ---@type FontString
         local fsVal1 = _G["DT_DatabaseBrowser_EntryLoc" .. i .. 'Val1']
+        ---@type FontString
         local fsVal2 = _G["DT_DatabaseBrowser_EntryLoc" .. i .. 'Val2']
+        ---@type FontString
         local fsVal3 = _G["DT_DatabaseBrowser_EntryLoc" .. i .. 'Val3']
 
         if (result) then
             btn:Enable()
             fsVal1:SetText(result.unitName)
+            fsVal1:SetTextColor(result.color.r, result.color.g, result.color.b, 1)
             fsVal2:SetText(result.zoneName)
+            fsVal2:SetTextColor(1, 1, 1, 1)
             fsVal3:SetText(result.percent)
+            fsVal3:SetTextColor(1, 1, 1, 1)
         else
             btn:Disable()
             fsVal1:SetText('')
