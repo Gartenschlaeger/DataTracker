@@ -19,8 +19,8 @@ function DataTracker:OnTargetChanged()
         return
     end
 
-    local unitGuid = UnitGUID("target")
-    local unitName = UnitName("target")
+    local unitGuid = UnitGUID('target')
+    local unitName = UnitName('target')
 
     if (unitGuid == nil or unitName == nil) then
         return

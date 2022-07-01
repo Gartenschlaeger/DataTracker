@@ -267,8 +267,8 @@ local function ProcessMoneyLoolSlot(itemSlot)
         if (sourcesCount == 2) then
             for j = 1, sourcesCount, 2 do
                 local unitGuid = sources[j]
-                local guidType = select(1, strsplit("-", unitGuid))
 
+                local guidType = select(1, strsplit("-", unitGuid))
                 if guidType == 'Creature' then
                     local unitId = DataTracker:UnitGuidToId(sources[j])
                     if (unitId and unitId > 0) then
