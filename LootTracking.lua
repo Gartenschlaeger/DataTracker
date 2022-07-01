@@ -40,7 +40,7 @@ local function TrackItem(itemId, itemName, itemQuantity, itemQuality, unitId, is
         itemInfo = {}
         DT_ItemDb[itemId] = itemInfo
 
-        DataTracker:LogInfo(DataTracker.i18n.NEW_ITEM .. ': ' .. itemName)
+        DataTracker:OnNewItemBroadcast(DataTracker.i18n.NEW_ITEM .. ': ' .. itemName)
     end
 
     itemInfo.nam = itemName

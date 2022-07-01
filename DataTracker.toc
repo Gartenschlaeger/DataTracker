@@ -12,6 +12,7 @@ Localization\en.lua
 Localization\de.lua
 
 Logging.lua
+Broadcast.lua
 Helper.lua
 
 UI/UIHelper.lua
