@@ -2,6 +2,13 @@
 -- needed to prevent duplicates and to calculate the counter correct
 local TIME_TO_STORE_LOOTINGINFOS = 60 * 5
 
+local SPELLID_SKINNING = 8613
+
+function DataTracker:PlayerHasSkinning()
+    local result = IsPlayerSpell(SPELLID_SKINNING)
+    return result
+end
+
 -- Called when copper was looted and should be added to db
 local function TrackLootedCopper(unitId, lootedCopper)
     DataTracker:LogVerbose('TrackLootedCopper', unitId, lootedCopper)
@@ -280,7 +287,7 @@ local function ProcessMoneyLoolSlot(itemSlot)
 end
 
 function DataTracker:OnUnitSpellcastSucceeded(unitTarget, castGUID, spellID)
-    if (unitTarget == 'player' and spellID == 8613) then
+    if (unitTarget == 'player' and spellID == SPELLID_SKINNING) then
         local unitGuid = UnitGUID("target")
         local unitId = DataTracker:UnitGuidToId(unitGuid)
         local lootingInfo = GetLootingInformations(unitGuid, unitId)

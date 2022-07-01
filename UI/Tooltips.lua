@@ -79,26 +79,29 @@ local function OnTooltipSetUnit(tooltip)
                 end
 
                 -- skinning items
-                local itemsSkinning = unitInfo['its_sk']
-                if (itemsSkinning) then
-                    shouldAddAnEmptyLine = true
-                    local ltd_sk = tonumber(unitInfo['ltd_sk']) or 0
+                if (DataTracker:PlayerHasSkinning()) then
+                    local itemsSkinning = unitInfo['its_sk']
+                    if (itemsSkinning) then
+                        shouldAddAnEmptyLine = true
+                        local ltd_sk = tonumber(unitInfo['ltd_sk']) or 0
 
-                    for itemId, itemCount in pairs(itemsSkinning) do
-                        local itemInfo = DT_ItemDb[itemId]
-                        if (itemInfo) then
-                            local percentage = DataTracker:CalculatePercentage(ltd_sk, itemCount)
+                        for itemId, itemCount in pairs(itemsSkinning) do
+                            local itemInfo = DT_ItemDb[itemId]
+                            if (itemInfo) then
+                                local percentage = DataTracker:CalculatePercentage(ltd_sk, itemCount)
 
-                            local itemQuality = tonumber(itemInfo['qlt'])
-                            local r, g, b, _ = GetItemQualityColor(itemQuality)
+                                local itemQuality = tonumber(itemInfo['qlt'])
+                                local r, g, b, _ = GetItemQualityColor(itemQuality)
 
-                            if (shouldAddAnEmptyLine) then
-                                tooltip:AddLine(' ')
-                                shouldAddAnEmptyLine = false
+                                if (shouldAddAnEmptyLine) then
+                                    tooltip:AddLine(' ')
+                                    shouldAddAnEmptyLine = false
+                                end
+
+                                tooltip:AddDoubleLine(itemInfo['nam'], DataTracker:FormatPercentage(percentage), r, g, b
+                                    , 1,
+                                    1, 1)
                             end
-
-                            tooltip:AddDoubleLine(itemInfo['nam'], DataTracker:FormatPercentage(percentage), r, g, b, 1,
-                                1, 1)
                         end
                     end
                 end
