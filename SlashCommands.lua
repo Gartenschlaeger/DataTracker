@@ -40,10 +40,16 @@ function SlashCommand_DataTrackerRemoveUnit(unitId)
     end
 end
 
+SLASH_DT_CLEANUPDB1 = '/dtcdb'
+function SlashCommand_CleanupDatabase()
+    DataTracker:CleanupDatabase()
+end
+
 function DataTracker:InitSlashCommands()
     SlashCmdList.DT_SHOW = SlashCommand_Show
     SlashCmdList.DT_HIDE = SlashCommand_Hide
     SlashCmdList.DT_LOGLEVEL = SlashCommand_LogLevel
     SlashCmdList.DT_UIDEBUG = SlashCommand_UIDebug
     SlashCmdList.DT_REMUNIT = SlashCommand_DataTrackerRemoveUnit
+    SlashCmdList.DT_CLEANUPDB = SlashCommand_CleanupDatabase
 end

@@ -2,6 +2,10 @@
 -- needed to prevent duplicates and to calculate the counter correct
 local TIME_TO_STORE_LOOTINGINFOS = 60 * 5
 
+-- time in seconds to store unit infos for targeted units
+-- needed to get additional unit related informations in looting events
+local TIME_TO_STORE_UNIT_INFOS = 60
+
 local SPELLID_SKINNING = 8613
 
 function DataTracker:PlayerHasSkinning()
@@ -10,8 +14,14 @@ function DataTracker:PlayerHasSkinning()
 end
 
 -- Called when copper was looted and should be added to db
-local function TrackLootedCopper(unitId, lootedCopper)
+local function TrackLootedCopper(unitGuid, unitId, lootedCopper)
     DataTracker:LogVerbose('TrackLootedCopper', unitId, lootedCopper)
+
+    local unitLevel = -1
+    local tmp_infos = DataTracker.TmpUnitInformations[unitGuid]
+    if (tmp_infos ~= nil) then
+        unitLevel = tmp_infos.level or -1
+    end
 
     local unitInfo = DT_UnitDb[unitId]
     if (unitInfo == nil) then
@@ -19,19 +29,40 @@ local function TrackLootedCopper(unitId, lootedCopper)
         DT_UnitDb[unitId] = unitInfo
     end
 
-    local totalLootedCopper = (unitInfo.cop or 0) + lootedCopper
-    unitInfo.cop = totalLootedCopper
-
-    local minCopper = unitInfo.mnc
-    if (minCopper == nil or minCopper > lootedCopper) then
-        minCopper = lootedCopper
-        unitInfo.mnc = minCopper
+    local unitCopperInfo = unitInfo.cpi
+    if (unitCopperInfo == nil) then
+        unitCopperInfo = {}
+        unitInfo.cpi = unitCopperInfo
     end
 
-    local maxCopper = unitInfo.mxc
-    if (maxCopper == nil or maxCopper < lootedCopper) then
+    local key
+    if (unitLevel < 1) then
+        key = '_'
+    else
+        key = 'l:' .. unitLevel
+    end
+
+    local levelInfo = unitCopperInfo[key]
+    if (levelInfo == nil) then
+        levelInfo = {}
+        unitCopperInfo[key] = levelInfo
+    end
+
+    levelInfo.ltd = (levelInfo.ltd or 0) + 1
+    levelInfo.tot = (levelInfo.tot or 0) + lootedCopper
+
+    local minCopper = levelInfo.min
+    if (minCopper == nil or lootedCopper < minCopper) then
+        --print('TrackLootedCopper, NEW MIN ' .. (minCopper or 'nil') .. ' -> ' .. lootedCopper)
+        minCopper = lootedCopper
+        levelInfo.min = lootedCopper
+    end
+
+    local maxCopper = levelInfo.max
+    if (maxCopper == nil or lootedCopper > maxCopper) then
+        --print('TrackLootedCopper, NEW MAX ' .. (maxCopper or 'nil') .. ' -> ' .. lootedCopper)
         maxCopper = lootedCopper
-        unitInfo.mxc = maxCopper
+        levelInfo.max = lootedCopper
     end
 
     DataTracker:LogDebug('Copper: ' .. lootedCopper .. ', (' .. unitInfo.nam .. ' ID = ' .. unitId .. ')')
@@ -274,7 +305,7 @@ local function ProcessMoneyLoolSlot(itemSlot)
                     if (unitId and unitId > 0) then
                         local lootingInfos = GetLootingInformations(unitGuid, unitId)
                         if (not lootingInfos.hasCopperTracked) then
-                            TrackLootedCopper(unitId, lootedCopper)
+                            TrackLootedCopper(unitGuid, unitId, lootedCopper)
                             lootingInfos.hasCopperTracked = true
 
                             IncrementLootCounter(lootingInfos)
@@ -329,10 +360,18 @@ function DataTracker:OnLootClosed()
 
     -- cleanup looted units table
     local currentTime = GetTime()
+
     for unitGuid, info in pairs(tmp_lootedUnits) do
         if (currentTime - info.time > TIME_TO_STORE_LOOTINGINFOS) then
             tmp_lootedUnits[unitGuid] = nil
-            DataTracker:LogVerbose('Cleaned up looted unit ' .. unitGuid)
+            DataTracker:LogVerbose('Clean up looting informations, unit = ' .. unitGuid)
+        end
+    end
+
+    for unitGuid, info in pairs(DataTracker.TmpUnitInformations) do
+        if (currentTime - info.time > TIME_TO_STORE_UNIT_INFOS) then
+            DataTracker.TmpUnitInformations[unitGuid] = nil
+            DataTracker:LogVerbose('Clean up unit informations, unit = ' .. unitGuid)
         end
     end
 

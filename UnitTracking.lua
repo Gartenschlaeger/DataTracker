@@ -10,6 +10,8 @@ local function ResolveUnitClassificationId(unitClassification)
     return classificationId
 end
 
+DataTracker.TmpUnitInformations = {}
+
 -- Occures when the target is changed (used to store units in db)
 function DataTracker:OnTargetChanged()
     DataTracker:LogTrace('OnTargetChanged')
@@ -21,6 +23,7 @@ function DataTracker:OnTargetChanged()
 
     local unitGuid = UnitGUID('target')
     local unitName = UnitName('target')
+    local unitLevel = UnitLevel('target')
 
     if (unitGuid == nil or unitName == nil) then
         return
@@ -42,6 +45,16 @@ function DataTracker:OnTargetChanged()
 
         mobInfo['nam'] = unitName
         mobInfo['clf'] = ResolveUnitClassificationId(classification)
+
+        local tmp_unit_info = DataTracker.TmpUnitInformations[unitGuid]
+        if (tmp_unit_info == nil) then
+            tmp_unit_info = {}
+            DataTracker.TmpUnitInformations[unitGuid] = tmp_unit_info
+        end
+
+        tmp_unit_info.time = GetTime()
+        tmp_unit_info.id = unitId
+        tmp_unit_info.level = unitLevel
     end
 end
 

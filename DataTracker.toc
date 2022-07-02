@@ -6,6 +6,8 @@
 ## SavedVariables: DT_Options, DT_ItemDb, DT_UnitDb, DT_ZoneDb, DT_UnitClassifications
 
 Main.lua
+
+Database.lua
 Options.lua
 
 Localization\en.lua

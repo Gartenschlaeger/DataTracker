@@ -32,5 +32,6 @@ l.UI_BACK   = 'Zurück'
 l.TT_KILLS  = 'Getötet'
 l.TT_LOOTED = 'Gelootet'
 
+l.TT_AVG_COP = 'Gold'
 l.TT_MIN_COP = 'Min. Gold'
 l.TT_MAX_COP = 'Max. Gold'
