@@ -28,6 +28,6 @@ l.UI_BACK   = 'Back'
 -- Tooltip
 l.TT_KILLS   = 'Kills'
 l.TT_LOOTED  = 'Looted'
-l.TT_AVG_COP = 'Avg. money'
+l.TT_AVG_COP = 'Money'
 l.TT_MIN_COP = 'Min. money'
 l.TT_MAX_COP = 'Max. money'
