@@ -1,9 +1,8 @@
 DataTracker = {}
 
--- Addon options
 DT_Options = {}
 
--- Called when the addon is fully loaded and saved values are loaded from disk.
+---Called when the addon is fully loaded and saved values are loaded from disk.
 function DataTracker:OnAddonLoaded(addonName)
     if (addonName == 'DataTracker') then
         local itemsCount = DataTracker:GetTableSize(DT_ItemDb)
@@ -19,6 +18,7 @@ function DataTracker:OnAddonLoaded(addonName)
     end
 end
 
+---Tracks general game related events
 function DataTracker.OnEvent(self, event, ...)
     --DataTracker:LogTrace('EVENT', event, ...)
     if (event == 'ADDON_LOADED') then
@@ -38,13 +38,14 @@ function DataTracker.OnEvent(self, event, ...)
     end
 end
 
-local f = CreateFrame('Frame')
-f:RegisterEvent('ADDON_LOADED')
-f:RegisterEvent('PLAYER_TARGET_CHANGED')
-f:RegisterEvent('ZONE_CHANGED_NEW_AREA')
-f:RegisterEvent('LOOT_READY')
-f:RegisterEvent('LOOT_OPENED')
-f:RegisterEvent('LOOT_CLOSED')
-f:RegisterEvent('COMBAT_LOG_EVENT_UNFILTERED')
-f:RegisterEvent('UNIT_SPELLCAST_SUCCEEDED')
-f:SetScript('OnEvent', DataTracker.OnEvent)
+-- create a hidden frame to track game events
+local eventsFrame = CreateFrame('Frame')
+eventsFrame:RegisterEvent('ADDON_LOADED')
+eventsFrame:RegisterEvent('PLAYER_TARGET_CHANGED')
+eventsFrame:RegisterEvent('ZONE_CHANGED_NEW_AREA')
+eventsFrame:RegisterEvent('LOOT_READY')
+eventsFrame:RegisterEvent('LOOT_OPENED')
+eventsFrame:RegisterEvent('LOOT_CLOSED')
+eventsFrame:RegisterEvent('COMBAT_LOG_EVENT_UNFILTERED')
+eventsFrame:RegisterEvent('UNIT_SPELLCAST_SUCCEEDED')
+eventsFrame:SetScript('OnEvent', DataTracker.OnEvent)

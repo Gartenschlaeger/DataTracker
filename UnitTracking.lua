@@ -1,4 +1,6 @@
--- Returns the classificationId for the given classification name
+---Returns the classificationId for the given classification name
+---@param unitClassification string
+---@return number
 local function ResolveUnitClassificationId(unitClassification)
     local classificationId = DT_UnitClassifications[unitClassification]
     if (classificationId == nil) then
@@ -12,7 +14,7 @@ end
 
 DataTracker.TmpUnitInformations = {}
 
--- Occures when the target is changed (used to store units in db)
+---Occures when the target is changed (used to store units in db)
 function DataTracker:OnTargetChanged()
     DataTracker:LogTrace('OnTargetChanged')
 
@@ -58,7 +60,9 @@ function DataTracker:OnTargetChanged()
     end
 end
 
--- Converts a unit guid to an id
+---Converts a unit guid to an id
+---@param unitGuid string
+---@return integer
 function DataTracker:UnitGuidToId(unitGuid)
     return tonumber(select(6, strsplit('-', unitGuid)), 10)
 end

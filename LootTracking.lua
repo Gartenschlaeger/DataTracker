@@ -317,6 +317,7 @@ local function ProcessMoneyLoolSlot(itemSlot)
     end
 end
 
+---Occured when a spell is casted (used to track when skinning is started)
 function DataTracker:OnUnitSpellcastSucceeded(unitTarget, castGUID, spellID)
     if (unitTarget == 'player' and spellID == SPELLID_SKINNING) then
         local unitGuid = UnitGUID("target")
@@ -326,7 +327,7 @@ function DataTracker:OnUnitSpellcastSucceeded(unitTarget, castGUID, spellID)
     end
 end
 
--- Called when loot window is open and loot is ready
+---Called when loot window is opened and loot is ready
 function DataTracker:OnLootReady()
     DataTracker:LogTrace('OnLootReady')
 
@@ -353,12 +354,13 @@ function DataTracker:OnLootReady()
     end
 end
 
+---Occures when the loot window was closed
 function DataTracker:OnLootClosed()
     DataTracker:LogVerbose('OnLootClosed')
 
     tmp_isLooting = false
 
-    -- cleanup looted units table
+    -- clean up temporary data
     local currentTime = GetTime()
 
     for unitGuid, info in pairs(tmp_lootedUnits) do

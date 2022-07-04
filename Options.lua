@@ -3,7 +3,7 @@ local function Cleanup()
     DT_Options.Tooltip.ShowTrashItems = nil
 end
 
--- Initialization of options. Called once the addon is loading.
+---Initialization of options. Called once the addon is loading.
 function DataTracker:InitOptions()
     if (DT_Options.MinLogLevel == nil) then
         DT_Options.MinLogLevel = DataTracker.LogLevel.Info

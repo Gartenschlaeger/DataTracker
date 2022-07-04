@@ -1,15 +1,16 @@
 -- Item database
 DT_ItemDb = {}
 
--- Unit database
+-- Units database
 DT_UnitDb = {}
 DT_UnitClassifications = {}
 
 -- Zones database
 DT_ZoneDb = {}
 
+---Cleans up the databases (depricated or old data)
 function DataTracker:CleanupDatabase()
-    -- units
+    -- units db
     for _, unitInfos in pairs(DT_UnitDb) do
         unitInfos.cop = nil
         unitInfos.mnc = nil

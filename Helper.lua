@@ -1,3 +1,4 @@
+---Returns the size for the given table
 function DataTracker:GetTableSize(table)
     local size = 0
     for _ in pairs(table) do
@@ -7,6 +8,7 @@ function DataTracker:GetTableSize(table)
     return size
 end
 
+---Converts a boolean value to a number (true = 1, false = 0)
 function DataTracker:BoolToNumber(booleanValue)
     if (booleanValue) then
         return 1
