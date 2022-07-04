@@ -39,14 +39,25 @@ DT_UnitDb = {
 		},
 		["kls"] = <Kills>,
 		["clf"] = <Classification>,
-		["mnc"] = <Min Copper>,
-		["mxc"] = <Max Copper>,
 		["nam"] = <Unit Name>,
-		["cop"] = <Copper>,
 		["ltd"] = <Looting counter>,
 		["its"] = {
 			[<Item ID>] = <Looting counter>,
 			..
+		},
+		["cpi"] = {
+			["l:38"] = {
+				["min"] = <min copper>,
+				["max"] = <max copper>,
+				["ltd"] = <copper looted>,
+				["tot"] = <total looted copper>,
+			},
+			["l:39"] = {
+				..
+			},
+			["_"] = {
+				..
+			},
 		},
 	},
     ..
