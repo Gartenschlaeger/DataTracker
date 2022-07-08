@@ -22,6 +22,7 @@ l.OP_TT_SHOW_KILLS   = 'Getötet'
 l.OP_TT_SHOW_LOOTED  = 'Gelootet'
 l.OP_TT_SHOW_MONEY   = 'Gold'
 l.OP_TT_SHOW_ITEMS   = 'Gegenstände'
+l.OP_TT_SHOW_ICONS   = 'Symbole anzeigen'
 l.OP_TT_MIN_ITEM_QLT = 'Min. Qualität'
 
 -- DatabaseBrowser

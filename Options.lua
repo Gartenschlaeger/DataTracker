@@ -14,6 +14,7 @@ function DataTracker:InitOptions()
     DT_Options.Tooltip.ShowLooted = DT_Options.Tooltip.ShowLooted or true
     DT_Options.Tooltip.ShowMoney = DT_Options.Tooltip.ShowMoney or true
     DT_Options.Tooltip.ShowItems = DT_Options.Tooltip.ShowItems or true
+    DT_Options.Tooltip.ShowIcons = DT_Options.Tooltip.ShowIcons or false
 
     if (DT_Options.Tooltip.MinQualityLevel == nil) then
         DT_Options.Tooltip.MinQualityLevel = 2

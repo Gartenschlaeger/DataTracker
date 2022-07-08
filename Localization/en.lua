@@ -19,6 +19,7 @@ l.OP_TT_SHOW_KILLS   = 'Show kills'
 l.OP_TT_SHOW_LOOTED  = 'Show times looted'
 l.OP_TT_SHOW_MONEY   = 'Show money'
 l.OP_TT_SHOW_ITEMS   = 'Show items'
+l.OP_TT_SHOW_ICONS   = 'Show icons'
 l.OP_TT_MIN_ITEM_QLT = 'Min. item quality'
 
 -- DatabaseBrowser

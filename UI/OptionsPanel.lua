@@ -44,13 +44,18 @@ function DataTracker:InitOptionsPanel()
         DT_Options.Tooltip.ShowItems = isEnabled
     end)
 
+    DataTracker:AddCheckbox(panel, 25, -240, DataTracker.i18n.OP_TT_SHOW_ICONS,
+        DT_Options.Tooltip.ShowIcons, function(isEnabled)
+        DT_Options.Tooltip.ShowIcons = isEnabled
+    end)
+
     -- min item quality level
-    local minQualityText = panel:CreateFontString("ARTWORK", nil, "GameFontNormal")
-    minQualityText:SetText(DataTracker.i18n.OP_TT_MIN_ITEM_QLT)
-    minQualityText:SetPoint("TOPLEFT", 14, -243)
+    local lblMinQualityItems = panel:CreateFontString("ARTWORK", nil, "GameFontNormal")
+    lblMinQualityItems:SetText(DataTracker.i18n.OP_TT_MIN_ITEM_QLT)
+    lblMinQualityItems:SetPoint("TOPLEFT", 30, -275)
 
     local ddMinItemQuality = CreateFrame("Frame", nil, panel, "UIDropDownMenuTemplate")
-    ddMinItemQuality:SetPoint('TOPLEFT', -4, -260)
+    ddMinItemQuality:SetPoint('TOPLEFT', 13, -290)
     UIDropDownMenu_SetWidth(ddMinItemQuality, 130)
 
     local function SetMinQualityLevelText(minQualityLevel)
