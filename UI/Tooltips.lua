@@ -96,8 +96,15 @@ local function OnTooltipSetUnit(tooltip)
                                         shouldAddAnEmptyLine = false
                                     end
 
-                                    tooltip:AddDoubleLine(itemInfo['nam'], DataTracker:FormatPercentage(percentage), r, g
-                                        , b, 1, 1, 1)
+                                    local iconPrefix = ''
+                                    if (DT_Options.Tooltip.ShowIcons) then
+                                        local itemTextureId = GetItemIcon(itemId)
+                                        iconPrefix = '|T' .. itemTextureId .. ':14|t '
+
+                                    end
+
+                                    tooltip:AddDoubleLine(iconPrefix .. itemInfo['nam'],
+                                        DataTracker:FormatPercentage(percentage), r, g, b, 1, 1, 1)
                                 end
                             end
                         end
@@ -124,9 +131,15 @@ local function OnTooltipSetUnit(tooltip)
                                     shouldAddAnEmptyLine = false
                                 end
 
-                                tooltip:AddDoubleLine(itemInfo['nam'], DataTracker:FormatPercentage(percentage), r, g, b
-                                    , 1,
-                                    1, 1)
+                                local iconPrefix = ''
+                                if (DT_Options.Tooltip.ShowIcons) then
+                                    local itemTextureId = GetItemIcon(itemId)
+                                    iconPrefix = '|T' .. itemTextureId .. ':14|t '
+
+                                end
+
+                                tooltip:AddDoubleLine(iconPrefix .. itemInfo['nam'],
+                                    DataTracker:FormatPercentage(percentage), r, g, b, 1, 1, 1)
                             end
                         end
                     end
