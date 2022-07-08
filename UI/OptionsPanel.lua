@@ -34,28 +34,50 @@ function DataTracker:InitOptionsPanel()
         DT_Options.Tooltip.ShowLooted = isEnabled
     end)
 
+    -- money --
+
+    local cbAvgGold = DataTracker:AddCheckbox(panel, 25, -210, DataTracker.i18n.OP_TT_SHOW_MONEY_AVG,
+        DT_Options.Tooltip.ShowMoneyAvg,
+        function(isEnabled)
+            DT_Options.Tooltip.ShowMoneyAvg = isEnabled
+        end)
+
+    local cbMMGold = DataTracker:AddCheckbox(panel, 25, -240, DataTracker.i18n.OP_TT_SHOW_MONEY_MM,
+        DT_Options.Tooltip.ShowMoneyMM,
+        function(isEnabled)
+            DT_Options.Tooltip.ShowMoneyMM = isEnabled
+        end)
+
     DataTracker:AddCheckbox(panel, 10, -180, DataTracker.i18n.OP_TT_SHOW_MONEY,
-        DT_Options.Tooltip.ShowMoney, function(isEnabled)
-        DT_Options.Tooltip.ShowMoney = isEnabled
-    end)
+        DT_Options.Tooltip.ShowMoney,
+        function(isEnabled)
+            DT_Options.Tooltip.ShowMoney = isEnabled
+            cbAvgGold:SetEnabled(isEnabled)
+            cbMMGold:SetEnabled(isEnabled)
+        end)
 
-    DataTracker:AddCheckbox(panel, 10, -210, DataTracker.i18n.OP_TT_SHOW_ITEMS,
-        DT_Options.Tooltip.ShowItems, function(isEnabled)
-        DT_Options.Tooltip.ShowItems = isEnabled
-    end)
+    -- items --
 
-    DataTracker:AddCheckbox(panel, 25, -240, DataTracker.i18n.OP_TT_SHOW_ICONS,
-        DT_Options.Tooltip.ShowIcons, function(isEnabled)
-        DT_Options.Tooltip.ShowIcons = isEnabled
-    end)
+    local cbShowIcons = DataTracker:AddCheckbox(panel, 25, -300, DataTracker.i18n.OP_TT_SHOW_ICONS,
+        DT_Options.Tooltip.ShowIcons,
+        function(isEnabled)
+            DT_Options.Tooltip.ShowIcons = isEnabled
+        end)
+
+    DataTracker:AddCheckbox(panel, 10, -270, DataTracker.i18n.OP_TT_SHOW_ITEMS,
+        DT_Options.Tooltip.ShowItems,
+        function(isEnabled)
+            DT_Options.Tooltip.ShowItems = isEnabled
+            cbShowIcons:SetEnabled(isEnabled)
+        end)
 
     -- min item quality level
     local lblMinQualityItems = panel:CreateFontString("ARTWORK", nil, "GameFontNormal")
     lblMinQualityItems:SetText(DataTracker.i18n.OP_TT_MIN_ITEM_QLT)
-    lblMinQualityItems:SetPoint("TOPLEFT", 30, -275)
+    lblMinQualityItems:SetPoint("TOPLEFT", 30, -340)
 
     local ddMinItemQuality = CreateFrame("Frame", nil, panel, "UIDropDownMenuTemplate")
-    ddMinItemQuality:SetPoint('TOPLEFT', 13, -290)
+    ddMinItemQuality:SetPoint('TOPLEFT', 13, -355)
     UIDropDownMenu_SetWidth(ddMinItemQuality, 130)
 
     local function SetMinQualityLevelText(minQualityLevel)

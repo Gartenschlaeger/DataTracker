@@ -10,9 +10,15 @@ function DataTracker:InitOptions()
     end
 
     DT_Options.Tooltip = DT_Options.Tooltip or {}
+
     DT_Options.Tooltip.ShowKills = DT_Options.Tooltip.ShowKills or true
+
     DT_Options.Tooltip.ShowLooted = DT_Options.Tooltip.ShowLooted or true
+
     DT_Options.Tooltip.ShowMoney = DT_Options.Tooltip.ShowMoney or true
+    DT_Options.Tooltip.ShowMoneyAvg = DT_Options.Tooltip.ShowMoneyAvg or true
+    DT_Options.Tooltip.ShowMoneyMM = DT_Options.Tooltip.ShowMoneyMM or false -- money min/max
+
     DT_Options.Tooltip.ShowItems = DT_Options.Tooltip.ShowItems or true
     DT_Options.Tooltip.ShowIcons = DT_Options.Tooltip.ShowIcons or false
 

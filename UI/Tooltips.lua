@@ -11,7 +11,8 @@ local function OnTooltipSetUnit(tooltip)
             if (unitInfo) then
                 local shouldAddAnEmptyLine = true
 
-                -- times looted
+                -- times looted --
+
                 if (DT_Options.Tooltip.ShowLooted) then
                     local timesLooted = tonumber(unitInfo['ltd']) or 0
                     if (timesLooted > 0) then
@@ -24,7 +25,8 @@ local function OnTooltipSetUnit(tooltip)
                     end
                 end
 
-                -- times killed
+                -- times killed --
+
                 if (DT_Options.Tooltip.ShowKills) then
                     local timesKilled = tonumber(unitInfo['kls']) or 0
                     if (timesKilled > 0) then
@@ -37,7 +39,8 @@ local function OnTooltipSetUnit(tooltip)
                     end
                 end
 
-                -- money: min/max
+                -- money --
+
                 if (DT_Options.Tooltip.ShowMoney) then
                     local key = '_'
                     if (unitLevel >= 1) then
@@ -52,31 +55,37 @@ local function OnTooltipSetUnit(tooltip)
                         end
 
                         if (levelInfos ~= nil) then
-                            local timesLooted = levelInfos.ltd or 0
-                            local totalCopper = levelInfos.tot or 0
+                            if (DT_Options.Tooltip.ShowMoneyAvg) then
+                                local timesLooted = levelInfos.ltd or 0
+                                local totalCopper = levelInfos.tot or 0
 
-                            if (timesLooted > 1 and totalCopper > 0) then
-                                local avarage = math.floor(totalCopper / timesLooted)
-                                tooltip:AddDoubleLine(DataTracker.i18n.TT_AVG_COP, GetCoinTextureString(avarage), 1, 1
-                                    , 1, 1, 1, 1)
+                                if (timesLooted > 1 and totalCopper > 0) then
+                                    local avarage = math.floor(totalCopper / timesLooted)
+                                    tooltip:AddDoubleLine(DataTracker.i18n.TT_AVG_COP, GetCoinTextureString(avarage),
+                                        1, 1, 1, 1, 1, 1)
+                                end
                             end
 
-                            local minCopper = levelInfos.min or 0
-                            local maxCopper = levelInfos.max or 0
+                            if (DT_Options.Tooltip.ShowMoneyMM) then
+                                local minCopper = levelInfos.min or 0
+                                local maxCopper = levelInfos.max or 0
 
-                            if (minCopper and minCopper > 0) then
-                                tooltip:AddDoubleLine(DataTracker.i18n.TT_MIN_COP, GetCoinTextureString(minCopper), 1, 1
-                                    , 1, 1, 1, 1)
+                                if (minCopper and minCopper > 0) then
+                                    tooltip:AddDoubleLine(DataTracker.i18n.TT_MIN_COP, GetCoinTextureString(minCopper),
+                                        1, 1, 1, 1, 1, 1)
+                                end
+                                if (maxCopper and maxCopper > 0) then
+                                    tooltip:AddDoubleLine(DataTracker.i18n.TT_MAX_COP, GetCoinTextureString(maxCopper),
+                                        1, 1, 1, 1, 1, 1)
+                                end
                             end
-                            if (maxCopper and maxCopper > 0) then
-                                tooltip:AddDoubleLine(DataTracker.i18n.TT_MAX_COP, GetCoinTextureString(maxCopper), 1, 1
-                                    , 1, 1, 1, 1)
-                            end
+
                         end
                     end
                 end
 
-                -- general items
+                -- general items --
+
                 if (DT_Options.Tooltip.ShowItems) then
                     local lootInfos = unitInfo['its']
                     if (lootInfos) then
@@ -111,7 +120,8 @@ local function OnTooltipSetUnit(tooltip)
                     end
                 end
 
-                -- skinning items
+                -- skinning items --
+
                 if (DataTracker:PlayerHasSkinning()) then
                     local itemsSkinning = unitInfo['its_sk']
                     if (itemsSkinning) then
