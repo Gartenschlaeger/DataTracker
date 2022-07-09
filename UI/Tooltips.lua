@@ -54,7 +54,7 @@ local function addMoney(context)
                 local timesLooted = levelInfos.ltd or 0
                 local totalCopper = levelInfos.tot or 0
 
-                if (timesLooted > 1 and totalCopper > 0) then
+                if (timesLooted > 0 and totalCopper > 0) then
                     local avarage = math.floor(totalCopper / timesLooted)
                     context.tooltip:AddDoubleLine(DataTracker.i18n.TT_AVG_COP, GetCoinTextureString(avarage),
                         1, 1, 1, 1, 1, 1)
@@ -193,6 +193,44 @@ local function addMiningLoot(context)
     end
 end
 
+local function addHerbalismLoot(context)
+    if (not DataTracker:PlayerHasHerbalism()) then
+        return
+    end
+
+    local items = context.unitInfo.its_hb
+    if (items) then
+        context.shouldAddAnEmptyLine = true
+        local timesLooted = tonumber(context.unitInfo.ltd_hb) or 0
+
+        for itemId, itemCount in pairs(items) do
+            local itemInfo = DT_ItemDb[itemId]
+            if (itemInfo) then
+                local itemQuality = tonumber(itemInfo.qlt)
+                if (itemQuality >= DT_Options.Tooltip.MinQualityLevel) then
+                    local percentage = DataTracker:CalculatePercentage(timesLooted, itemCount)
+                    local r, g, b, _ = GetItemQualityColor(itemQuality)
+
+                    if (context.shouldAddAnEmptyLine) then
+                        context.tooltip:AddLine(' ')
+                        context.shouldAddAnEmptyLine = false
+                    end
+
+                    local iconPrefix = ''
+                    if (DT_Options.Tooltip.ShowIcons) then
+                        local itemTextureId = GetItemIcon(itemId)
+                        iconPrefix = '|T' .. itemTextureId .. ':14|t '
+
+                    end
+
+                    context.tooltip:AddDoubleLine(iconPrefix .. itemInfo.nam,
+                        DataTracker:FormatPercentage(percentage), r, g, b, 1, 1, 1)
+                end
+            end
+        end
+    end
+end
+
 local function OnTooltipSetUnit(tooltip)
     local _, unit = tooltip:GetUnit();
     if (unit) then
@@ -211,10 +249,13 @@ local function OnTooltipSetUnit(tooltip)
 
                 addTimesLooted(context)
                 addTimesKilled(context)
+
                 addMoney(context)
+
                 addLoot(context)
                 addSkinningLoot(context)
                 addMiningLoot(context)
+                addHerbalismLoot(context)
 
                 tooltipWasModified = unitId
             end

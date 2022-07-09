@@ -8,6 +8,7 @@ local TIME_TO_STORE_UNIT_INFOS = 60
 
 local SPELLID_SKINNING = 8613
 local SPELLID_MINING = 32606
+local SPELLID_HERBALISM = 32605
 
 function DataTracker:PlayerHasSkinning()
     return IsPlayerSpell(SPELLID_SKINNING)
@@ -15,6 +16,10 @@ end
 
 function DataTracker:PlayerHasMining()
     return IsPlayerSpell(SPELLID_MINING)
+end
+
+function DataTracker:PlayerHasHerbalism()
+    return IsPlayerSpell(SPELLID_HERBALISM)
 end
 
 -- Called when copper was looted and should be added to db
@@ -108,6 +113,12 @@ local function TrackItem(itemId, itemName, itemQuantity, itemQuality, unitId, so
             unitItemsInfo = {}
             unitInfo.its_mn = unitItemsInfo
         end
+    elseif (sourceType == 'herbalism') then
+        unitItemsInfo = unitInfo.its_hb
+        if (unitItemsInfo == nil) then
+            unitItemsInfo = {}
+            unitInfo.its_hb = unitItemsInfo
+        end
     else
         unitItemsInfo = unitInfo.its
         if (unitItemsInfo == nil) then
@@ -125,16 +136,7 @@ local function TrackItem(itemId, itemName, itemQuantity, itemQuality, unitId, so
     unitItemsInfo[itemId] = unitItemLootedCounter
 
     if (DataTracker:IsDebugLogEnabled()) then
-        local prefix
-        if (sourceType == 'skinning') then
-            prefix = 'S:Item'
-        elseif (sourceType == 'mining') then
-            prefix = 'M:Item'
-        else
-            prefix = 'G:Item'
-        end
-
-        DataTracker:LogDebug(prefix .. ': ' .. itemQuantity ..
+        DataTracker:LogDebug(sourceType .. ': ' .. itemQuantity ..
             ' ' .. itemName .. ' (ID = ' .. itemId .. '), ' .. (unitInfo.nam or '') .. ' (ID = ' .. unitId .. ')')
     end
 end
@@ -163,6 +165,13 @@ local function IncrementLootCounter(lootingInfos)
             lootingInfos.miningCounterIncreased = true
 
             DataTracker:LogDebug('M:Count: ' .. (unitInfo.nam or '') .. ' (ID = ' .. lootingInfos.unitId .. ')')
+        end
+    elseif (lootingInfos.isHerbalismStarted) then
+        if (not lootingInfos.herbalismCounterIncreased) then
+            unitInfo.ltd_hb = (unitInfo.ltd_hb or 0) + 1
+            lootingInfos.herbalismCounterIncreased = true
+
+            DataTracker:LogDebug('H:Count: ' .. (unitInfo.nam or '') .. ' (ID = ' .. lootingInfos.unitId .. ')')
         end
     else
         if (not lootingInfos.lootingCounterWasIncremented) then
@@ -242,15 +251,20 @@ local function GetLootingInformations(unitGuid, unitId)
             -- true if general looting counter was increased
             lootingCounterWasIncremented = false,
 
-            -- skinning related values
-            skinningItems = {},
+            -- skinning
             skinningStarted = false,
+            skinningItems = {},
             skinningCounterIncreased = false,
 
-            -- mining related values
-            miningItems = {},
+            -- mining
             isMiningStarted = false,
-            miningCounterIncreased = false
+            miningItems = {},
+            miningCounterIncreased = false,
+
+            -- herbalism
+            isHerbalismStarted = false,
+            herbalismItems = {},
+            herbalismCounterIncreased = false
         }
 
         tmp_lootedUnits[unitGuid] = lootingInfos
@@ -283,6 +297,9 @@ local function ProcessItemLootSlot(itemSlot)
             elseif (lootingInfos.isMiningStarted) then
                 lootedItems = lootingInfos.miningItems
                 sourceType = 'mining'
+            elseif (lootingInfos.isHerbalismStarted) then
+                lootedItems = lootingInfos.herbalismItems
+                sourceType = 'herbalism'
             else
                 lootedItems = lootingInfos.items
                 sourceType = 'general'
@@ -345,16 +362,22 @@ end
 ---Occured when a spell is casted (used to track when skinning is started)
 function DataTracker:OnUnitSpellcastSucceeded(unitTarget, castGUID, spellID)
     if (unitTarget == 'player') then
+        --print(GetSpellInfo(spellID))
+
+        local unitGuid = UnitGUID("target")
+        if (not unitGuid) then
+            return
+        end
+
         if (spellID == SPELLID_SKINNING) then
-            local unitGuid = UnitGUID("target")
-            local unitId = DataTracker:UnitGuidToId(unitGuid)
-            local lootingInfo = GetLootingInformations(unitGuid, unitId)
+            local lootingInfo = GetLootingInformations(unitGuid, DataTracker:UnitGuidToId(unitGuid))
             lootingInfo.skinningStarted = true
         elseif (spellID == SPELLID_MINING) then
-            local unitGuid = UnitGUID("target")
-            local unitId = DataTracker:UnitGuidToId(unitGuid)
-            local lootingInfo = GetLootingInformations(unitGuid, unitId)
+            local lootingInfo = GetLootingInformations(unitGuid, DataTracker:UnitGuidToId(unitGuid))
             lootingInfo.isMiningStarted = true
+        elseif (spellID == SPELLID_HERBALISM) then
+            local lootingInfo = GetLootingInformations(unitGuid, DataTracker:UnitGuidToId(unitGuid))
+            lootingInfo.isHerbalismStarted = true
         end
     end
 end
