@@ -25,14 +25,16 @@ function DataTracker:InitOptionsPanel()
     titleTooltip:SetPoint("TOPLEFT", 12, -95)
 
     DataTracker:AddCheckbox(panel, 10, -120, DataTracker.i18n.OP_TT_SHOW_KILLS,
-        DT_Options.Tooltip.ShowKills, function(isEnabled)
-        DT_Options.Tooltip.ShowKills = isEnabled
-    end)
+        DT_Options.Tooltip.ShowKills,
+        function(isEnabled)
+            DT_Options.Tooltip.ShowKills = isEnabled
+        end)
 
     DataTracker:AddCheckbox(panel, 10, -150, DataTracker.i18n.OP_TT_SHOW_LOOTED,
-        DT_Options.Tooltip.ShowLooted, function(isEnabled)
-        DT_Options.Tooltip.ShowLooted = isEnabled
-    end)
+        DT_Options.Tooltip.ShowLooted,
+        function(isEnabled)
+            DT_Options.Tooltip.ShowLooted = isEnabled
+        end)
 
     -- money --
 

@@ -7,10 +7,14 @@ local TIME_TO_STORE_LOOTINGINFOS = 60 * 5
 local TIME_TO_STORE_UNIT_INFOS = 60
 
 local SPELLID_SKINNING = 8613
+local SPELLID_MINING = 32606
 
 function DataTracker:PlayerHasSkinning()
-    local result = IsPlayerSpell(SPELLID_SKINNING)
-    return result
+    return IsPlayerSpell(SPELLID_SKINNING)
+end
+
+function DataTracker:PlayerHasMining()
+    return IsPlayerSpell(SPELLID_MINING)
 end
 
 -- Called when copper was looted and should be added to db
@@ -69,8 +73,8 @@ local function TrackLootedCopper(unitGuid, unitId, lootedCopper)
 end
 
 -- Called when a new item was looted and should be added to db
-local function TrackItem(itemId, itemName, itemQuantity, itemQuality, unitId, isSkinningItem)
-    DataTracker:LogVerbose('TrackItem', itemId, itemName, itemQuantity, itemQuality, unitId, isSkinningItem)
+local function TrackItem(itemId, itemName, itemQuantity, itemQuality, unitId, sourceType)
+    DataTracker:LogVerbose('TrackItem', itemId, itemName, itemQuantity, itemQuality, unitId, sourceType)
 
     -- store item info
     local itemInfo = DT_ItemDb[itemId]
@@ -92,11 +96,17 @@ local function TrackItem(itemId, itemName, itemQuantity, itemQuality, unitId, is
     end
 
     local unitItemsInfo
-    if (isSkinningItem) then
+    if (sourceType == 'skinning') then
         unitItemsInfo = unitInfo.its_sk
         if (unitItemsInfo == nil) then
             unitItemsInfo = {}
             unitInfo.its_sk = unitItemsInfo
+        end
+    elseif (sourceType == 'mining') then
+        unitItemsInfo = unitInfo.its_mn
+        if (unitItemsInfo == nil) then
+            unitItemsInfo = {}
+            unitInfo.its_mn = unitItemsInfo
         end
     else
         unitItemsInfo = unitInfo.its
@@ -116,15 +126,15 @@ local function TrackItem(itemId, itemName, itemQuantity, itemQuality, unitId, is
 
     if (DataTracker:IsDebugLogEnabled()) then
         local prefix
-        if (isSkinningItem) then
+        if (sourceType == 'skinning') then
             prefix = 'S:Item'
+        elseif (sourceType == 'mining') then
+            prefix = 'M:Item'
         else
             prefix = 'G:Item'
         end
 
-        DataTracker:LogDebug(prefix ..
-            ': ' ..
-            itemQuantity ..
+        DataTracker:LogDebug(prefix .. ': ' .. itemQuantity ..
             ' ' .. itemName .. ' (ID = ' .. itemId .. '), ' .. (unitInfo.nam or '') .. ' (ID = ' .. unitId .. ')')
     end
 end
@@ -146,6 +156,13 @@ local function IncrementLootCounter(lootingInfos)
             lootingInfos.skinningCounterIncreased = true
 
             DataTracker:LogDebug('S:Count: ' .. (unitInfo.nam or '') .. ' (ID = ' .. lootingInfos.unitId .. ')')
+        end
+    elseif (lootingInfos.isMiningStarted) then
+        if (not lootingInfos.miningCounterIncreased) then
+            unitInfo.ltd_mn = (unitInfo.ltd_mn or 0) + 1
+            lootingInfos.miningCounterIncreased = true
+
+            DataTracker:LogDebug('M:Count: ' .. (unitInfo.nam or '') .. ' (ID = ' .. lootingInfos.unitId .. ')')
         end
     else
         if (not lootingInfos.lootingCounterWasIncremented) then
@@ -218,8 +235,6 @@ local function GetLootingInformations(unitGuid, unitId)
 
             -- general items
             items = {},
-            -- items from skinning
-            skinningItems = {},
 
             -- was copper already tracked?
             hasCopperTracked = false,
@@ -227,10 +242,15 @@ local function GetLootingInformations(unitGuid, unitId)
             -- true if general looting counter was increased
             lootingCounterWasIncremented = false,
 
-            -- true if skinning was already started
+            -- skinning related values
+            skinningItems = {},
             skinningStarted = false,
-            -- true if skinng counter was increased
-            skinningCounterIncreased = false
+            skinningCounterIncreased = false,
+
+            -- mining related values
+            miningItems = {},
+            isMiningStarted = false,
+            miningCounterIncreased = false
         }
 
         tmp_lootedUnits[unitGuid] = lootingInfos
@@ -256,18 +276,23 @@ local function ProcessItemLootSlot(itemSlot)
 
             local lootingInfos = GetLootingInformations(guid, unitId)
 
-            local lootedItems
+            local lootedItems, sourceType
             if (lootingInfos.skinningStarted) then
                 lootedItems = lootingInfos.skinningItems
+                sourceType = 'skinning'
+            elseif (lootingInfos.isMiningStarted) then
+                lootedItems = lootingInfos.miningItems
+                sourceType = 'mining'
             else
                 lootedItems = lootingInfos.items
+                sourceType = 'general'
             end
 
             if (lootedItems[itemId] == nil) then
                 local sourceQuantity = tonumber(sources[sourceIndex + 1])
                 if (unitId and unitId > 0) then
                     if (not isQuestItem) then
-                        TrackItem(itemId, lootName, sourceQuantity, lootQuality, unitId, lootingInfos.skinningStarted)
+                        TrackItem(itemId, lootName, sourceQuantity, lootQuality, unitId, sourceType)
                     end
 
                     lootedItems[itemId] = sourceQuantity
@@ -319,11 +344,18 @@ end
 
 ---Occured when a spell is casted (used to track when skinning is started)
 function DataTracker:OnUnitSpellcastSucceeded(unitTarget, castGUID, spellID)
-    if (unitTarget == 'player' and spellID == SPELLID_SKINNING) then
-        local unitGuid = UnitGUID("target")
-        local unitId = DataTracker:UnitGuidToId(unitGuid)
-        local lootingInfo = GetLootingInformations(unitGuid, unitId)
-        lootingInfo.skinningStarted = true
+    if (unitTarget == 'player') then
+        if (spellID == SPELLID_SKINNING) then
+            local unitGuid = UnitGUID("target")
+            local unitId = DataTracker:UnitGuidToId(unitGuid)
+            local lootingInfo = GetLootingInformations(unitGuid, unitId)
+            lootingInfo.skinningStarted = true
+        elseif (spellID == SPELLID_MINING) then
+            local unitGuid = UnitGUID("target")
+            local unitId = DataTracker:UnitGuidToId(unitGuid)
+            local lootingInfo = GetLootingInformations(unitGuid, unitId)
+            lootingInfo.isMiningStarted = true
+        end
     end
 end
 

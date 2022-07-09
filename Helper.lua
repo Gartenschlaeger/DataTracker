@@ -8,6 +8,14 @@ function DataTracker:GetTableSize(table)
     return size
 end
 
+function DataTracker:IfNil(value, defaultValue)
+    if (value == nil) then
+        return defaultValue
+    end
+
+    return value
+end
+
 ---Converts a boolean value to a number (true = 1, false = 0)
 function DataTracker:BoolToNumber(booleanValue)
     if (booleanValue) then
