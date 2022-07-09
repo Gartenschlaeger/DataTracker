@@ -6,5 +6,19 @@
         "editor.defaultFormatter": "sumneko.lua"
     },
     "wowAPI.locale": "enUS",
-    "wowAPI.emmyLua.loadFrameXML": true
+    "wowAPI.emmyLua.loadFrameXML": true,
+    "Lua.diagnostics.globals": [
+        "GameTooltip",
+        "UIDropDownMenu_SetWidth",
+        "UIDropDownMenu_SetText",
+        "UIDropDownMenu_Initialize",
+        "UIDropDownMenu_AddButton",
+        "UIDropDownMenu_CreateInfo",
+        "FauxScrollFrame_Update",
+        "FauxScrollFrame_GetOffset",
+        "COPPER_PER_GOLD",
+        "COPPER_PER_SILVER",
+        "LOOT_SLOT_ITEM",
+        "LOOT_SLOT_MONEY"
+    ]
 }

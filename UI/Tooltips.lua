@@ -93,7 +93,7 @@ local function addLoot(context)
             local itemInfo = DT_ItemDb[itemId]
             if (itemInfo) then
                 local itemQuality = tonumber(itemInfo['qlt'])
-                if (itemQuality >= DT_Options.Tooltip.MinQualityLevel) then
+                if (itemQuality and itemQuality >= DT_Options.Tooltip.MinQualityLevel) then
                     local percentage = DataTracker:CalculatePercentage(ltd, timesItemWasLooted)
                     local r, g, b, _ = GetItemQualityColor(itemQuality)
 
@@ -131,7 +131,7 @@ local function addSkinningLoot(context)
             local itemInfo = DT_ItemDb[itemId]
             if (itemInfo) then
                 local itemQuality = tonumber(itemInfo['qlt'])
-                if (itemQuality >= DT_Options.Tooltip.MinQualityLevel) then
+                if (itemQuality and itemQuality >= DT_Options.Tooltip.MinQualityLevel) then
                     local percentage = DataTracker:CalculatePercentage(ltd_sk, itemCount)
                     local r, g, b, _ = GetItemQualityColor(itemQuality)
 
@@ -169,7 +169,7 @@ local function addMiningLoot(context)
             local itemInfo = DT_ItemDb[itemId]
             if (itemInfo) then
                 local itemQuality = tonumber(itemInfo.qlt)
-                if (itemQuality >= DT_Options.Tooltip.MinQualityLevel) then
+                if (itemQuality and itemQuality >= DT_Options.Tooltip.MinQualityLevel) then
                     local percentage = DataTracker:CalculatePercentage(ltd_mn, itemCount)
                     local r, g, b, _ = GetItemQualityColor(itemQuality)
 
@@ -207,7 +207,7 @@ local function addHerbalismLoot(context)
             local itemInfo = DT_ItemDb[itemId]
             if (itemInfo) then
                 local itemQuality = tonumber(itemInfo.qlt)
-                if (itemQuality >= DT_Options.Tooltip.MinQualityLevel) then
+                if (itemQuality and itemQuality >= DT_Options.Tooltip.MinQualityLevel) then
                     local percentage = DataTracker:CalculatePercentage(timesLooted, itemCount)
                     local r, g, b, _ = GetItemQualityColor(itemQuality)
 
@@ -235,6 +235,10 @@ local function OnTooltipSetUnit(tooltip)
     local _, unit = tooltip:GetUnit();
     if (unit) then
         local unitGuid = UnitGUID(unit);
+        if (not unitGuid) then
+            return
+        end
+
         local unitLevel = UnitLevel(unit)
         local unitId = DataTracker:UnitGuidToId(unitGuid);
         if (unitId and tooltipWasModified ~= unitId) then
