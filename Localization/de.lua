@@ -35,6 +35,7 @@ l.UI_SEARCH     = 'Suche'
 l.UI_BACK       = 'Zurück'
 l.UI_RESET      = 'Reset'
 l.UI_UNIT_NAME  = 'Gegner name'
+l.UI_ZONE_NAME  = 'Zone'
 l.UI_KILLS_PH   = 'Getötet'
 l.UI_GOLD_LEVEL = 'Gold level'
 

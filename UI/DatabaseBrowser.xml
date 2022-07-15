@@ -282,10 +282,19 @@
                             <OnTextChanged function="DT_AnyUnitFilter_TextChanged"/>
                         </Scripts>
                     </EditBox>
+                    <EditBox parentKey="ZoneName" inherits="InputBoxInstructionsTemplate" numeric="false" letters="10" autoFocus="false">
+                        <Size x="120" y="30"/>
+                        <Anchors>
+                            <Anchor point="LEFT" relativeKey="$parent.UnitName" relativePoint="RIGHT" x="10" />
+                        </Anchors>
+                        <Scripts>
+                            <OnTextChanged function="DT_AnyUnitFilter_TextChanged"/>
+                        </Scripts>
+                    </EditBox>
                     <EditBox parentKey="MinKillCount" inherits="InputBoxInstructionsTemplate" numeric="true" letters="3" autoFocus="false">
                         <Size x="80" y="30"/>
                         <Anchors>
-                            <Anchor point="LEFT" relativeKey="$parent.UnitName" relativePoint="RIGHT" x="10" />
+                            <Anchor point="LEFT" relativeKey="$parent.ZoneName" relativePoint="RIGHT" x="10" />
                         </Anchors>
                         <Scripts>
                             <OnTextChanged function="DT_AnyUnitFilter_TextChanged"/>
