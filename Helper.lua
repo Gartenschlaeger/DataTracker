@@ -53,6 +53,26 @@ function helper:CalculatePercentage(timesLooted, foundItems)
     return percentage
 end
 
+---Parses the item id from item link
+---@param link string
+---@return integer
+function helper:GetItemIdFromLink(link)
+    local id = link:match("item:(%d+):")
+    if (id) then
+        return tonumber(id, 10)
+    end
+
+    return -1
+end
+
+---Converts UnitGuid to UnitID
+---@param guid string
+---@return integer
+function helper:GetUnitIdFromGuid(guid)
+    local id = select(6, strsplit('-', guid))
+    return tonumber(id, 10)
+end
+
 ---formats a percentage value
 ---@param percentage number percentage value between 1 and 100
 ---@return string

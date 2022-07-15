@@ -290,7 +290,7 @@ local function ProcessItemLootSlot(itemSlot)
         local guid = sources[sourceIndex]
         local guidType = select(1, strsplit("-", guid))
         if guidType == 'Creature' then
-            local unitId = core:UnitGuidToId(guid)
+            local unitId = core.helper:GetUnitIdFromGuid(guid)
 
             local lootingInfos = GetLootingInformations(guid, unitId)
 
@@ -347,7 +347,7 @@ local function ProcessMoneyLoolSlot(itemSlot)
 
                 local guidType = select(1, strsplit("-", unitGuid))
                 if guidType == 'Creature' then
-                    local unitId = core:UnitGuidToId(sources[j])
+                    local unitId = core.helper:GetUnitIdFromGuid(sources[j])
                     if (unitId and unitId > 0) then
                         local lootingInfos = GetLootingInformations(unitGuid, unitId)
                         if (not lootingInfos.hasCopperTracked) then
@@ -374,13 +374,13 @@ function core:OnUnitSpellcastSucceeded(unitTarget, castGUID, spellID)
         end
 
         if (spellID == SPELLID_SKINNING) then
-            local lootingInfo = GetLootingInformations(unitGuid, core:UnitGuidToId(unitGuid))
+            local lootingInfo = GetLootingInformations(unitGuid, core.helper:GetUnitIdFromGuid(unitGuid))
             lootingInfo.skinningStarted = true
         elseif (spellID == SPELLID_MINING) then
-            local lootingInfo = GetLootingInformations(unitGuid, core:UnitGuidToId(unitGuid))
+            local lootingInfo = GetLootingInformations(unitGuid, core.helper:GetUnitIdFromGuid(unitGuid))
             lootingInfo.isMiningStarted = true
         elseif (spellID == SPELLID_HERBALISM) then
-            local lootingInfo = GetLootingInformations(unitGuid, core:UnitGuidToId(unitGuid))
+            local lootingInfo = GetLootingInformations(unitGuid, core.helper:GetUnitIdFromGuid(unitGuid))
             lootingInfo.isHerbalismStarted = true
         end
     end

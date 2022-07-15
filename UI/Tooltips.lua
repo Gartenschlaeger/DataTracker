@@ -1,8 +1,6 @@
 ---@class DTCore
 local _, core = ...
 
-local tooltipWasModified = nil
-
 local function addEmptyLine(context)
     if (context.shouldAddAnEmptyLine) then
         context.tooltip:AddLine(' ')
@@ -225,6 +223,9 @@ local function addHerbalismLoot(context)
     end
 end
 
+local unitTooltipLastUnitId = nil
+local itemTooltipLastItemId = nil
+
 local function OnTooltipSetUnit(tooltip)
     local _, unit = tooltip:GetUnit();
     if (unit) then
@@ -234,8 +235,8 @@ local function OnTooltipSetUnit(tooltip)
         end
 
         local unitLevel = UnitLevel(unit)
-        local unitId = core:UnitGuidToId(unitGuid);
-        if (unitId and tooltipWasModified ~= unitId) then
+        local unitId = core.helper:GetUnitIdFromGuid(unitGuid);
+        if (unitId and unitTooltipLastUnitId ~= unitId) then
             local unitInfo = DT_UnitDb[unitId]
             if (unitInfo) then
                 local context = {
@@ -262,17 +263,37 @@ local function OnTooltipSetUnit(tooltip)
                 context.shouldAddAnEmptyLine = true
                 addHerbalismLoot(context)
 
-                tooltipWasModified = unitId
+                unitTooltipLastUnitId = unitId
             end
         end
     end
 end
 
+local function OnTooltipSetItem(tooltip)
+    local _, link = tooltip:GetItem()
+    if (link == nil) then
+        return
+    end
+
+    local itemId = core.helper:GetItemIdFromLink(link)
+    if (itemId == -1) then
+        return
+    end
+
+    if (itemTooltipLastItemId ~= itemId) then
+        itemTooltipLastItemId = itemId
+
+        -- TODO: implement item tooltip infos
+    end
+end
+
 local function OnTooltipCleared()
-    tooltipWasModified = nil
+    unitTooltipLastUnitId = nil
+    itemTooltipLastItemId = nil
 end
 
 function core:InitTooltipHooks()
     GameTooltip:HookScript("OnTooltipSetUnit", OnTooltipSetUnit)
+    GameTooltip:HookScript('OnTooltipSetItem', OnTooltipSetItem)
     GameTooltip:HookScript("OnTooltipCleared", OnTooltipCleared)
 end

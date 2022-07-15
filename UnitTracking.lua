@@ -1,13 +1,6 @@
 ---@class DTCore
 local _, core = ...
 
----Converts UnitGuid to UnitID
----@param unitGuid string
----@return integer
-function core:UnitGuidToId(unitGuid)
-    return tonumber(select(6, strsplit('-', unitGuid)), 10)
-end
-
 ---Returns the classificationId for the given classification name
 ---@param unitClassification string
 ---@return number
@@ -44,7 +37,7 @@ function core:OnTargetChanged()
 
     local unitType = select(1, strsplit('-', unitGuid))
     if (unitType == 'Creature') then
-        local unitId = core:UnitGuidToId(unitGuid)
+        local unitId = core.helper:GetUnitIdFromGuid(unitGuid)
 
         local mobInfo = DT_UnitDb[unitId]
         if (mobInfo == nil) then

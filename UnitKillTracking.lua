@@ -55,7 +55,7 @@ function core:OnCombatLogEventUnfiltered()
             core.TmpAttackedUnitGuids[destGUID] = true
         elseif (subEvent == 'UNIT_DIED' and guidType == "Creature" and core.TmpAttackedUnitGuids[destGUID] == true) then
             core.TmpAttackedUnitGuids[destGUID] = nil
-            local unitId = core:UnitGuidToId(destGUID)
+            local unitId = core.helper:GetUnitIdFromGuid(destGUID)
             core:TrackKill(unitId, destName)
         end
     end
