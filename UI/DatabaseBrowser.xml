@@ -88,13 +88,15 @@
             <Anchor point="CENTER" />
         </Anchors>
         <Frames>
+            <!-- item search -->
             <Frame parentKey="itemSearch" hidden="true" virtual="true">
                 <Anchors>
                     <Anchor point="TOPLEFT" relativeTo="$parent" x="20" y="-40" />
                     <Anchor point="BOTTOMRIGHT" x="-17" y="20" />
                 </Anchors>
                 <Frames>
-                    <EditBox name="DT_DatabaseBrowser_SearchBox" autoFocus="true" historyLines="10" inherits="SearchBoxTemplate">
+                    <!-- filters -->
+                    <EditBox parentKey="SearchBox" autoFocus="true" historyLines="10" inherits="SearchBoxTemplate">
                         <Size x="250" y="30"/>
                         <Anchors>
                             <Anchor point="TOPLEFT" x="0" y="0" />
@@ -103,15 +105,31 @@
                             <OnEnterPressed function="DT_DatabaseBrowser_OnSearch" />
                         </Scripts>
                     </EditBox>
-                    <Button name="DT_DatabaseBrowser_SearchBtn" inherits="UIPanelButtonTemplate" virtual="false">
+                    <EditBox parentKey="MinKillCount" inherits="InputBoxTemplate" numeric="true" letters="3">
+                        <Size x="50" y="30"/>
+                        <Anchors>
+                            <Anchor point="LEFT" relativeKey="$parent.SearchBox" relativePoint="RIGHT" x="15" y="0"/>
+                        </Anchors>
+                    </EditBox>
+                    <Button parentKey="searchBtn" inherits="UIPanelButtonTemplate">
                         <Size x="95" y="22"/>
                         <Anchors>
-                            <Anchor point="RIGHT" relativeTo="DT_DatabaseBrowser_SearchBox" x="100" y="0"/>
+                            <Anchor point="LEFT" relativeKey="$parent.MinKillCount" relativePoint="RIGHT" x="15" />
                         </Anchors>
                         <Scripts>
                             <OnClick function="DT_DatabaseBrowser_OnSearch" />
                         </Scripts>
                     </Button>
+                    <Button parentKey="resetBtn" inherits="UIPanelButtonTemplate">
+                        <Size x="95" y="22"/>
+                        <Anchors>
+                            <Anchor point="LEFT" relativeKey="$parent.searchBtn" relativePoint="RIGHT" x="5" />
+                        </Anchors>
+                        <Scripts>
+                            <OnClick function="DT_DatabaseBrowser_OnReset" />
+                        </Scripts>
+                    </Button>
+                    <!-- scroll area -->
                     <ScrollFrame name="DT_DatabaseBrowser_ScrollBar" inherits="FauxScrollFrameTemplate">
                         <Anchors>
                             <Anchor point="TOPLEFT" x="-20" y="-40"  />
@@ -121,6 +139,7 @@
                             <OnVerticalScroll>FauxScrollFrame_OnVerticalScroll(self, offset, 25, DT_DatabaseBrowser_ScrollBar_Update)</OnVerticalScroll>
                         </Scripts>
                     </ScrollFrame>
+                    <!-- results -->
                     <Button name="DT_DatabaseBrowser_Entry1" inherits="DT_DatabaseBrowser_ResultItemTemplate">
                         <Anchors>
                             <Anchor point="TOPLEFT" relativeTo="DT_DatabaseBrowser_ScrollBar" relativePoint="TOPLEFT">
@@ -217,6 +236,7 @@
                     </Button>
                 </Frames>
             </Frame>
+            <!-- item details -->
             <Frame parentKey="itemDetails" hidden="true">
                 <Anchors>
                     <Anchor point="TOPLEFT" relativeTo="$parent" x="20" y="-40" />
@@ -235,7 +255,8 @@
                     </Layer>
                 </Layers>
                 <Frames>
-                    <Button name="DT_DatabaseBrowser_BackBtn" inherits="UIPanelButtonTemplate" virtual="false">
+                    <!-- controls -->
+                    <Button parentKey="backBtn" inherits="UIPanelButtonTemplate" virtual="false">
                         <Size x="96" y="24"/>
                         <Anchors>
                             <Anchor point="TOPRIGHT" x="0" y="0"/>
@@ -244,6 +265,7 @@
                             <OnClick function="DT_DatabaseBrowser_OnBack" />
                         </Scripts>
                     </Button>
+                    <!-- scroll area -->
                     <ScrollFrame name="DT_DatabaseBrowser_ScrollBarLoc" inherits="FauxScrollFrameTemplate">
                         <Anchors>
                             <Anchor point="TOPLEFT" x="-20" y="-40"  />
@@ -253,6 +275,7 @@
                             <OnVerticalScroll>FauxScrollFrame_OnVerticalScroll(self, offset, 25, DT_DatabaseBrowser_ScrollBarLoc_Update)</OnVerticalScroll>
                         </Scripts>
                     </ScrollFrame>
+                    <!-- results -->
                     <Button name="DT_DatabaseBrowser_EntryLoc1" inherits="DT_DatabaseBrowser_ResultLocTemplate">
                         <Anchors>
                             <Anchor point="TOPLEFT" relativeTo="DT_DatabaseBrowser_ScrollBar" relativePoint="TOPLEFT">

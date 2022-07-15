@@ -33,6 +33,7 @@ l.OP_TT_MIN_ITEM_QLT   = 'Min. Qualität'
 -- DatabaseBrowser
 l.UI_SEARCH = 'Suche'
 l.UI_BACK   = 'Zurück'
+l.UI_RESET  = 'Reset'
 
 -- Tooltip
 l.TT_KILLS  = 'Getötet'

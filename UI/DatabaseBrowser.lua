@@ -6,21 +6,39 @@ local DT_RESULT_PIXEL_HEIGHT = 25
 
 ---@type Frame
 local DatabaseBrowserFrame
+---@type Frame
+local ItemSearchFrame
+---@type Frame
+local ItemDetailsFrame
 
-local function LocalizeUI()
-    DT_DatabaseBrowser_SearchBtn:SetText(core.i18n.UI_SEARCH)
-    DT_DatabaseBrowser_BackBtn:SetText(core.i18n.UI_BACK)
-end
+---@type Button
+local searchBtn
+
+---@type EditBox
+local searchBox
+
+---@type Button
+local backBtn
 
 function DT_DatabaseBrowser_OnLoad(self)
     core.logging:Trace('DT_DatabaseBrowser_OnLoad')
 
-    ---@diagnostic disable-next-line: undefined-global
     DatabaseBrowserFrame = DT_DatabaseBrowserFrame
     DatabaseBrowserFrame.Title:SetText('DataTracker')
     DatabaseBrowserFrame:RegisterForDrag("LeftButton")
 
-    LocalizeUI()
+    ItemSearchFrame = DatabaseBrowserFrame.itemSearch
+    searchBtn = ItemSearchFrame.searchBtn
+    searchBtn:SetText(core.i18n.UI_SEARCH)
+
+    local resetBtn = ItemSearchFrame.resetBtn
+    resetBtn:SetText(core.i18n.UI_RESET)
+
+    searchBox = ItemSearchFrame.SearchBox
+
+    ItemDetailsFrame = DatabaseBrowserFrame.itemDetails
+    backBtn = ItemDetailsFrame.backBtn
+    backBtn:SetText(core.i18n.UI_BACK)
 
     -- disable by default
     for i = 1, DT_RESULT_ITEMS_COUNT do
@@ -28,9 +46,8 @@ function DT_DatabaseBrowser_OnLoad(self)
         btnEntry:Disable()
     end
 
-    ---@type Frame
-    local itemSearchFrame = DatabaseBrowserFrame.itemSearch
-    itemSearchFrame:Show()
+    DT_DatabaseBrowser_ScrollBar_Update()
+    ItemSearchFrame:Show()
 end
 
 function DT_DatabaseBrowser_OnDragStart(self)
@@ -55,16 +72,24 @@ function DT_DatabaseBrowser_OnHide(self)
     core.logging:Trace('DT_DatabaseBrowser_OnHide')
 end
 
+function DT_DatabaseBrowser_OnReset(self)
+    DT_SearchResults = {}
+    searchBox:SetText('')
+    DT_DatabaseBrowser_ScrollBar_Update()
+end
+
 function DT_DatabaseBrowser_OnSearch(self)
     core.logging:Trace('DT_DatabaseBrowser_OnSearch')
 
     DT_SearchResults = {}
 
     local index = 1
-    local searchText = strtrim(DT_DatabaseBrowser_SearchBox:GetText())
-    searchText = strlower(searchText)
 
-    if (searchText and strlen(searchText) > 0) then
+    ---@type string
+    ---@diagnostic disable-next-line: assign-type-mismatch
+    local searchText = searchBox:GetText()
+    searchText = strtrim(strlower(searchText))
+    if (strlen(searchText) > 0) then
         for itemId, itemInfo in pairs(DT_ItemDb) do
             local nameMatches = strfind(strlower(itemInfo.nam), searchText, 1, true)
             if (nameMatches) then
