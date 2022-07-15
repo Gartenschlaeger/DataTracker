@@ -40,20 +40,20 @@ core.TmpAttackedUnitGuids = {}
 function core:OnCombatLogEventUnfiltered()
     local _, subEvent, _, sourceGUID, sourceName, _, _, destGUID, destName = CombatLogGetCurrentEventInfo()
 
-    if destGUID ~= nil
-    then
-        local guidType = select(1, strsplit("-", destGUID))
+    if (destGUID) then
+        core.logging:Verbose('OnCombatLogEventUnfiltered', subEvent, sourceGUID, sourceName, destGUID, destName)
+
         local isDamageSubEvent = subEvent == 'SWING_DAMAGE' or subEvent == 'SPELL_DAMAGE';
         local isPlayerAttack = sourceGUID == UnitGUID('player')
         local isPetAttack = sourceGUID == UnitGUID('pet')
-
-        core.logging:Verbose('OnCombatLogEventUnfiltered', subEvent, sourceGUID, sourceName, destGUID, destName)
 
         if (isDamageSubEvent and (isPlayerAttack or isPetAttack)) then
             core.TmpAttackedUnitGuids[destGUID] = true
         elseif (subEvent == "PARTY_KILL") then
             core.TmpAttackedUnitGuids[destGUID] = true
-        elseif (subEvent == 'UNIT_DIED' and guidType == "Creature" and core.TmpAttackedUnitGuids[destGUID] == true) then
+        elseif (
+            subEvent == 'UNIT_DIED' and core.helper:IsTrackableUnit(destGUID) and
+                core.TmpAttackedUnitGuids[destGUID] == true) then
             core.TmpAttackedUnitGuids[destGUID] = nil
             local unitId = core.helper:GetUnitIdFromGuid(destGUID)
             core:TrackKill(unitId, destName)

@@ -230,7 +230,7 @@ local function OnTooltipSetUnit(tooltip)
     local _, unit = tooltip:GetUnit();
     if (unit) then
         local unitGuid = UnitGUID(unit);
-        if (not unitGuid) then
+        if (not unitGuid or not core.helper:IsTrackableUnit(unitGuid)) then
             return
         end
 

@@ -53,6 +53,28 @@ function helper:CalculatePercentage(timesLooted, foundItems)
     return percentage
 end
 
+---Returns the unit type from unit guid
+---@param unitGuid string
+---@return string
+function helper:GetUnitTypeByGuid(unitGuid)
+    -- Cast-[type]-[serverID]-[instanceID]-[zoneUID]-[spellID]-[castUID]
+    return select(1, strsplit('-', unitGuid))
+end
+
+---Returns true if the unit should be tracked
+---@param unitGuid string?
+---@return boolean
+function helper:IsTrackableUnit(unitGuid)
+    if (unitGuid) then
+        local type = self:GetUnitTypeByGuid(unitGuid)
+        if (type == 'Creature') then -- type == 'Vehicle'
+            return true
+        end
+    end
+
+    return false
+end
+
 ---Parses the item id from item link
 ---@param link string
 ---@return number

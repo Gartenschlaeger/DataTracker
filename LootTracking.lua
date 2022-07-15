@@ -277,8 +277,7 @@ local function ProcessItemLootSlot(itemSlot)
     local sources = { GetLootSourceInfo(itemSlot) }
     for sourceIndex = 1, #sources, 2 do
         local guid = sources[sourceIndex]
-        local guidType = select(1, strsplit("-", guid))
-        if guidType == 'Creature' then
+        if (core.helper:IsTrackableUnit(guid)) then
             local unitId = core.helper:GetUnitIdFromGuid(guid)
 
             local lootingInfos = GetLootingInformations(guid, unitId)
@@ -333,10 +332,8 @@ local function ProcessMoneyLoolSlot(itemSlot)
         if (sourcesCount == 2) then
             for j = 1, sourcesCount, 2 do
                 local unitGuid = sources[j]
-
-                local guidType = select(1, strsplit("-", unitGuid))
-                if guidType == 'Creature' then
-                    local unitId = core.helper:GetUnitIdFromGuid(sources[j])
+                if (core.helper:IsTrackableUnit(unitGuid)) then
+                    local unitId = core.helper:GetUnitIdFromGuid(unitGuid)
                     if (unitId and unitId > 0) then
                         local lootingInfos = GetLootingInformations(unitGuid, unitId)
                         if (not lootingInfos.hasCopperTracked) then

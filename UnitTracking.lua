@@ -29,14 +29,11 @@ function core:OnTargetChanged()
 
     local unitGuid = UnitGUID('target')
     local unitName = UnitName('target')
-    local unitLevel = UnitLevel('target')
-
     if (unitGuid == nil or unitName == nil) then
         return
     end
 
-    local unitType = select(1, strsplit('-', unitGuid))
-    if (unitType == 'Creature') then
+    if (core.helper:IsTrackableUnit(unitGuid)) then
         local unitId = core.helper:GetUnitIdFromGuid(unitGuid)
 
         local mobInfo = DT_UnitDb[unitId]
@@ -60,6 +57,6 @@ function core:OnTargetChanged()
 
         tmp_unit_info.time = GetTime()
         tmp_unit_info.id = unitId
-        tmp_unit_info.level = unitLevel
+        tmp_unit_info.level = UnitLevel('target')
     end
 end
