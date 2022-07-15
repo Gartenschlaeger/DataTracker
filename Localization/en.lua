@@ -29,11 +29,12 @@ l.OP_TT_SHOW_ICONS     = 'Show icons'
 l.OP_TT_MIN_ITEM_QLT   = 'Min. item quality'
 
 -- DatabaseBrowser
-l.UI_SEARCH    = 'Search'
-l.UI_BACK      = 'Back'
-l.UI_RESET     = 'Reset'
-l.UI_UNIT_NAME = 'Unit name'
-l.UI_KILLS_PH  = 'Kills'
+l.UI_SEARCH     = 'Search'
+l.UI_BACK       = 'Back'
+l.UI_RESET      = 'Reset'
+l.UI_UNIT_NAME  = 'Unit name'
+l.UI_KILLS_PH   = 'Kills'
+l.UI_GOLD_LEVEL = 'Gold level'
 
 -- Tooltip
 l.TT_KILLS   = 'Kills'

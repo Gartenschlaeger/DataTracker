@@ -24,6 +24,9 @@ local unitNameFilter
 ---@type EditBox
 local minKillsFilter
 
+---@type EditBox
+local goldLevelFilter
+
 ---@type Button
 local backBtn
 
@@ -52,6 +55,9 @@ function DT_DatabaseBrowser_OnLoad(self)
 
     unitNameFilter = ItemDetailsFrame.UnitName
     unitNameFilter.Instructions:SetText(core.i18n.UI_UNIT_NAME)
+
+    goldLevelFilter = ItemDetailsFrame.GoldLevel
+    goldLevelFilter.Instructions:SetText(core.i18n.UI_GOLD_LEVEL)
 
     backBtn = ItemDetailsFrame.backBtn
     backBtn:SetText(core.i18n.UI_BACK)
@@ -186,7 +192,7 @@ local function LoadItemDetails(itemIndex)
 
     local unitName = unitNameFilter:GetText()
     local minKills = tonumber(minKillsFilter:GetText(), 10)
-    local playerLevel = UnitLevel('player')
+    local goldLevel = tonumber(goldLevelFilter:GetText(), 10)
 
     local totalResults = 0
     for unitId, unitInfo in pairs(DT_UnitDb) do
@@ -218,7 +224,7 @@ local function LoadItemDetails(itemIndex)
                             unitId,
                             unitInfo.nam,
                             unitInfo.kls,
-                            core.helper:CalculateAvgUnitGoldCount(unitInfo, playerLevel),
+                            core.helper:CalculateAvgUnitGoldCount(unitInfo, goldLevel),
                             core.helper:FormatPercentage(percent),
                             color.r, color.g, color.b)
                         break
@@ -238,7 +244,7 @@ local function LoadItemDetails(itemIndex)
                             unitId,
                             unitInfo.nam,
                             unitInfo.kls,
-                            core.helper:CalculateAvgUnitGoldCount(unitInfo, playerLevel),
+                            core.helper:CalculateAvgUnitGoldCount(unitInfo, goldLevel),
                             core.helper:FormatPercentage(percent),
                             color.r, color.g, color.b)
                         break

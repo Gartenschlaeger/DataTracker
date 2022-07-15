@@ -75,16 +75,15 @@ function helper:CalculateAvgUnitGoldCount(unitInfo, level)
         return nil -- no copper info in general
     end
 
-    local levelCopperInfo = copperInfo['l:' .. level]
+    local levelCopperInfo = nil
 
-    -- fallback: try if copperinfo exists for none level based units e.g. boss
-    if (levelCopperInfo == nil) then
-        levelCopperInfo = copperInfo['_']
+    if (level) then
+        levelCopperInfo = copperInfo['l:' .. level]
     end
 
-    -- shadowlands fallback: use level 30 if player is higher
-    if (level > 30) then
-        levelCopperInfo = copperInfo['l:30']
+    -- fallback: none level based units e.g. boss
+    if (levelCopperInfo == nil) then
+        levelCopperInfo = copperInfo['_']
     end
 
     if (not levelCopperInfo) then

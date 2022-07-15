@@ -283,9 +283,18 @@
                         </Scripts>
                     </EditBox>
                     <EditBox parentKey="MinKillCount" inherits="InputBoxInstructionsTemplate" numeric="true" letters="3" autoFocus="false">
-                        <Size x="50" y="30"/>
+                        <Size x="80" y="30"/>
                         <Anchors>
                             <Anchor point="LEFT" relativeKey="$parent.UnitName" relativePoint="RIGHT" x="10" />
+                        </Anchors>
+                        <Scripts>
+                            <OnTextChanged function="DT_AnyUnitFilter_TextChanged"/>
+                        </Scripts>
+                    </EditBox>
+                    <EditBox parentKey="GoldLevel" inherits="InputBoxInstructionsTemplate" numeric="true" letters="3" autoFocus="false">
+                        <Size x="80" y="30"/>
+                        <Anchors>
+                            <Anchor point="LEFT" relativeKey="$parent.MinKillCount" relativePoint="RIGHT" x="10" />
                         </Anchors>
                         <Scripts>
                             <OnTextChanged function="DT_AnyUnitFilter_TextChanged"/>
