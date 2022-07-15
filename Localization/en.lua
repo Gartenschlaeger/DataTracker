@@ -6,7 +6,7 @@ local l = {}
 core.i18n = l
 
 -- General
-l.LOADING_MSG = 'DataTracker loaded, %u items, %u units'
+l.LOADING_MSG = 'DataTracker loaded, %s items, %s units'
 
 l.GOLD   = 'Gold'
 l.SILVER = 'Silver'

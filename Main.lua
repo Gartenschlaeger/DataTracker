@@ -4,15 +4,17 @@ local _, core = ...
 ---Called when the addon is fully loaded and saved values are loaded from disk.
 local function OnAddonLoaded(addonName)
     if (addonName == 'DataTracker') then
-        local itemsCount = core.helper:GetTableSize(DT_ItemDb)
-        local unitsCount = core.helper:GetTableSize(DT_UnitDb)
-
         core:InitOptions()
         core:InitOptionsPanel()
         core:InitSlashCommands()
         core:InitTooltipHooks()
 
-        local loadingMessage = string.format(core.i18n.LOADING_MSG, itemsCount, unitsCount)
+        local itemsCount = core.helper:GetTableSize(DT_ItemDb)
+        local unitsCount = core.helper:GetTableSize(DT_UnitDb)
+        local loadingMessage = string.format(core.i18n.LOADING_MSG,
+            FormatLargeNumber(itemsCount),
+            FormatLargeNumber(unitsCount))
+
         core.logging:Info(loadingMessage)
     end
 end

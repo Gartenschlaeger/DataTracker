@@ -8,7 +8,7 @@ end
 local l = core.i18n
 
 -- General
-l.LOADING_MSG = 'DataTracker wurde geladen, %u Gegenstände, %u Gegner'
+l.LOADING_MSG = 'DataTracker wurde geladen, %s Gegenstände, %s Gegner'
 
 l.GOLD   = 'Gold';
 l.SILVER = 'Silber';
