@@ -67,7 +67,7 @@ end
 function helper:IsTrackableUnit(unitGuid)
     if (unitGuid) then
         local type = self:GetUnitTypeByGuid(unitGuid)
-        if (type == 'Creature') then -- type == 'Vehicle'
+        if (type == 'Creature' or type == 'Vehicle') then
             return true
         end
     end
