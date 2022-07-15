@@ -55,11 +55,13 @@ end
 
 ---Parses the item id from item link
 ---@param link string
----@return integer
+---@return number
 function helper:GetItemIdFromLink(link)
-    local id = link:match("item:(%d+):")
-    if (id) then
-        return tonumber(id, 10)
+    core.logging:Verbose('GetItemIdFromLink, link = ', link)
+
+    if (link) then
+        local _, _, idCode = string.find(link, "|Hitem:(%d*):(%d*):(%d*):")
+        return tonumber(idCode) or -1
     end
 
     return -1

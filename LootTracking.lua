@@ -186,18 +186,6 @@ local function IncrementLootCounter(lootingInfos)
     end
 end
 
--- Returns the itemId by slot link
-local function GetLootId(itemSlot)
-    local link = GetLootSlotLink(itemSlot)
-    if link then
-        core.logging:Verbose('GetLootId, link = ', link)
-        local _, _, idCode = string.find(link, "|Hitem:(%d*):(%d*):(%d*):")
-        return tonumber(idCode) or -1
-    end
-
-    return 0
-end
-
 local function ParseMoneyFromLootName(lootName)
     local startIndex = 0
     local lootedCopper = 0
@@ -282,7 +270,8 @@ local function ProcessItemLootSlot(itemSlot)
     ---@type number|nil
     local itemId = currencyID
     if (itemId == nil) then
-        itemId = GetLootId(itemSlot)
+        local link = GetLootSlotLink(itemSlot)
+        itemId = core.helper:GetItemIdFromLink(link)
     end
 
     local sources = { GetLootSourceInfo(itemSlot) }
