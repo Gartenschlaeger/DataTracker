@@ -19,7 +19,10 @@ local searchBtn
 local searchBox
 
 ---@type EditBox
-local minKillsBox
+local unitNameFilter
+
+---@type EditBox
+local minKillsFilter
 
 ---@type Button
 local backBtn
@@ -44,10 +47,11 @@ function DT_DatabaseBrowser_OnLoad(self)
 
     ItemDetailsFrame = DatabaseBrowserFrame.itemDetails
 
-    ---@class FontString
-    minKillsBox = ItemDetailsFrame.MinKillCount
-    local fsKillsPlaceholder = minKillsBox.Instructions
-    fsKillsPlaceholder:SetText(core.i18n.UI_KILLS_PH)
+    minKillsFilter = ItemDetailsFrame.MinKillCount
+    minKillsFilter.Instructions:SetText(core.i18n.UI_KILLS_PH)
+
+    unitNameFilter = ItemDetailsFrame.UnitName
+    unitNameFilter.Instructions:SetText(core.i18n.UI_UNIT_NAME)
 
     backBtn = ItemDetailsFrame.backBtn
     backBtn:SetText(core.i18n.UI_BACK)
@@ -143,12 +147,13 @@ function DT_DatabaseBrowser_OnBack(self)
     DatabaseBrowserFrame.itemDetails:Hide()
 end
 
-local function createUnitResult(unitId, unitName, kills, percent, colorR, colorG, colorB)
+local function createUnitResult(unitId, unitName, kills, gold, percent, colorR, colorG, colorB)
     return {
         unitId = unitId,
         unitName = unitName,
         zoneName = '',
         kills = kills,
+        gold = gold,
         percent = percent,
         color = { r = colorR, g = colorG, b = colorB }
     }
@@ -179,15 +184,25 @@ local function LoadItemDetails(itemIndex)
     title:SetText(itemTexture .. ' ' .. itemResult.itemName)
     title:SetTextColor(itemResult.color.r, itemResult.color.g, itemResult.color.b)
 
-    local minKills = tonumber(minKillsBox:GetText(), 10)
+    local unitName = unitNameFilter:GetText()
+    local minKills = tonumber(minKillsFilter:GetText(), 10)
+    local playerLevel = UnitLevel('player')
 
     local totalResults = 0
     for unitId, unitInfo in pairs(DT_UnitDb) do
         local result = nil
 
         local add = true
+
         if (minKills and unitInfo.kls and unitInfo.kls < minKills) then
             add = false
+        end
+
+        if (unitName and unitInfo.nam) then
+            local fm = unitInfo.nam:find(unitName)
+            if (not fm) then
+                add = false
+            end
         end
 
         if (add) then
@@ -203,6 +218,7 @@ local function LoadItemDetails(itemIndex)
                             unitId,
                             unitInfo.nam,
                             unitInfo.kls,
+                            core.helper:CalculateAvgUnitGoldCount(unitInfo, playerLevel),
                             core.helper:FormatPercentage(percent),
                             color.r, color.g, color.b)
                         break
@@ -222,6 +238,7 @@ local function LoadItemDetails(itemIndex)
                             unitId,
                             unitInfo.nam,
                             unitInfo.kls,
+                            core.helper:CalculateAvgUnitGoldCount(unitInfo, playerLevel),
                             core.helper:FormatPercentage(percent),
                             color.r, color.g, color.b)
                         break
@@ -253,9 +270,8 @@ local function LoadItemDetails(itemIndex)
     DatabaseBrowserFrame.itemDetails:Show()
 end
 
-function DT_MinKillCount_TextChanged(self)
+function DT_AnyUnitFilter_TextChanged(self)
     InputBoxInstructions_OnTextChanged(self)
-
     if (lastItemDetailsIndex) then
         LoadItemDetails(lastItemDetailsIndex)
     end
@@ -284,6 +300,9 @@ function DT_DatabaseBrowser_ScrollBarLoc_Update()
         local fsZone = _G["DT_DatabaseBrowser_EntryLoc" .. i .. 'Zone']
 
         ---@type FontString
+        local fsGold = _G["DT_DatabaseBrowser_EntryLoc" .. i .. 'Gold']
+
+        ---@type FontString
         local fsKills = _G["DT_DatabaseBrowser_EntryLoc" .. i .. 'Kills']
 
         ---@type FontString
@@ -297,6 +316,13 @@ function DT_DatabaseBrowser_ScrollBarLoc_Update()
             fsZone:SetText(result.zoneName)
             fsZone:SetTextColor(1, 1, 1, 1)
 
+            if (result.gold and result.gold > 0) then
+                fsGold:SetText(GetCoinTextureString(result.gold))
+            else
+                fsGold:SetText('')
+            end
+            fsGold:SetTextColor(1, 1, 1, 1)
+
             fsKills:SetText(result.kills)
             fsKills:SetTextColor(1, 1, 1, 1)
 
@@ -306,6 +332,7 @@ function DT_DatabaseBrowser_ScrollBarLoc_Update()
             btn:Disable()
             fsUnit:SetText('')
             fsZone:SetText('')
+            fsGold:SetText('')
             fsKills:SetText('')
             fsPercentage:SetText('')
         end

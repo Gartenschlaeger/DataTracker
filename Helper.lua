@@ -65,6 +65,41 @@ function helper:GetItemIdFromLink(link)
     return -1
 end
 
+---Calculated the avarage gold amount for the given unit at given level.
+---@param unitInfo table
+---@param level number
+---@return number|nil
+function helper:CalculateAvgUnitGoldCount(unitInfo, level)
+    local copperInfo = unitInfo.cpi
+    if (not copperInfo) then
+        return nil -- no copper info in general
+    end
+
+    local levelCopperInfo = copperInfo['l:' .. level]
+
+    -- fallback: try if copperinfo exists for none level based units e.g. boss
+    if (levelCopperInfo == nil) then
+        levelCopperInfo = copperInfo['_']
+    end
+
+    -- shadowlands fallback: use level 30 if player is higher
+    if (level > 30) then
+        levelCopperInfo = copperInfo['l:30']
+    end
+
+    if (not levelCopperInfo) then
+        return nil -- no copper info for level
+    end
+
+    local totalCopper = levelCopperInfo.tot
+    local timesLooted = levelCopperInfo.ltd
+    if (totalCopper > 0 and timesLooted > 0) then
+        return math.floor(totalCopper / timesLooted)
+    end
+
+    return nil
+end
+
 ---Converts UnitGuid to UnitID
 ---@param guid string
 ---@return integer

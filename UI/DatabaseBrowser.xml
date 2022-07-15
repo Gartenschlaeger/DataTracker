@@ -43,12 +43,12 @@
     <Button name="DT_DatabaseBrowser_ResultLocTemplate" virtual="true">
         <Size x="750" y="25"/>
         <Layers>
-            <Layer level="BACKGROUND">
+            <!-- <Layer level="BACKGROUND">
                 <Texture name="$parentHighlight" file="Interface\QuestFrame\UI-QuestTitleHighlight" alphaMode="ADD" setAllPoints="true" hidden="true" />
-            </Layer>
+            </Layer> -->
             <Layer level="ARTWORK">
                 <FontString name="$parentUnit" inherits="GameFontNormalSmall" justifyH="LEFT">
-                    <Size x="300" y="25"/>
+                    <Size x="250" y="25"/>
                     <Anchors>
                         <Anchor point="LEFT">
                             <Offset x="0" y="0"/>
@@ -56,10 +56,18 @@
                     </Anchors>
                 </FontString>
                 <FontString name="$parentZone" inherits="GameFontNormalSmall" justifyH="LEFT">
-                    <Size x="300" y="25"/>
+                    <Size x="250" y="25"/>
                     <Anchors>
                         <Anchor point="LEFT">
                             <Offset x="300" y="0"/>
+                        </Anchor>
+                    </Anchors>
+                </FontString>
+                <FontString name="$parentGold" inherits="GameFontNormalSmall" justifyH="RIGHT">
+                    <Size x="100" y="25"/>
+                    <Anchors>
+                        <Anchor point="LEFT">
+                            <Offset x="500" y="0"/>
                         </Anchor>
                     </Anchors>
                 </FontString>
@@ -81,10 +89,10 @@
                 </FontString>
             </Layer>
         </Layers>
-        <Scripts>
+        <!-- <Scripts>
             <OnEnter>_G[self:GetName().."Highlight"]:Show()</OnEnter>
             <OnLeave>_G[self:GetName().."Highlight"]:Hide()</OnLeave>
-        </Scripts>
+        </Scripts> -->
         <NormalText name="$parentNormalText" inherits="GameFontNormalSmall" justifyH="LEFT"/>
     </Button>
     <Frame name="DT_DatabaseBrowserFrame" 
@@ -265,13 +273,22 @@
                 </Layers>
                 <Frames>
                     <!-- controls -->
-                    <EditBox parentKey="MinKillCount" inherits="InputBoxInstructionsTemplate" numeric="true" letters="3" autoFocus="false">
-                        <Size x="50" y="30"/>
+                    <EditBox parentKey="UnitName" inherits="InputBoxInstructionsTemplate" numeric="false" letters="10" autoFocus="false">
+                        <Size x="120" y="30"/>
                         <Anchors>
                             <Anchor point="TOPLEFT" x="0" y="-30"/>
                         </Anchors>
                         <Scripts>
-                            <OnTextChanged function="DT_MinKillCount_TextChanged"/>
+                            <OnTextChanged function="DT_AnyUnitFilter_TextChanged"/>
+                        </Scripts>
+                    </EditBox>
+                    <EditBox parentKey="MinKillCount" inherits="InputBoxInstructionsTemplate" numeric="true" letters="3" autoFocus="false">
+                        <Size x="50" y="30"/>
+                        <Anchors>
+                            <Anchor point="LEFT" relativeKey="$parent.UnitName" relativePoint="RIGHT" x="10" />
+                        </Anchors>
+                        <Scripts>
+                            <OnTextChanged function="DT_AnyUnitFilter_TextChanged"/>
                         </Scripts>
                     </EditBox>
                     <Button parentKey="backBtn" inherits="UIPanelButtonTemplate" virtual="false">
