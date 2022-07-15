@@ -2,6 +2,7 @@
 local _, core = ...
 
 local DT_RESULT_ITEMS_COUNT = 18
+local DT_RESULT_DETAIL_ITEMS_COUNT = 17
 local DT_RESULT_PIXEL_HEIGHT = 25
 
 ---@type Frame
@@ -17,8 +18,13 @@ local searchBtn
 ---@type EditBox
 local searchBox
 
+---@type EditBox
+local minKillsBox
+
 ---@type Button
 local backBtn
+
+local lastItemDetailsIndex = nil
 
 function DT_DatabaseBrowser_OnLoad(self)
     core.logging:Trace('DT_DatabaseBrowser_OnLoad')
@@ -37,6 +43,12 @@ function DT_DatabaseBrowser_OnLoad(self)
     searchBox = ItemSearchFrame.SearchBox
 
     ItemDetailsFrame = DatabaseBrowserFrame.itemDetails
+
+    ---@class FontString
+    minKillsBox = ItemDetailsFrame.MinKillCount
+    local fsKillsPlaceholder = minKillsBox.Instructions
+    fsKillsPlaceholder:SetText(core.i18n.UI_KILLS_PH)
+
     backBtn = ItemDetailsFrame.backBtn
     backBtn:SetText(core.i18n.UI_BACK)
 
@@ -123,17 +135,20 @@ DT_SearchUnitResults = {}
 function DT_DatabaseBrowser_OnBack(self)
     core.logging:Trace('DT_DatabaseBrowser_OnBack')
 
+    lastItemDetailsIndex = nil
+
     ---@diagnostic disable-next-line: undefined-field
     DatabaseBrowserFrame.itemSearch:Show()
     ---@diagnostic disable-next-line: undefined-field
     DatabaseBrowserFrame.itemDetails:Hide()
 end
 
-local function createUnitResult(unitId, unitName, percent, colorR, colorG, colorB)
+local function createUnitResult(unitId, unitName, kills, percent, colorR, colorG, colorB)
     return {
         unitId = unitId,
         unitName = unitName,
         zoneName = '',
+        kills = kills,
         percent = percent,
         color = { r = colorR, g = colorG, b = colorB }
     }
@@ -150,6 +165,7 @@ local function GetUnitColor(classification)
 end
 
 local function LoadItemDetails(itemIndex)
+    lastItemDetailsIndex = itemIndex
     local itemResult = DT_SearchResults[itemIndex]
 
     core.logging:Trace(itemResult.itemName, itemResult.itemId)
@@ -163,52 +179,67 @@ local function LoadItemDetails(itemIndex)
     title:SetText(itemTexture .. ' ' .. itemResult.itemName)
     title:SetTextColor(itemResult.color.r, itemResult.color.g, itemResult.color.b)
 
+    local minKills = tonumber(minKillsBox:GetText(), 10)
+
     local totalResults = 0
     for unitId, unitInfo in pairs(DT_UnitDb) do
         local result = nil
 
-        -- general loot items
-        local its = unitInfo.its
-        if (its) then
-            local ltd = tonumber(unitInfo['ltd']) or 0
-            for itemId, timesLooted in pairs(its) do
-                if (itemResult.itemId == itemId) then
-                    local percent = core.helper:CalculatePercentage(ltd, timesLooted)
-                    local color = GetUnitColor(unitInfo.clf)
-                    result = createUnitResult(unitId, unitInfo.nam,
-                        core.helper:FormatPercentage(percent),
-                        color.r, color.g, color.b)
-                    break
-                end
-            end
+        local add = true
+        if (minKills and unitInfo.kls and unitInfo.kls < minKills) then
+            add = false
         end
 
-        -- skinning loot
-        local unitItems = unitInfo.its_sk
-        if (unitItems) then
-            local ltd_sk = tonumber(unitInfo['ltd_sk']) or 0
-            for itemId, timesLooted in pairs(unitItems) do
-                if (itemResult.itemId == itemId) then
-                    local percent = core.helper:CalculatePercentage(ltd_sk, timesLooted)
-                    local color = GetUnitColor(unitInfo.clf)
-                    result = createUnitResult(unitId, unitInfo.nam,
-                        core.helper:FormatPercentage(percent),
-                        color.r, color.g, color.b)
-                    break
-                end
-            end
-        end
-
-        if (result) then
-            if (unitInfo.zns) then
-                for zoneId, _ in pairs(unitInfo.zns) do
-                    local text = core:GetZoneText(zoneId)
-                    result.zoneName = result.zoneName .. ' ' .. text
+        if (add) then
+            -- general loot items
+            local its = unitInfo.its
+            if (its) then
+                local ltd = tonumber(unitInfo['ltd']) or 0
+                for itemId, timesLooted in pairs(its) do
+                    if (itemResult.itemId == itemId) then
+                        local percent = core.helper:CalculatePercentage(ltd, timesLooted)
+                        local color = GetUnitColor(unitInfo.clf)
+                        result = createUnitResult(
+                            unitId,
+                            unitInfo.nam,
+                            unitInfo.kls,
+                            core.helper:FormatPercentage(percent),
+                            color.r, color.g, color.b)
+                        break
+                    end
                 end
             end
 
-            totalResults = totalResults + 1
-            DT_SearchUnitResults[totalResults] = result
+            -- skinning loot
+            local unitItems = unitInfo.its_sk
+            if (unitItems) then
+                local ltd_sk = tonumber(unitInfo['ltd_sk']) or 0
+                for itemId, timesLooted in pairs(unitItems) do
+                    if (itemResult.itemId == itemId) then
+                        local percent = core.helper:CalculatePercentage(ltd_sk, timesLooted)
+                        local color = GetUnitColor(unitInfo.clf)
+                        result = createUnitResult(
+                            unitId,
+                            unitInfo.nam,
+                            unitInfo.kls,
+                            core.helper:FormatPercentage(percent),
+                            color.r, color.g, color.b)
+                        break
+                    end
+                end
+            end
+
+            if (result) then
+                if (unitInfo.zns) then
+                    for zoneId, _ in pairs(unitInfo.zns) do
+                        local text = core:GetZoneText(zoneId)
+                        result.zoneName = result.zoneName .. ' ' .. text
+                    end
+                end
+
+                totalResults = totalResults + 1
+                DT_SearchUnitResults[totalResults] = result
+            end
         end
 
     end
@@ -222,39 +253,61 @@ local function LoadItemDetails(itemIndex)
     DatabaseBrowserFrame.itemDetails:Show()
 end
 
+function DT_MinKillCount_TextChanged(self)
+    InputBoxInstructions_OnTextChanged(self)
+
+    if (lastItemDetailsIndex) then
+        LoadItemDetails(lastItemDetailsIndex)
+    end
+end
+
 function DT_DatabaseBrowser_ScrollBarLoc_Update()
     local totalResults = core.helper:GetTableSize(DT_SearchUnitResults)
-    FauxScrollFrame_Update(DT_DatabaseBrowser_ScrollBarLoc, totalResults, DT_RESULT_ITEMS_COUNT, DT_RESULT_PIXEL_HEIGHT)
+    FauxScrollFrame_Update(DT_DatabaseBrowser_ScrollBarLoc,
+        totalResults,
+        DT_RESULT_DETAIL_ITEMS_COUNT,
+        DT_RESULT_PIXEL_HEIGHT)
 
     local offset = FauxScrollFrame_GetOffset(DT_DatabaseBrowser_ScrollBarLoc)
 
     -- print('totalResults:', totalResults, ', from:', offset, 'to:', offset + DT_RESULT_ITEMS_COUNT)
 
-    for i = 1, DT_RESULT_ITEMS_COUNT do
+    for i = 1, DT_RESULT_DETAIL_ITEMS_COUNT do
         local result = DT_SearchUnitResults[i + offset]
 
         local btn = _G['DT_DatabaseBrowser_EntryLoc' .. i]
 
         ---@type FontString
-        local fsVal1 = _G["DT_DatabaseBrowser_EntryLoc" .. i .. 'Val1']
+        local fsUnit = _G["DT_DatabaseBrowser_EntryLoc" .. i .. 'Unit']
+
         ---@type FontString
-        local fsVal2 = _G["DT_DatabaseBrowser_EntryLoc" .. i .. 'Val2']
+        local fsZone = _G["DT_DatabaseBrowser_EntryLoc" .. i .. 'Zone']
+
         ---@type FontString
-        local fsVal3 = _G["DT_DatabaseBrowser_EntryLoc" .. i .. 'Val3']
+        local fsKills = _G["DT_DatabaseBrowser_EntryLoc" .. i .. 'Kills']
+
+        ---@type FontString
+        local fsPercentage = _G["DT_DatabaseBrowser_EntryLoc" .. i .. 'Percentage']
 
         if (result) then
             btn:Enable()
-            fsVal1:SetText(result.unitName)
-            fsVal1:SetTextColor(result.color.r, result.color.g, result.color.b, 1)
-            fsVal2:SetText(result.zoneName)
-            fsVal2:SetTextColor(1, 1, 1, 1)
-            fsVal3:SetText(result.percent)
-            fsVal3:SetTextColor(1, 1, 1, 1)
+            fsUnit:SetText(result.unitName)
+            fsUnit:SetTextColor(result.color.r, result.color.g, result.color.b, 1)
+
+            fsZone:SetText(result.zoneName)
+            fsZone:SetTextColor(1, 1, 1, 1)
+
+            fsKills:SetText(result.kills)
+            fsKills:SetTextColor(1, 1, 1, 1)
+
+            fsPercentage:SetText(result.percent)
+            fsPercentage:SetTextColor(1, 1, 1, 1)
         else
             btn:Disable()
-            fsVal1:SetText('')
-            fsVal2:SetText('')
-            fsVal3:SetText('')
+            fsUnit:SetText('')
+            fsZone:SetText('')
+            fsKills:SetText('')
+            fsPercentage:SetText('')
         end
     end
 end

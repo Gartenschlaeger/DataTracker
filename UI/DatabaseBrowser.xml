@@ -43,33 +43,48 @@
     <Button name="DT_DatabaseBrowser_ResultLocTemplate" virtual="true">
         <Size x="750" y="25"/>
         <Layers>
+            <Layer level="BACKGROUND">
+                <Texture name="$parentHighlight" file="Interface\QuestFrame\UI-QuestTitleHighlight" alphaMode="ADD" setAllPoints="true" hidden="true" />
+            </Layer>
             <Layer level="ARTWORK">
-                <FontString name="$parentVal1" inherits="GameFontNormalSmall" justifyH="LEFT">
-                    <Size x="350" y="25"/>
+                <FontString name="$parentUnit" inherits="GameFontNormalSmall" justifyH="LEFT">
+                    <Size x="300" y="25"/>
                     <Anchors>
                         <Anchor point="LEFT">
                             <Offset x="0" y="0"/>
                         </Anchor>
                     </Anchors>
                 </FontString>
-                <FontString name="$parentVal2" inherits="GameFontNormalSmall" justifyH="LEFT">
-                    <Size x="350" y="25"/>
+                <FontString name="$parentZone" inherits="GameFontNormalSmall" justifyH="LEFT">
+                    <Size x="300" y="25"/>
                     <Anchors>
                         <Anchor point="LEFT">
-                            <Offset x="350" y="0"/>
+                            <Offset x="300" y="0"/>
                         </Anchor>
                     </Anchors>
                 </FontString>
-                <FontString name="$parentVal3" inherits="GameFontNormalSmall" justifyH="RIGHT">
-                    <Size x="45" y="25"/>
+                <FontString name="$parentKills" inherits="GameFontNormalSmall" justifyH="RIGHT">
+                    <Size x="80" y="25"/>
                     <Anchors>
                         <Anchor point="LEFT">
-                            <Offset x="700" y="0"/>
+                            <Offset x="600" y="0"/>
+                        </Anchor>
+                    </Anchors>
+                </FontString>
+                <FontString name="$parentPercentage" inherits="GameFontNormalSmall" justifyH="RIGHT">
+                    <Size x="60" y="25"/>
+                    <Anchors>
+                        <Anchor point="LEFT">
+                            <Offset x="680" y="0"/>
                         </Anchor>
                     </Anchors>
                 </FontString>
             </Layer>
         </Layers>
+        <Scripts>
+            <OnEnter>_G[self:GetName().."Highlight"]:Show()</OnEnter>
+            <OnLeave>_G[self:GetName().."Highlight"]:Hide()</OnLeave>
+        </Scripts>
         <NormalText name="$parentNormalText" inherits="GameFontNormalSmall" justifyH="LEFT"/>
     </Button>
     <Frame name="DT_DatabaseBrowserFrame" 
@@ -105,16 +120,10 @@
                             <OnEnterPressed function="DT_DatabaseBrowser_OnSearch" />
                         </Scripts>
                     </EditBox>
-                    <EditBox parentKey="MinKillCount" inherits="InputBoxTemplate" numeric="true" letters="3">
-                        <Size x="50" y="30"/>
-                        <Anchors>
-                            <Anchor point="LEFT" relativeKey="$parent.SearchBox" relativePoint="RIGHT" x="15" y="0"/>
-                        </Anchors>
-                    </EditBox>
                     <Button parentKey="searchBtn" inherits="UIPanelButtonTemplate">
                         <Size x="95" y="22"/>
                         <Anchors>
-                            <Anchor point="LEFT" relativeKey="$parent.MinKillCount" relativePoint="RIGHT" x="15" />
+                            <Anchor point="LEFT" relativeKey="$parent.SearchBox" relativePoint="RIGHT" x="15" />
                         </Anchors>
                         <Scripts>
                             <OnClick function="DT_DatabaseBrowser_OnSearch" />
@@ -256,6 +265,15 @@
                 </Layers>
                 <Frames>
                     <!-- controls -->
+                    <EditBox parentKey="MinKillCount" inherits="InputBoxInstructionsTemplate" numeric="true" letters="3" autoFocus="false">
+                        <Size x="50" y="30"/>
+                        <Anchors>
+                            <Anchor point="TOPLEFT" x="0" y="-30"/>
+                        </Anchors>
+                        <Scripts>
+                            <OnTextChanged function="DT_MinKillCount_TextChanged"/>
+                        </Scripts>
+                    </EditBox>
                     <Button parentKey="backBtn" inherits="UIPanelButtonTemplate" virtual="false">
                         <Size x="96" y="24"/>
                         <Anchors>
@@ -268,7 +286,7 @@
                     <!-- scroll area -->
                     <ScrollFrame name="DT_DatabaseBrowser_ScrollBarLoc" inherits="FauxScrollFrameTemplate">
                         <Anchors>
-                            <Anchor point="TOPLEFT" x="-20" y="-40"  />
+                            <Anchor point="TOPLEFT" x="-20" y="-65"  />
                             <Anchor point="BOTTOMRIGHT" x="-20" y="-5" />
                         </Anchors>
                         <Scripts>
@@ -280,7 +298,7 @@
                         <Anchors>
                             <Anchor point="TOPLEFT" relativeTo="DT_DatabaseBrowser_ScrollBar" relativePoint="TOPLEFT">
                                 <Offset>
-                                    <AbsDimension x="18" y="0"/>
+                                    <AbsDimension x="18" y="-25"/>
                                 </Offset>
                             </Anchor>
                         </Anchors>
@@ -363,11 +381,6 @@
                     <Button name="DT_DatabaseBrowser_EntryLoc17" inherits="DT_DatabaseBrowser_ResultLocTemplate">
                         <Anchors>
                             <Anchor point="TOPLEFT" relativeTo="DT_DatabaseBrowser_EntryLoc16" relativePoint="BOTTOMLEFT"/>
-                        </Anchors>
-                    </Button>
-                    <Button name="DT_DatabaseBrowser_EntryLoc18" inherits="DT_DatabaseBrowser_ResultLocTemplate">
-                        <Anchors>
-                            <Anchor point="TOPLEFT" relativeTo="DT_DatabaseBrowser_EntryLoc17" relativePoint="BOTTOMLEFT"/>
                         </Anchors>
                     </Button>
                 </Frames>
