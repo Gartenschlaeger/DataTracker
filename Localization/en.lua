@@ -1,5 +1,9 @@
+---@class DTCore
+local _, core = ...
+
+---@class DTLocale
 local l = {}
-DataTracker.i18n = l
+core.i18n = l
 
 -- General
 l.LOADING_MSG = 'DataTracker loaded, %u items, %u units'

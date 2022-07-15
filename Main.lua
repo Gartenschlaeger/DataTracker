@@ -1,40 +1,39 @@
-DataTracker = {}
-
-DT_Options = {}
+---@class DTCore
+local _, core = ...
 
 ---Called when the addon is fully loaded and saved values are loaded from disk.
-function DataTracker:OnAddonLoaded(addonName)
+local function OnAddonLoaded(addonName)
     if (addonName == 'DataTracker') then
-        local itemsCount = DataTracker:GetTableSize(DT_ItemDb)
-        local unitsCount = DataTracker:GetTableSize(DT_UnitDb)
+        local itemsCount = core.helper:GetTableSize(DT_ItemDb)
+        local unitsCount = core.helper:GetTableSize(DT_UnitDb)
 
-        DataTracker:InitOptions()
-        DataTracker:InitOptionsPanel()
-        DataTracker:InitSlashCommands()
-        DataTracker:InitTooltipHooks()
+        core:InitOptions()
+        core:InitOptionsPanel()
+        core:InitSlashCommands()
+        core:InitTooltipHooks()
 
-        local loadingMessage = string.format(DataTracker.i18n.LOADING_MSG, itemsCount, unitsCount)
-        DataTracker:LogInfo(loadingMessage)
+        local loadingMessage = string.format(core.i18n.LOADING_MSG, itemsCount, unitsCount)
+        core.logging:Info(loadingMessage)
     end
 end
 
 ---Tracks general game related events
-function DataTracker.OnEvent(self, event, ...)
+local function OnEvent(self, event, ...)
     --DataTracker:LogTrace('EVENT', event, ...)
     if (event == 'ADDON_LOADED') then
-        DataTracker:OnAddonLoaded(...)
+        OnAddonLoaded(...)
     elseif (event == 'PLAYER_TARGET_CHANGED') then
-        DataTracker:OnTargetChanged()
+        core:OnTargetChanged()
     elseif (event == 'ZONE_CHANGED_NEW_AREA') then
-        DataTracker:UpdateCurrentZone()
+        core:UpdateCurrentZone()
     elseif (event == 'UNIT_SPELLCAST_SUCCEEDED') then
-        DataTracker:OnUnitSpellcastSucceeded(...)
+        core:OnUnitSpellcastSucceeded(...)
     elseif (event == 'LOOT_READY') then
-        DataTracker:OnLootReady()
+        core:OnLootReady()
     elseif (event == 'LOOT_CLOSED') then
-        DataTracker:OnLootClosed()
+        core:OnLootClosed()
     elseif (event == 'COMBAT_LOG_EVENT_UNFILTERED') then
-        DataTracker:OnCombatLogEventUnfiltered()
+        core:OnCombatLogEventUnfiltered()
     end
 end
 
@@ -48,4 +47,4 @@ eventsFrame:RegisterEvent('LOOT_OPENED')
 eventsFrame:RegisterEvent('LOOT_CLOSED')
 eventsFrame:RegisterEvent('COMBAT_LOG_EVENT_UNFILTERED')
 eventsFrame:RegisterEvent('UNIT_SPELLCAST_SUCCEEDED')
-eventsFrame:SetScript('OnEvent', DataTracker.OnEvent)
+eventsFrame:SetScript('OnEvent', OnEvent)

@@ -1,5 +1,12 @@
+---@class DTCore
+local _, core = ...
+
+---@class DTHelper
+local helper = {}
+core.helper = helper
+
 ---Returns the size for the given table
-function DataTracker:GetTableSize(table)
+function helper:GetTableSize(table)
     local size = 0
     for _ in pairs(table) do
         size = size + 1
@@ -8,7 +15,11 @@ function DataTracker:GetTableSize(table)
     return size
 end
 
-function DataTracker:IfNil(value, defaultValue)
+---Returns value if not nil otherwise defaultValue
+---@param value any
+---@param defaultValue any
+---@return any
+function helper:IfNil(value, defaultValue)
     if (value == nil) then
         return defaultValue
     end
@@ -17,7 +28,7 @@ function DataTracker:IfNil(value, defaultValue)
 end
 
 ---Converts a boolean value to a number (true = 1, false = 0)
-function DataTracker:BoolToNumber(booleanValue)
+function helper:BoolToNumber(booleanValue)
     if (booleanValue) then
         return 1
     end
@@ -29,7 +40,7 @@ end
 ---@param timesLooted number
 ---@param foundItems number
 ---@return number
-function DataTracker:CalculatePercentage(timesLooted, foundItems)
+function helper:CalculatePercentage(timesLooted, foundItems)
     if (not timesLooted or timesLooted <= 0) then
         return 0
     end
@@ -45,7 +56,7 @@ end
 ---formats a percentage value
 ---@param percentage number percentage value between 1 and 100
 ---@return string
-function DataTracker:FormatPercentage(percentage)
+function helper:FormatPercentage(percentage)
     local result = ''
     if (percentage > 0) then
         local p = percentage * 100

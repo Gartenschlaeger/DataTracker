@@ -1,3 +1,6 @@
+---@class DTCore
+local _, core = ...
+
 -- time in seconds to store lootinginfos for looted units
 -- needed to prevent duplicates and to calculate the counter correct
 local TIME_TO_STORE_LOOTINGINFOS = 60 * 5
@@ -10,24 +13,24 @@ local SPELLID_SKINNING = 8613
 local SPELLID_MINING = 32606
 local SPELLID_HERBALISM = 32605
 
-function DataTracker:PlayerHasSkinning()
+function core:PlayerHasSkinning()
     return IsPlayerSpell(SPELLID_SKINNING)
 end
 
-function DataTracker:PlayerHasMining()
+function core:PlayerHasMining()
     return IsPlayerSpell(SPELLID_MINING)
 end
 
-function DataTracker:PlayerHasHerbalism()
+function core:PlayerHasHerbalism()
     return IsPlayerSpell(SPELLID_HERBALISM)
 end
 
 -- Called when copper was looted and should be added to db
 local function TrackLootedCopper(unitGuid, unitId, lootedCopper)
-    DataTracker:LogVerbose('TrackLootedCopper', unitId, lootedCopper)
+    core.logging:Verbose('TrackLootedCopper', unitId, lootedCopper)
 
     local unitLevel = -1
-    local tmp_infos = DataTracker.TmpUnitInformations[unitGuid]
+    local tmp_infos = core.TmpUnitInformations[unitGuid]
     if (tmp_infos ~= nil) then
         unitLevel = tmp_infos.level or -1
     end
@@ -74,12 +77,12 @@ local function TrackLootedCopper(unitGuid, unitId, lootedCopper)
         levelInfo.max = lootedCopper
     end
 
-    DataTracker:LogDebug('Copper: ' .. lootedCopper .. ', (' .. unitInfo.nam .. ' ID = ' .. unitId .. ')')
+    core.logging:Debug('Copper: ' .. lootedCopper .. ', (' .. unitInfo.nam .. ' ID = ' .. unitId .. ')')
 end
 
 -- Called when a new item was looted and should be added to db
 local function TrackItem(itemId, itemName, itemQuantity, itemQuality, unitId, sourceType)
-    DataTracker:LogVerbose('TrackItem', itemId, itemName, itemQuantity, itemQuality, unitId, sourceType)
+    core.logging:Verbose('TrackItem', itemId, itemName, itemQuantity, itemQuality, unitId, sourceType)
 
     -- store item info
     local itemInfo = DT_ItemDb[itemId]
@@ -87,7 +90,7 @@ local function TrackItem(itemId, itemName, itemQuantity, itemQuality, unitId, so
         itemInfo = {}
         DT_ItemDb[itemId] = itemInfo
 
-        DataTracker:OnNewItemBroadcast(DataTracker.i18n.NEW_ITEM .. ': ' .. itemName)
+        core.bc:NewItem(core.i18n.NEW_ITEM .. ': ' .. itemName)
     end
 
     itemInfo.nam = itemName
@@ -135,20 +138,20 @@ local function TrackItem(itemId, itemName, itemQuantity, itemQuality, unitId, so
     end
     unitItemsInfo[itemId] = unitItemLootedCounter
 
-    if (DataTracker:IsDebugLogEnabled()) then
-        DataTracker:LogDebug(sourceType .. ': ' .. itemQuantity ..
+    if (core.logging:IsDebugEnabled()) then
+        core.logging:Debug(sourceType .. ': ' .. itemQuantity ..
             ' ' .. itemName .. ' (ID = ' .. itemId .. '), ' .. (unitInfo.nam or '') .. ' (ID = ' .. unitId .. ')')
     end
 end
 
 -- Increments the loot counter for the given unitId
 local function IncrementLootCounter(lootingInfos)
-    DataTracker:LogTrace('IncrementLootCounter', lootingInfos.unitId, lootingInfos.skinningStarted)
+    core.logging:Trace('IncrementLootCounter', lootingInfos.unitId, lootingInfos.skinningStarted)
 
     -- get unit info
     local unitInfo = DT_UnitDb[lootingInfos.unitId]
     if (unitInfo == nil) then
-        DataTracker:LogWarning('Cannot find unit with id ' .. lootingInfos.unitId)
+        core.logging:Warning('Cannot find unit with id ' .. lootingInfos.unitId)
         return
     end
 
@@ -157,28 +160,28 @@ local function IncrementLootCounter(lootingInfos)
             unitInfo.ltd_sk = (unitInfo.ltd_sk or 0) + 1
             lootingInfos.skinningCounterIncreased = true
 
-            DataTracker:LogDebug('S:Count: ' .. (unitInfo.nam or '') .. ' (ID = ' .. lootingInfos.unitId .. ')')
+            core.logging:Debug('S:Count: ' .. (unitInfo.nam or '') .. ' (ID = ' .. lootingInfos.unitId .. ')')
         end
     elseif (lootingInfos.isMiningStarted) then
         if (not lootingInfos.miningCounterIncreased) then
             unitInfo.ltd_mn = (unitInfo.ltd_mn or 0) + 1
             lootingInfos.miningCounterIncreased = true
 
-            DataTracker:LogDebug('M:Count: ' .. (unitInfo.nam or '') .. ' (ID = ' .. lootingInfos.unitId .. ')')
+            core.logging:Debug('M:Count: ' .. (unitInfo.nam or '') .. ' (ID = ' .. lootingInfos.unitId .. ')')
         end
     elseif (lootingInfos.isHerbalismStarted) then
         if (not lootingInfos.herbalismCounterIncreased) then
             unitInfo.ltd_hb = (unitInfo.ltd_hb or 0) + 1
             lootingInfos.herbalismCounterIncreased = true
 
-            DataTracker:LogDebug('H:Count: ' .. (unitInfo.nam or '') .. ' (ID = ' .. lootingInfos.unitId .. ')')
+            core.logging:Debug('H:Count: ' .. (unitInfo.nam or '') .. ' (ID = ' .. lootingInfos.unitId .. ')')
         end
     else
         if (not lootingInfos.lootingCounterWasIncremented) then
             unitInfo.ltd = (unitInfo.ltd or 0) + 1
             lootingInfos.lootingCounterWasIncremented = true
 
-            DataTracker:LogDebug('L:Count: ' .. (unitInfo.nam or '') .. ' (ID = ' .. lootingInfos.unitId .. ')')
+            core.logging:Debug('L:Count: ' .. (unitInfo.nam or '') .. ' (ID = ' .. lootingInfos.unitId .. ')')
         end
     end
 end
@@ -187,7 +190,7 @@ end
 local function GetLootId(itemSlot)
     local link = GetLootSlotLink(itemSlot)
     if link then
-        DataTracker:LogVerbose('GetLootId, link = ', link)
+        core.logging:Verbose('GetLootId, link = ', link)
         local _, _, idCode = string.find(link, "|Hitem:(%d*):(%d*):(%d*):")
         return tonumber(idCode) or -1
     end
@@ -199,27 +202,27 @@ local function ParseMoneyFromLootName(lootName)
     local startIndex = 0
     local lootedCopper = 0
 
-    startIndex = string.find(lootName, ' ' .. DataTracker.i18n.GOLD)
+    startIndex = string.find(lootName, ' ' .. core.i18n.GOLD)
     if startIndex then
         local g = tonumber(string.sub(lootName, 0, startIndex - 1)) or 0
         lootName = string.sub(lootName, startIndex + 5, string.len(lootName))
         lootedCopper = lootedCopper + ((g or 0) * COPPER_PER_GOLD)
-        DataTracker:LogVerbose('ParseMoneyFromLootName, Processing Gold', g)
+        core.logging:Verbose('ParseMoneyFromLootName, Processing Gold', g)
     end
 
-    startIndex = string.find(lootName, ' ' .. DataTracker.i18n.SILVER)
+    startIndex = string.find(lootName, ' ' .. core.i18n.SILVER)
     if startIndex then
         local s = tonumber(string.sub(lootName, 0, startIndex - 1)) or 0
         lootName = string.sub(lootName, startIndex + 7, string.len(lootName))
         lootedCopper = lootedCopper + ((s or 0) * COPPER_PER_SILVER)
-        DataTracker:LogVerbose('ParseMoneyFromLootName, Processing Silver', s)
+        core.logging:Verbose('ParseMoneyFromLootName, Processing Silver', s)
     end
 
-    startIndex = string.find(lootName, ' ' .. DataTracker.i18n.COPPER)
+    startIndex = string.find(lootName, ' ' .. core.i18n.COPPER)
     if startIndex then
         local c = tonumber(string.sub(lootName, 0, startIndex - 1)) or 0
         lootedCopper = lootedCopper + (c or 0)
-        DataTracker:LogVerbose('ParseMoneyFromLootName, Processing Copper', c)
+        core.logging:Verbose('ParseMoneyFromLootName, Processing Copper', c)
     end
 
     return lootedCopper
@@ -234,7 +237,7 @@ local tmp_lootedUnits = {}
 local function GetLootingInformations(unitGuid, unitId)
     local lootingInfos = tmp_lootedUnits[unitGuid]
     if (lootingInfos == nil) then
-        DataTracker:LogTrace('Create looting informations for unit ' .. unitId)
+        core.logging:Trace('Create looting informations for unit ' .. unitId)
 
         lootingInfos = {
             -- id of unit
@@ -276,6 +279,7 @@ end
 local function ProcessItemLootSlot(itemSlot)
     local _, lootName, _, currencyID, lootQuality, _, isQuestItem, _ = GetLootSlotInfo(itemSlot)
 
+    ---@type number|nil
     local itemId = currencyID
     if (itemId == nil) then
         itemId = GetLootId(itemSlot)
@@ -286,7 +290,7 @@ local function ProcessItemLootSlot(itemSlot)
         local guid = sources[sourceIndex]
         local guidType = select(1, strsplit("-", guid))
         if guidType == 'Creature' then
-            local unitId = DataTracker:UnitGuidToId(guid)
+            local unitId = core:UnitGuidToId(guid)
 
             local lootingInfos = GetLootingInformations(guid, unitId)
 
@@ -329,7 +333,7 @@ local function ProcessMoneyLoolSlot(itemSlot)
     local lootedCopper = ParseMoneyFromLootName(lootName)
 
     if (lootedCopper) then
-        DataTracker:LogVerbose('LOOT_SLOT_MONEY', lootedCopper)
+        core.logging:Verbose('LOOT_SLOT_MONEY', lootedCopper)
 
         local sources = { GetLootSourceInfo(itemSlot) }
         local sourcesCount = #sources
@@ -343,7 +347,7 @@ local function ProcessMoneyLoolSlot(itemSlot)
 
                 local guidType = select(1, strsplit("-", unitGuid))
                 if guidType == 'Creature' then
-                    local unitId = DataTracker:UnitGuidToId(sources[j])
+                    local unitId = core:UnitGuidToId(sources[j])
                     if (unitId and unitId > 0) then
                         local lootingInfos = GetLootingInformations(unitGuid, unitId)
                         if (not lootingInfos.hasCopperTracked) then
@@ -360,7 +364,7 @@ local function ProcessMoneyLoolSlot(itemSlot)
 end
 
 ---Occured when a spell is casted (used to track when skinning is started)
-function DataTracker:OnUnitSpellcastSucceeded(unitTarget, castGUID, spellID)
+function core:OnUnitSpellcastSucceeded(unitTarget, castGUID, spellID)
     if (unitTarget == 'player') then
         --print(GetSpellInfo(spellID))
 
@@ -370,21 +374,21 @@ function DataTracker:OnUnitSpellcastSucceeded(unitTarget, castGUID, spellID)
         end
 
         if (spellID == SPELLID_SKINNING) then
-            local lootingInfo = GetLootingInformations(unitGuid, DataTracker:UnitGuidToId(unitGuid))
+            local lootingInfo = GetLootingInformations(unitGuid, core:UnitGuidToId(unitGuid))
             lootingInfo.skinningStarted = true
         elseif (spellID == SPELLID_MINING) then
-            local lootingInfo = GetLootingInformations(unitGuid, DataTracker:UnitGuidToId(unitGuid))
+            local lootingInfo = GetLootingInformations(unitGuid, core:UnitGuidToId(unitGuid))
             lootingInfo.isMiningStarted = true
         elseif (spellID == SPELLID_HERBALISM) then
-            local lootingInfo = GetLootingInformations(unitGuid, DataTracker:UnitGuidToId(unitGuid))
+            local lootingInfo = GetLootingInformations(unitGuid, core:UnitGuidToId(unitGuid))
             lootingInfo.isHerbalismStarted = true
         end
     end
 end
 
 ---Called when loot window is opened and loot is ready
-function DataTracker:OnLootReady()
-    DataTracker:LogTrace('OnLootReady')
+function core:OnLootReady()
+    core.logging:Trace('OnLootReady')
 
     -- ignore if event is already handled
     if (tmp_isLooting) then
@@ -394,8 +398,8 @@ function DataTracker:OnLootReady()
     tmp_isLooting = true
 
     -- ensure current zone id is set
-    if (DataTracker.CurrentZoneId == nil) then
-        DataTracker:UpdateCurrentZone()
+    if (core.CurrentZoneId == nil) then
+        core:UpdateCurrentZone()
     end
 
     -- track loot
@@ -410,8 +414,8 @@ function DataTracker:OnLootReady()
 end
 
 ---Occures when the loot window was closed
-function DataTracker:OnLootClosed()
-    DataTracker:LogVerbose('OnLootClosed')
+function core:OnLootClosed()
+    core.logging:Verbose('OnLootClosed')
 
     tmp_isLooting = false
 
@@ -421,16 +425,16 @@ function DataTracker:OnLootClosed()
     for unitGuid, info in pairs(tmp_lootedUnits) do
         if (currentTime - info.time > TIME_TO_STORE_LOOTINGINFOS) then
             tmp_lootedUnits[unitGuid] = nil
-            DataTracker:LogVerbose('Clean up looting informations, unit = ' .. unitGuid)
+            core.logging:Verbose('Clean up looting informations, unit = ' .. unitGuid)
         end
     end
 
-    for unitGuid, info in pairs(DataTracker.TmpUnitInformations) do
+    for unitGuid, info in pairs(core.TmpUnitInformations) do
         if (currentTime - info.time > TIME_TO_STORE_UNIT_INFOS) then
-            DataTracker.TmpUnitInformations[unitGuid] = nil
-            DataTracker:LogVerbose('Clean up unit informations, unit = ' .. unitGuid)
+            core.TmpUnitInformations[unitGuid] = nil
+            core.logging:Verbose('Clean up unit informations, unit = ' .. unitGuid)
         end
     end
 
-    DataTracker:LogVerbose('lootedUnits size:', DataTracker:GetTableSize(tmp_lootedUnits))
+    core.logging:Verbose('lootedUnits size:', core.helper:GetTableSize(tmp_lootedUnits))
 end

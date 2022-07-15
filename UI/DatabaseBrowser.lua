@@ -1,3 +1,6 @@
+---@class DTCore
+local _, core = ...
+
 local DT_RESULT_ITEMS_COUNT = 18
 local DT_RESULT_PIXEL_HEIGHT = 25
 
@@ -5,12 +8,12 @@ local DT_RESULT_PIXEL_HEIGHT = 25
 local DatabaseBrowserFrame
 
 local function LocalizeUI()
-    DT_DatabaseBrowser_SearchBtn:SetText(DataTracker.i18n.UI_SEARCH)
-    DT_DatabaseBrowser_BackBtn:SetText(DataTracker.i18n.UI_BACK)
+    DT_DatabaseBrowser_SearchBtn:SetText(core.i18n.UI_SEARCH)
+    DT_DatabaseBrowser_BackBtn:SetText(core.i18n.UI_BACK)
 end
 
 function DT_DatabaseBrowser_OnLoad(self)
-    DataTracker:LogTrace('DT_DatabaseBrowser_OnLoad')
+    core.logging:Trace('DT_DatabaseBrowser_OnLoad')
 
     ---@diagnostic disable-next-line: undefined-global
     DatabaseBrowserFrame = DT_DatabaseBrowserFrame
@@ -31,7 +34,7 @@ function DT_DatabaseBrowser_OnLoad(self)
 end
 
 function DT_DatabaseBrowser_OnDragStart(self)
-    DataTracker:LogTrace('DT_DatabaseBrowser_OnDragStart')
+    core.logging:Trace('DT_DatabaseBrowser_OnDragStart')
 
     if not self.isLocked then
         self:StartMoving()
@@ -39,21 +42,21 @@ function DT_DatabaseBrowser_OnDragStart(self)
 end
 
 function DT_DatabaseBrowser_OnDragStop(self)
-    DataTracker:LogTrace('DT_DatabaseBrowser_OnDragStop')
+    core.logging:Trace('DT_DatabaseBrowser_OnDragStop')
 
     self:StopMovingOrSizing()
 end
 
 function DT_DatabaseBrowser_OnShow(self)
-    DataTracker:LogTrace('DT_DatabaseBrowser_OnShow')
+    core.logging:Trace('DT_DatabaseBrowser_OnShow')
 end
 
 function DT_DatabaseBrowser_OnHide(self)
-    DataTracker:LogTrace('DT_DatabaseBrowser_OnHide')
+    core.logging:Trace('DT_DatabaseBrowser_OnHide')
 end
 
 function DT_DatabaseBrowser_OnSearch(self)
-    DataTracker:LogTrace('DT_DatabaseBrowser_OnSearch')
+    core.logging:Trace('DT_DatabaseBrowser_OnSearch')
 
     DT_SearchResults = {}
 
@@ -93,9 +96,11 @@ DT_SearchUnitResults = {}
 -- FauxScrollFrame_Update(frame, totalItems, numOfLines, pixelHeightPerLine)
 
 function DT_DatabaseBrowser_OnBack(self)
-    DataTracker:LogTrace('DT_DatabaseBrowser_OnBack')
+    core.logging:Trace('DT_DatabaseBrowser_OnBack')
 
+    ---@diagnostic disable-next-line: undefined-field
     DatabaseBrowserFrame.itemSearch:Show()
+    ---@diagnostic disable-next-line: undefined-field
     DatabaseBrowserFrame.itemDetails:Hide()
 end
 
@@ -115,13 +120,14 @@ local function GetUnitColor(classification)
     elseif (classification == DT_UnitClassifications['elite']) then
         return { r = 1, g = 0.81, b = 0 }
     end
+
     return { r = 1, g = 1, b = 1 }
 end
 
 local function LoadItemDetails(itemIndex)
     local itemResult = DT_SearchResults[itemIndex]
 
-    DataTracker:LogTrace(itemResult.itemName, itemResult.itemId)
+    core.logging:Trace(itemResult.itemName, itemResult.itemId)
 
     DT_SearchUnitResults = {}
 
@@ -142,10 +148,10 @@ local function LoadItemDetails(itemIndex)
             local ltd = tonumber(unitInfo['ltd']) or 0
             for itemId, timesLooted in pairs(its) do
                 if (itemResult.itemId == itemId) then
-                    local percent = DataTracker:CalculatePercentage(ltd, timesLooted)
+                    local percent = core.helper:CalculatePercentage(ltd, timesLooted)
                     local color = GetUnitColor(unitInfo.clf)
                     result = createUnitResult(unitId, unitInfo.nam,
-                        DataTracker:FormatPercentage(percent),
+                        core.helper:FormatPercentage(percent),
                         color.r, color.g, color.b)
                     break
                 end
@@ -158,10 +164,10 @@ local function LoadItemDetails(itemIndex)
             local ltd_sk = tonumber(unitInfo['ltd_sk']) or 0
             for itemId, timesLooted in pairs(unitItems) do
                 if (itemResult.itemId == itemId) then
-                    local percent = DataTracker:CalculatePercentage(ltd_sk, timesLooted)
+                    local percent = core.helper:CalculatePercentage(ltd_sk, timesLooted)
                     local color = GetUnitColor(unitInfo.clf)
                     result = createUnitResult(unitId, unitInfo.nam,
-                        DataTracker:FormatPercentage(percent),
+                        core.helper:FormatPercentage(percent),
                         color.r, color.g, color.b)
                     break
                 end
@@ -171,7 +177,7 @@ local function LoadItemDetails(itemIndex)
         if (result) then
             if (unitInfo.zns) then
                 for zoneId, _ in pairs(unitInfo.zns) do
-                    local text = DataTracker:GetZoneText(zoneId)
+                    local text = core:GetZoneText(zoneId)
                     result.zoneName = result.zoneName .. ' ' .. text
                 end
             end
@@ -185,12 +191,14 @@ local function LoadItemDetails(itemIndex)
     -- print(totalResults)
     DT_DatabaseBrowser_ScrollBarLoc_Update()
 
+    ---@diagnostic disable-next-line: undefined-field
     DatabaseBrowserFrame.itemSearch:Hide()
+    ---@diagnostic disable-next-line: undefined-field
     DatabaseBrowserFrame.itemDetails:Show()
 end
 
 function DT_DatabaseBrowser_ScrollBarLoc_Update()
-    local totalResults = DataTracker:GetTableSize(DT_SearchUnitResults)
+    local totalResults = core.helper:GetTableSize(DT_SearchUnitResults)
     FauxScrollFrame_Update(DT_DatabaseBrowser_ScrollBarLoc, totalResults, DT_RESULT_ITEMS_COUNT, DT_RESULT_PIXEL_HEIGHT)
 
     local offset = FauxScrollFrame_GetOffset(DT_DatabaseBrowser_ScrollBarLoc)
@@ -227,9 +235,9 @@ function DT_DatabaseBrowser_ScrollBarLoc_Update()
 end
 
 function DT_DatabaseBrowser_ScrollBar_Update()
-    DataTracker:LogTrace('DT_DatabaseBrowser_ScrollBar_Update')
+    core.logging:Trace('DT_DatabaseBrowser_ScrollBar_Update')
 
-    local totalResults = DataTracker:GetTableSize(DT_SearchResults)
+    local totalResults = core.helper:GetTableSize(DT_SearchResults)
     FauxScrollFrame_Update(DT_DatabaseBrowser_ScrollBar, totalResults, DT_RESULT_ITEMS_COUNT, DT_RESULT_PIXEL_HEIGHT)
 
     local offset = FauxScrollFrame_GetOffset(DT_DatabaseBrowser_ScrollBar)

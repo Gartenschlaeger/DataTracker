@@ -1,11 +1,24 @@
-function DataTracker:OnNewItemBroadcast(text)
-    DataTracker:LogInfo(text)
+---@class DTCore
+local _, core = ...
+
+---@class DTBroadcast
+local broadcast = {}
+core.bc = broadcast
+
+---New item found
+---@param text string
+function broadcast:NewItem(text)
+    core.logging:Info(text)
 end
 
-function DataTracker:OnNewZoneBroadcast(text)
-    DataTracker:LogInfo(text)
+---New zone detected
+---@param text string
+function broadcast:NewZone(text)
+    core.logging:Info(text)
 end
 
-function DataTracker:OnNewUnitBroadcast(text)
-    DataTracker:LogInfo(text)
+---New unit detected
+---@param text string
+function broadcast:NewUnit(text)
+    core.logging:Info(text)
 end

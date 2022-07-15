@@ -1,4 +1,7 @@
-function DataTracker:InitOptionsPanel()
+---@class DTCore
+local _, core = ...
+
+function core:InitOptionsPanel()
     local panel = CreateFrame("Frame")
     panel.name = "DataTracker"
 
@@ -10,12 +13,12 @@ function DataTracker:InitOptionsPanel()
     titleGeneral:SetText("Allgemeines")
     titleGeneral:SetPoint("TOPLEFT", 12, -15)
 
-    DataTracker:AddCheckbox(panel, 10, -40, DataTracker.i18n.OP_DEBUG_LOGS,
-        DT_Options.MinLogLevel == DataTracker.LogLevel.Debug, function(isEnabled)
+    core.ui:AddCheckbox(panel, 10, -40, core.i18n.OP_DEBUG_LOGS,
+        DT_Options.MinLogLevel == core.logging.LogLevel.Debug, function(isEnabled)
         if (isEnabled) then
-            DT_Options.MinLogLevel = DataTracker.LogLevel.Debug
+            DT_Options.MinLogLevel = core.logging.LogLevel.Debug
         else
-            DT_Options.MinLogLevel = DataTracker.LogLevel.Info
+            DT_Options.MinLogLevel = core.logging.LogLevel.Info
         end
     end)
 
@@ -24,13 +27,13 @@ function DataTracker:InitOptionsPanel()
     titleTooltip:SetText("Tooltip")
     titleTooltip:SetPoint("TOPLEFT", 12, -95)
 
-    DataTracker:AddCheckbox(panel, 10, -120, DataTracker.i18n.OP_TT_SHOW_KILLS,
+    core.ui:AddCheckbox(panel, 10, -120, core.i18n.OP_TT_SHOW_KILLS,
         DT_Options.Tooltip.ShowKills,
         function(isEnabled)
             DT_Options.Tooltip.ShowKills = isEnabled
         end)
 
-    DataTracker:AddCheckbox(panel, 10, -150, DataTracker.i18n.OP_TT_SHOW_LOOTED,
+    core.ui:AddCheckbox(panel, 10, -150, core.i18n.OP_TT_SHOW_LOOTED,
         DT_Options.Tooltip.ShowLooted,
         function(isEnabled)
             DT_Options.Tooltip.ShowLooted = isEnabled
@@ -38,19 +41,19 @@ function DataTracker:InitOptionsPanel()
 
     -- money --
 
-    local cbAvgGold = DataTracker:AddCheckbox(panel, 25, -210, DataTracker.i18n.OP_TT_SHOW_MONEY_AVG,
+    local cbAvgGold = core.ui:AddCheckbox(panel, 25, -210, core.i18n.OP_TT_SHOW_MONEY_AVG,
         DT_Options.Tooltip.ShowMoneyAvg,
         function(isEnabled)
             DT_Options.Tooltip.ShowMoneyAvg = isEnabled
         end)
 
-    local cbMMGold = DataTracker:AddCheckbox(panel, 25, -240, DataTracker.i18n.OP_TT_SHOW_MONEY_MM,
+    local cbMMGold = core.ui:AddCheckbox(panel, 25, -240, core.i18n.OP_TT_SHOW_MONEY_MM,
         DT_Options.Tooltip.ShowMoneyMM,
         function(isEnabled)
             DT_Options.Tooltip.ShowMoneyMM = isEnabled
         end)
 
-    DataTracker:AddCheckbox(panel, 10, -180, DataTracker.i18n.OP_TT_SHOW_MONEY,
+    core.ui:AddCheckbox(panel, 10, -180, core.i18n.OP_TT_SHOW_MONEY,
         DT_Options.Tooltip.ShowMoney,
         function(isEnabled)
             DT_Options.Tooltip.ShowMoney = isEnabled
@@ -60,13 +63,13 @@ function DataTracker:InitOptionsPanel()
 
     -- items --
 
-    local cbShowIcons = DataTracker:AddCheckbox(panel, 25, -300, DataTracker.i18n.OP_TT_SHOW_ICONS,
+    local cbShowIcons = core.ui:AddCheckbox(panel, 25, -300, core.i18n.OP_TT_SHOW_ICONS,
         DT_Options.Tooltip.ShowIcons,
         function(isEnabled)
             DT_Options.Tooltip.ShowIcons = isEnabled
         end)
 
-    DataTracker:AddCheckbox(panel, 10, -270, DataTracker.i18n.OP_TT_SHOW_ITEMS,
+    core.ui:AddCheckbox(panel, 10, -270, core.i18n.OP_TT_SHOW_ITEMS,
         DT_Options.Tooltip.ShowItems,
         function(isEnabled)
             DT_Options.Tooltip.ShowItems = isEnabled
@@ -75,7 +78,7 @@ function DataTracker:InitOptionsPanel()
 
     -- min item quality level
     local lblMinQualityItems = panel:CreateFontString("ARTWORK", nil, "GameFontNormal")
-    lblMinQualityItems:SetText(DataTracker.i18n.OP_TT_MIN_ITEM_QLT)
+    lblMinQualityItems:SetText(core.i18n.OP_TT_MIN_ITEM_QLT)
     lblMinQualityItems:SetPoint("TOPLEFT", 30, -340)
 
     local ddMinItemQuality = CreateFrame("Frame", nil, panel, "UIDropDownMenuTemplate")

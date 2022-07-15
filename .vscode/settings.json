@@ -19,6 +19,13 @@
         "COPPER_PER_GOLD",
         "COPPER_PER_SILVER",
         "LOOT_SLOT_ITEM",
-        "LOOT_SLOT_MONEY"
+        "LOOT_SLOT_MONEY",
+        "FrameStackTooltip_Toggle",
+        "SlashCmdList",
+        "DT_DatabaseBrowser_SearchBtn",
+        "DT_DatabaseBrowser_BackBtn",
+        "DT_DatabaseBrowser_SearchBox",
+        "DT_DatabaseBrowser_DetailTitle",
+        "DT_DatabaseBrowserFrame"
     ]
 }

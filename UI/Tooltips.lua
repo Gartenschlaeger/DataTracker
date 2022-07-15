@@ -1,4 +1,23 @@
+---@class DTCore
+local _, core = ...
+
 local tooltipWasModified = nil
+
+local function addEmptyLine(context)
+    if (context.shouldAddAnEmptyLine) then
+        context.tooltip:AddLine(' ')
+        context.shouldAddAnEmptyLine = false
+    end
+end
+
+local function addDoubleLineRGB(context, left, right, r, g, b)
+    addEmptyLine(context)
+    context.tooltip:AddDoubleLine(left, right, r, g, b, 1, 1, 1)
+end
+
+local function addDoubleLine(context, left, right)
+    addDoubleLineRGB(context, left, right, 1, 1, 1)
+end
 
 local function addTimesLooted(context)
     if (not DT_Options.Tooltip.ShowLooted) then
@@ -7,12 +26,7 @@ local function addTimesLooted(context)
 
     local timesLooted = tonumber(context.unitInfo['ltd']) or 0
     if (timesLooted > 0) then
-        if (context.shouldAddAnEmptyLine) then
-            context.tooltip:AddLine(' ')
-            context.shouldAddAnEmptyLine = false
-        end
-
-        context.tooltip:AddDoubleLine(DataTracker.i18n.TT_LOOTED, timesLooted, 1, 1, 1, 1, 1, 1)
+        addDoubleLine(context, core.i18n.TT_LOOTED, timesLooted)
     end
 end
 
@@ -23,12 +37,7 @@ local function addTimesKilled(context)
 
     local timesKilled = tonumber(context.unitInfo['kls']) or 0
     if (timesKilled > 0) then
-        if (context.shouldAddAnEmptyLine) then
-            context.tooltip:AddLine(' ')
-            context.shouldAddAnEmptyLine = false
-        end
-
-        context.tooltip:AddDoubleLine(DataTracker.i18n.TT_KILLS, timesKilled, 1, 1, 1, 1, 1, 1)
+        addDoubleLine(context, core.i18n.TT_KILLS, timesKilled)
     end
 end
 
@@ -56,8 +65,7 @@ local function addMoney(context)
 
                 if (timesLooted > 0 and totalCopper > 0) then
                     local avarage = math.floor(totalCopper / timesLooted)
-                    context.tooltip:AddDoubleLine(DataTracker.i18n.TT_AVG_COP, GetCoinTextureString(avarage),
-                        1, 1, 1, 1, 1, 1)
+                    addDoubleLine(context, core.i18n.TT_AVG_COP, GetCoinTextureString(avarage))
                 end
             end
 
@@ -66,12 +74,10 @@ local function addMoney(context)
                 local maxCopper = levelInfos.max or 0
 
                 if (minCopper and minCopper > 0) then
-                    context.tooltip:AddDoubleLine(DataTracker.i18n.TT_MIN_COP, GetCoinTextureString(minCopper),
-                        1, 1, 1, 1, 1, 1)
+                    addDoubleLine(context, core.i18n.TT_MIN_COP, GetCoinTextureString(minCopper))
                 end
                 if (maxCopper and maxCopper > 0) then
-                    context.tooltip:AddDoubleLine(DataTracker.i18n.TT_MAX_COP, GetCoinTextureString(maxCopper),
-                        1, 1, 1, 1, 1, 1)
+                    addDoubleLine(context, core.i18n.TT_MAX_COP, GetCoinTextureString(maxCopper))
                 end
             end
 
@@ -94,13 +100,8 @@ local function addLoot(context)
             if (itemInfo) then
                 local itemQuality = tonumber(itemInfo['qlt'])
                 if (itemQuality and itemQuality >= DT_Options.Tooltip.MinQualityLevel) then
-                    local percentage = DataTracker:CalculatePercentage(ltd, timesItemWasLooted)
+                    local percentage = core.helper:CalculatePercentage(ltd, timesItemWasLooted)
                     local r, g, b, _ = GetItemQualityColor(itemQuality)
-
-                    if (context.shouldAddAnEmptyLine) then
-                        context.tooltip:AddLine(' ')
-                        context.shouldAddAnEmptyLine = false
-                    end
 
                     local iconPrefix = ''
                     if (DT_Options.Tooltip.ShowIcons) then
@@ -109,8 +110,10 @@ local function addLoot(context)
 
                     end
 
-                    context.tooltip:AddDoubleLine(iconPrefix .. itemInfo['nam'],
-                        DataTracker:FormatPercentage(percentage), r, g, b, 1, 1, 1)
+                    addDoubleLineRGB(context,
+                        iconPrefix .. itemInfo['nam'],
+                        core.helper:FormatPercentage(percentage),
+                        r, g, b)
                 end
             end
         end
@@ -118,7 +121,7 @@ local function addLoot(context)
 end
 
 local function addSkinningLoot(context)
-    if (not DataTracker:PlayerHasSkinning()) then
+    if (not core:PlayerHasSkinning()) then
         return
     end
 
@@ -132,13 +135,7 @@ local function addSkinningLoot(context)
             if (itemInfo) then
                 local itemQuality = tonumber(itemInfo['qlt'])
                 if (itemQuality and itemQuality >= DT_Options.Tooltip.MinQualityLevel) then
-                    local percentage = DataTracker:CalculatePercentage(ltd_sk, itemCount)
-                    local r, g, b, _ = GetItemQualityColor(itemQuality)
-
-                    if (context.shouldAddAnEmptyLine) then
-                        context.tooltip:AddLine(' ')
-                        context.shouldAddAnEmptyLine = false
-                    end
+                    local percentage = core.helper:CalculatePercentage(ltd_sk, itemCount)
 
                     local iconPrefix = ''
                     if (DT_Options.Tooltip.ShowIcons) then
@@ -147,8 +144,11 @@ local function addSkinningLoot(context)
 
                     end
 
-                    context.tooltip:AddDoubleLine(iconPrefix .. itemInfo['nam'],
-                        DataTracker:FormatPercentage(percentage), r, g, b, 1, 1, 1)
+                    local r, g, b, _ = GetItemQualityColor(itemQuality)
+                    addDoubleLineRGB(context,
+                        iconPrefix .. itemInfo['nam'],
+                        core.helper:FormatPercentage(percentage),
+                        r, g, b)
                 end
             end
         end
@@ -156,7 +156,7 @@ local function addSkinningLoot(context)
 end
 
 local function addMiningLoot(context)
-    if (not DataTracker:PlayerHasMining()) then
+    if (not core:PlayerHasMining()) then
         return
     end
 
@@ -170,13 +170,7 @@ local function addMiningLoot(context)
             if (itemInfo) then
                 local itemQuality = tonumber(itemInfo.qlt)
                 if (itemQuality and itemQuality >= DT_Options.Tooltip.MinQualityLevel) then
-                    local percentage = DataTracker:CalculatePercentage(ltd_mn, itemCount)
-                    local r, g, b, _ = GetItemQualityColor(itemQuality)
-
-                    if (context.shouldAddAnEmptyLine) then
-                        context.tooltip:AddLine(' ')
-                        context.shouldAddAnEmptyLine = false
-                    end
+                    local percentage = core.helper:CalculatePercentage(ltd_mn, itemCount)
 
                     local iconPrefix = ''
                     if (DT_Options.Tooltip.ShowIcons) then
@@ -185,8 +179,11 @@ local function addMiningLoot(context)
 
                     end
 
-                    context.tooltip:AddDoubleLine(iconPrefix .. itemInfo.nam,
-                        DataTracker:FormatPercentage(percentage), r, g, b, 1, 1, 1)
+                    local r, g, b, _ = GetItemQualityColor(itemQuality)
+                    addDoubleLineRGB(context,
+                        iconPrefix .. itemInfo.nam,
+                        core.helper:FormatPercentage(percentage),
+                        r, g, b)
                 end
             end
         end
@@ -194,7 +191,7 @@ local function addMiningLoot(context)
 end
 
 local function addHerbalismLoot(context)
-    if (not DataTracker:PlayerHasHerbalism()) then
+    if (not core:PlayerHasHerbalism()) then
         return
     end
 
@@ -208,13 +205,7 @@ local function addHerbalismLoot(context)
             if (itemInfo) then
                 local itemQuality = tonumber(itemInfo.qlt)
                 if (itemQuality and itemQuality >= DT_Options.Tooltip.MinQualityLevel) then
-                    local percentage = DataTracker:CalculatePercentage(timesLooted, itemCount)
-                    local r, g, b, _ = GetItemQualityColor(itemQuality)
-
-                    if (context.shouldAddAnEmptyLine) then
-                        context.tooltip:AddLine(' ')
-                        context.shouldAddAnEmptyLine = false
-                    end
+                    local percentage = core.helper:CalculatePercentage(timesLooted, itemCount)
 
                     local iconPrefix = ''
                     if (DT_Options.Tooltip.ShowIcons) then
@@ -223,8 +214,11 @@ local function addHerbalismLoot(context)
 
                     end
 
-                    context.tooltip:AddDoubleLine(iconPrefix .. itemInfo.nam,
-                        DataTracker:FormatPercentage(percentage), r, g, b, 1, 1, 1)
+                    local r, g, b, _ = GetItemQualityColor(itemQuality)
+                    addDoubleLineRGB(context,
+                        iconPrefix .. itemInfo.nam,
+                        core.helper:FormatPercentage(percentage),
+                        r, g, b)
                 end
             end
         end
@@ -240,7 +234,7 @@ local function OnTooltipSetUnit(tooltip)
         end
 
         local unitLevel = UnitLevel(unit)
-        local unitId = DataTracker:UnitGuidToId(unitGuid);
+        local unitId = core:UnitGuidToId(unitGuid);
         if (unitId and tooltipWasModified ~= unitId) then
             local unitInfo = DT_UnitDb[unitId]
             if (unitInfo) then
@@ -251,14 +245,21 @@ local function OnTooltipSetUnit(tooltip)
                     shouldAddAnEmptyLine = true
                 }
 
+                context.shouldAddAnEmptyLine = true
                 addTimesLooted(context)
                 addTimesKilled(context)
 
+                context.shouldAddAnEmptyLine = true
                 addMoney(context)
 
+                context.shouldAddAnEmptyLine = true
                 addLoot(context)
+
+                context.shouldAddAnEmptyLine = true
                 addSkinningLoot(context)
+                context.shouldAddAnEmptyLine = true
                 addMiningLoot(context)
+                context.shouldAddAnEmptyLine = true
                 addHerbalismLoot(context)
 
                 tooltipWasModified = unitId
@@ -271,7 +272,7 @@ local function OnTooltipCleared()
     tooltipWasModified = nil
 end
 
-function DataTracker:InitTooltipHooks()
+function core:InitTooltipHooks()
     GameTooltip:HookScript("OnTooltipSetUnit", OnTooltipSetUnit)
     GameTooltip:HookScript("OnTooltipCleared", OnTooltipCleared)
 end

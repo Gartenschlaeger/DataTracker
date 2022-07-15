@@ -7,11 +7,11 @@
 
 Main.lua
 
-Database.lua
-Options.lua
-
 Localization\en.lua
 Localization\de.lua
+
+Database.lua
+Options.lua
 
 Logging.lua
 Broadcast.lua

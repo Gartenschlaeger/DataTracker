@@ -1,26 +1,29 @@
+---@class DTCore
+local _, core = ...
+
 SLASH_DT_SHOW1 = "/dts"
 local function SlashCommand_Show()
-    DataTracker:LogTrace('DT_SlashCommand_Show')
+    core.logging:Trace('DT_SlashCommand_Show')
 
     DT_DatabaseBrowserFrame:Show()
 end
 
 SLASH_DT_HIDE1 = "/dth"
 local function SlashCommand_Hide()
-    DataTracker:LogTrace('DT_SlashCommand_Hide')
+    core.logging:Trace('DT_SlashCommand_Hide')
 
     DT_DatabaseBrowserFrame:Hide()
 end
 
 SLASH_DT_LOGLEVEL1 = "/dtll"
 local function SlashCommand_LogLevel(msg)
-    DataTracker:LogTrace('DT_SlashCommand_DebugLogs', msg)
+    core.logging:Trace('DT_SlashCommand_DebugLogs', msg)
 
     local logLevel = tonumber(msg)
-    for n, v in pairs(DataTracker.LogLevel) do
+    for n, v in pairs(core.logging.LogLevel) do
         if (logLevel == n or logLevel == v) then
             DT_Options.MinLogLevel = logLevel
-            DataTracker:LogInfo('Changed min log level to ' .. n)
+            core.logging:Info('Changed min log level to ' .. n)
         end
     end
 end
@@ -36,16 +39,16 @@ function SlashCommand_DataTrackerRemoveUnit(unitId)
     local id = tonumber(unitId)
     if (id) then
         DT_UnitDb[id] = nil
-        DataTracker:LogInfo('Removed unit with id ' .. id)
+        core.logging:Info('Removed unit with id ' .. id)
     end
 end
 
 SLASH_DT_CLEANUPDB1 = '/dtcdb'
 function SlashCommand_CleanupDatabase()
-    DataTracker:CleanupDatabase()
+    core:CleanupDatabase()
 end
 
-function DataTracker:InitSlashCommands()
+function core:InitSlashCommands()
     SlashCmdList.DT_SHOW = SlashCommand_Show
     SlashCmdList.DT_HIDE = SlashCommand_Hide
     SlashCmdList.DT_LOGLEVEL = SlashCommand_LogLevel

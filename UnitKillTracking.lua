@@ -1,9 +1,12 @@
--- Increments the kill counter
-function DataTracker:TrackKill(unitId, unitName)
-    DataTracker:LogTrace('TrackKill', unitId, unitName)
+---@class DTCore
+local _, core = ...
 
-    if (DataTracker.CurrentZoneId == nil) then
-        DataTracker:UpdateCurrentZone()
+-- Increments the kill counter
+function core:TrackKill(unitId, unitName)
+    core.logging:Trace('TrackKill', unitId, unitName)
+
+    if (core.CurrentZoneId == nil) then
+        core:UpdateCurrentZone()
     end
 
     -- get unit info
@@ -25,17 +28,17 @@ function DataTracker:TrackKill(unitId, unitName)
     end
 
     -- update zone kills counter
-    zones[DataTracker.CurrentZoneId] = (zones[DataTracker.CurrentZoneId] or 0) + 1
+    zones[core.CurrentZoneId] = (zones[core.CurrentZoneId] or 0) + 1
 
-    DataTracker:LogDebug('Kill: ' .. unitName .. ' (ID = ' .. unitId .. '), total kills = ' .. totalKills)
+    core.logging:Debug('Kill: ' .. unitName .. ' (ID = ' .. unitId .. '), total kills = ' .. totalKills)
 end
 
--- Temporarilly storage of attacked unit guids
-local tmp_attackedUnitGuids = {}
+---Temporarily storage for attacked unit guids
+core.TmpAttackedUnitGuids = {}
 
 -- Occures for any combat log
-function DataTracker:OnCombatLogEventUnfiltered()
-    local timestamp, subEvent, _, sourceGUID, sourceName, sourceFlags, sourceRaidFlags, destGUID, destName, destFlags, destRaidFlags, damage_spellid, overkill_spellname, school_spellSchool, resisted_amount, blocked_overkill = CombatLogGetCurrentEventInfo()
+function core:OnCombatLogEventUnfiltered()
+    local _, subEvent, _, sourceGUID, sourceName, _, _, destGUID, destName = CombatLogGetCurrentEventInfo()
 
     if destGUID ~= nil
     then
@@ -44,16 +47,16 @@ function DataTracker:OnCombatLogEventUnfiltered()
         local isPlayerAttack = sourceGUID == UnitGUID('player')
         local isPetAttack = sourceGUID == UnitGUID('pet')
 
-        DataTracker:LogVerbose('OnCombatLogEventUnfiltered', subEvent, sourceGUID, sourceName, destGUID, destName)
+        core.logging:Verbose('OnCombatLogEventUnfiltered', subEvent, sourceGUID, sourceName, destGUID, destName)
 
         if (isDamageSubEvent and (isPlayerAttack or isPetAttack)) then
-            tmp_attackedUnitGuids[destGUID] = true
+            core.TmpAttackedUnitGuids[destGUID] = true
         elseif (subEvent == "PARTY_KILL") then
-            tmp_attackedUnitGuids[destGUID] = true
-        elseif (subEvent == 'UNIT_DIED' and guidType == "Creature" and tmp_attackedUnitGuids[destGUID] == true) then
-            tmp_attackedUnitGuids[destGUID] = nil
-            local unitId = DataTracker:UnitGuidToId(destGUID)
-            DataTracker:TrackKill(unitId, destName)
+            core.TmpAttackedUnitGuids[destGUID] = true
+        elseif (subEvent == 'UNIT_DIED' and guidType == "Creature" and core.TmpAttackedUnitGuids[destGUID] == true) then
+            core.TmpAttackedUnitGuids[destGUID] = nil
+            local unitId = core:UnitGuidToId(destGUID)
+            core:TrackKill(unitId, destName)
         end
     end
 end
