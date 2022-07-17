@@ -41,7 +41,7 @@ function core:OnTargetChanged()
             mobInfo = {}
             DT_UnitDb[unitId] = mobInfo
 
-            core.bc:NewUnit(core.i18n.NEW_UNIT .. ': ' .. unitName)
+            core.bc:NewUnit(unitId, unitName)
         end
 
         local classification = UnitClassification('target')

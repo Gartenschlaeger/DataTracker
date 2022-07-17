@@ -3,7 +3,7 @@
 ## Notes: Addon to track looted items and fighted units.
 ## Author: Kai Gartenschläger
 ## Version: 1.0.0
-## SavedVariables: DT_Options, DT_ItemDb, DT_UnitDb, DT_ZoneDb, DT_UnitClassifications
+## SavedVariables: DT_Options, DT_ItemDb, DT_UnitDb, DT_ZoneDb, DT_MapDb, DT_UnitClassifications
 
 Main.lua
 
@@ -11,6 +11,8 @@ Localization\en.lua
 Localization\de.lua
 
 Database.lua
+Databases/MapDb.lua
+
 Options.lua
 
 Logging.lua
@@ -25,7 +27,6 @@ UI/OptionsPanel.lua
 
 SlashCommands.lua
 
-ZoneTracking.lua
 UnitTracking.lua
 UnitKillTracking.lua
 LootTracking.lua

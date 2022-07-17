@@ -26,6 +26,8 @@
         "DT_DatabaseBrowser_BackBtn",
         "DT_DatabaseBrowser_SearchBox",
         "DT_DatabaseBrowser_DetailTitle",
-        "DT_DatabaseBrowserFrame"
+        "DT_DatabaseBrowserFrame",
+        "InputBoxInstructions_OnTextChanged",
+        "WorldMapFrame"
     ]
 }

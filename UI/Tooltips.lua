@@ -83,7 +83,7 @@ local function addMoney(context)
     end
 end
 
-local function addLoot(context)
+local function addGeneralLoot(context)
     if (not DT_Options.Tooltip.ShowItems) then
         return
     end
@@ -94,22 +94,20 @@ local function addLoot(context)
 
         context.shouldAddAnEmptyLine = true
         for itemId, timesItemWasLooted in pairs(lootInfos) do
-            local itemInfo = DT_ItemDb[itemId]
+            local itemInfo = core.helper:GetItemInfo(itemId) -- DT_ItemDb[itemId]
             if (itemInfo) then
-                local itemQuality = tonumber(itemInfo['qlt'])
-                if (itemQuality and itemQuality >= DT_Options.Tooltip.MinQualityLevel) then
+                -- local itemQuality = tonumber(itemInfo['qlt'])
+                if (itemInfo.quality >= DT_Options.Tooltip.MinQualityLevel) then
                     local percentage = core.helper:CalculatePercentage(ltd, timesItemWasLooted)
-                    local r, g, b, _ = GetItemQualityColor(itemQuality)
+                    local r, g, b, _ = GetItemQualityColor(itemInfo.quality)
 
                     local iconPrefix = ''
                     if (DT_Options.Tooltip.ShowIcons) then
-                        local itemTextureId = GetItemIcon(itemId)
-                        iconPrefix = '|T' .. itemTextureId .. ':14|t '
-
+                        iconPrefix = '|T' .. itemInfo.texture .. ':14|t '
                     end
 
                     addDoubleLineRGB(context,
-                        iconPrefix .. itemInfo['nam'],
+                        iconPrefix .. itemInfo.name,
                         core.helper:FormatPercentage(percentage),
                         r, g, b)
                 end
@@ -254,7 +252,7 @@ local function OnTooltipSetUnit(tooltip)
                 addMoney(context)
 
                 context.shouldAddAnEmptyLine = true
-                addLoot(context)
+                addGeneralLoot(context)
 
                 context.shouldAddAnEmptyLine = true
                 addSkinningLoot(context)

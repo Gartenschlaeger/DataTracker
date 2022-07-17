@@ -147,3 +147,46 @@ function helper:FormatPercentage(percentage)
 
     return result
 end
+
+local mapInfoCache = {}
+
+---Returns the mapname from map cache or nil, if map is not found.
+---@param mapId number
+---@return string|nil
+function helper:GetMapNameById(mapId)
+    local result = mapInfoCache[mapId]
+    if (result == nil) then
+        local mapInfo = C_Map.GetMapInfo(mapId)
+        if (mapInfo) then
+            mapInfoCache[mapId] = mapInfo.name
+            result = mapInfo.name
+        else
+            core.logging:Warning('Could not find mapinfo for map id ' .. mapId)
+        end
+    end
+
+    return result
+end
+
+local itemCache = {}
+
+---Returns item informations from cache, or nil if no item with given id was found.
+---@param itemId number
+---@return table|nil
+function helper:GetItemInfo(itemId)
+    local itemInfo = itemCache[itemId]
+    if (itemInfo == nil) then
+        local itemName, _, itemQuality, _, _, _, _, _, _, itemTexture, _, _, _, _, _, _, _ = GetItemInfo(itemId)
+        if (itemName) then
+            itemInfo = {
+                name = itemName,
+                quality = itemQuality,
+                texture = itemTexture
+            }
+
+            itemCache[itemId] = itemInfo
+        end
+    end
+
+    return itemInfo
+end

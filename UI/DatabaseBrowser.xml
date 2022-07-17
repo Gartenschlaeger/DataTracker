@@ -43,9 +43,9 @@
     <Button name="DT_DatabaseBrowser_ResultLocTemplate" virtual="true">
         <Size x="750" y="25"/>
         <Layers>
-            <!-- <Layer level="BACKGROUND">
+            <Layer level="BACKGROUND">
                 <Texture name="$parentHighlight" file="Interface\QuestFrame\UI-QuestTitleHighlight" alphaMode="ADD" setAllPoints="true" hidden="true" />
-            </Layer> -->
+            </Layer>
             <Layer level="ARTWORK">
                 <FontString name="$parentUnit" inherits="GameFontNormalSmall" justifyH="LEFT">
                     <Size x="250" y="25"/>
@@ -89,10 +89,10 @@
                 </FontString>
             </Layer>
         </Layers>
-        <!-- <Scripts>
+        <Scripts>
             <OnEnter>_G[self:GetName().."Highlight"]:Show()</OnEnter>
             <OnLeave>_G[self:GetName().."Highlight"]:Hide()</OnLeave>
-        </Scripts> -->
+        </Scripts>
         <NormalText name="$parentNormalText" inherits="GameFontNormalSmall" justifyH="LEFT"/>
     </Button>
     <Frame name="DT_DatabaseBrowserFrame" 

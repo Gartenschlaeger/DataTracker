@@ -32,10 +32,13 @@ DT_ItemDb = {
 	},
     ..
 }
+```
+
+```lua
 DT_UnitDb = {
 	[<Unit ID>] = {
-		["zns"] = {
-			[<Zone ID>] = <Kills>,
+		["mps"] = {
+			[<Map ID>] = <Kills>,
 		},
 		["kls"] = <Kills>,
 		["clf"] = <Classification>,
@@ -62,9 +65,11 @@ DT_UnitDb = {
 	},
     ..
 }
-DT_ZoneDb = {
-	[<Zone ID>] = <Zone Name>,
+```
+
+```lua
+DT_MapDb = {
+	["<Map ID>"] = <Map Name>,
     ..
 }
-
 ```

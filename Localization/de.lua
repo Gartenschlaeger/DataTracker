@@ -10,13 +10,13 @@ local l = core.i18n
 -- General
 l.LOADING_MSG = 'DataTracker geladen, %s Gegenstände, %s Gegner (verwende /dts um zu suchen)'
 
-l.GOLD   = 'Gold';
-l.SILVER = 'Silber';
-l.COPPER = 'Kupfer';
+l.GOLD   = 'Gold'
+l.SILVER = 'Silber'
+l.COPPER = 'Kupfer'
 
-l.NEW_UNIT = 'Neuer Gegner';
-l.NEW_ZONE = 'Neue Zone';
-l.NEW_ITEM = 'Neuer Gegenstand';
+l.NEW_UNIT = 'Neuer Gegner'
+l.NEW_MAP = 'Neue Karte'
+l.NEW_ITEM = 'Neuer Gegenstand'
 
 -- OptionsPanel
 l.OP_DEBUG_LOGS        = 'Diagnoselogs aktivieren'

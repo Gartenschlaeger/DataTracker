@@ -163,7 +163,8 @@ local function createUnitResult(unitId, unitName, kills, gold, percent, colorR, 
     return {
         unitId = unitId,
         unitName = unitName,
-        zoneName = '',
+        maps = '',
+        mapIds = {},
         kills = kills,
         gold = gold,
         percent = percent,
@@ -244,7 +245,7 @@ local function LoadItemDetails(itemIndex)
             -- skinning loot
             local unitItems = unitInfo.its_sk
             if (unitItems) then
-                local ltd_sk = tonumber(unitInfo['ltd_sk']) or 0
+                local ltd_sk = tonumber(unitInfo.ltd_sk) or 0
                 for itemId, timesLooted in pairs(unitItems) do
                     if (itemResult.itemId == itemId) then
                         local percent = core.helper:CalculatePercentage(ltd_sk, timesLooted)
@@ -262,16 +263,27 @@ local function LoadItemDetails(itemIndex)
             end
 
             if (result) then
-                if (unitInfo.zns) then
-                    for zoneId, _ in pairs(unitInfo.zns) do
-                        local text = core:GetZoneText(zoneId)
-                        result.zoneName = result.zoneName .. ' ' .. text
+                local maps = {}
+                local mapIds = {}
+                if (unitInfo.mps) then
+                    for mapId, _ in pairs(unitInfo.mps) do
+                        local mapName = core.helper:GetMapNameById(mapId)
+                        if (mapName) then
+                            table.insert(mapIds, mapId)
+                            table.insert(maps, mapName)
+                        end
+
+                        result.maps = result.maps .. ' ' .. mapName
                     end
                 end
 
-                -- filter by zone name
+                table.sort(maps)
+                result.maps = table.concat(maps, ', ')
+                result.mapIds = mapIds
+
+                -- filter by map
                 if (zoneName) then
-                    local fm = result.zoneName:find(zoneName)
+                    local fm = result.maps:find(zoneName)
                     if (not fm) then
                         add = false
                     end
@@ -322,7 +334,7 @@ function DT_DatabaseBrowser_ScrollBarLoc_Update()
         local fsUnit = _G["DT_DatabaseBrowser_EntryLoc" .. i .. 'Unit']
 
         ---@type FontString
-        local fsZone = _G["DT_DatabaseBrowser_EntryLoc" .. i .. 'Zone']
+        local fsMaps = _G["DT_DatabaseBrowser_EntryLoc" .. i .. 'Zone']
 
         ---@type FontString
         local fsGold = _G["DT_DatabaseBrowser_EntryLoc" .. i .. 'Gold']
@@ -334,12 +346,23 @@ function DT_DatabaseBrowser_ScrollBarLoc_Update()
         local fsPercentage = _G["DT_DatabaseBrowser_EntryLoc" .. i .. 'Percentage']
 
         if (result) then
-            btn:Enable()
             fsUnit:SetText(result.unitName)
             fsUnit:SetTextColor(result.color.r, result.color.g, result.color.b, 1)
 
-            fsZone:SetText(result.zoneName)
-            fsZone:SetTextColor(1, 1, 1, 1)
+            btn:Enable()
+            btn:SetAttribute('unitIndex', i + offset)
+            btn:SetScript("OnClick", function(self)
+                local unitIndex = tonumber(self:GetAttribute('unitIndex'))
+                local unitResult = DT_SearchUnitResults[unitIndex]
+                for _, mapId in pairs(unitResult.mapIds) do
+                    WorldMapFrame:Show()
+                    WorldMapFrame:SetMapID(mapId)
+                    break
+                end
+            end)
+
+            fsMaps:SetText(result.maps)
+            fsMaps:SetTextColor(1, 1, 1, 1)
 
             if (result.gold and result.gold > 0) then
                 fsGold:SetText(GetCoinTextureString(result.gold))
@@ -356,7 +379,7 @@ function DT_DatabaseBrowser_ScrollBarLoc_Update()
         else
             btn:Disable()
             fsUnit:SetText('')
-            fsZone:SetText('')
+            fsMaps:SetText('')
             fsGold:SetText('')
             fsKills:SetText('')
             fsPercentage:SetText('')
