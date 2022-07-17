@@ -13,7 +13,7 @@ l.SILVER = 'Silver'
 l.COPPER = 'Copper'
 
 l.NEW_UNIT = 'New unit'
-l.NEW_ZONE = 'New zone'
+l.NEW_MAP = 'New map'
 l.NEW_ITEM = 'New item'
 
 -- OptionsPanel

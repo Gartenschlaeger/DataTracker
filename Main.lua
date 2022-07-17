@@ -26,8 +26,8 @@ local function OnEvent(self, event, ...)
         OnAddonLoaded(...)
     elseif (event == 'PLAYER_TARGET_CHANGED') then
         core:OnTargetChanged()
-    elseif (event == 'ZONE_CHANGED_NEW_AREA') then
-        core:UpdateCurrentZone()
+    elseif (event == 'PLAYER_ENTERING_WORLD' or event == 'ZONE_CHANGED_NEW_AREA') then
+        core.mapDb:TrackCurrentMap()
     elseif (event == 'UNIT_SPELLCAST_SUCCEEDED') then
         core:OnUnitSpellcastSucceeded(...)
     elseif (event == 'LOOT_READY') then
@@ -43,6 +43,7 @@ end
 local eventsFrame = CreateFrame('Frame')
 eventsFrame:RegisterEvent('ADDON_LOADED')
 eventsFrame:RegisterEvent('PLAYER_TARGET_CHANGED')
+eventsFrame:RegisterEvent('PLAYER_ENTERING_WORLD')
 eventsFrame:RegisterEvent('ZONE_CHANGED_NEW_AREA')
 eventsFrame:RegisterEvent('LOOT_READY')
 eventsFrame:RegisterEvent('LOOT_OPENED')

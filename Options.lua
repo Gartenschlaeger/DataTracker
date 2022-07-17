@@ -3,12 +3,7 @@ local _, core = ...
 
 DT_Options = {}
 
-local function Cleanup()
-    DT_Options.ShowMinimapButton = nil
-    DT_Options.Tooltip.ShowTrashItems = nil
-end
-
-local DEFAULT_MIN_ITEM_QUALITY_LEVEL = 2
+local DEFAULT_MIN_ITEM_QUALITY_LEVEL = 1
 
 ---Initialization of options. Called once the addon is loading.
 function core:InitOptions()
@@ -18,7 +13,7 @@ function core:InitOptions()
 
     DT_Options.Tooltip = DT_Options.Tooltip or {}
 
-    DT_Options.Tooltip.ShowKills = core.helper:IfNil(DT_Options.Tooltip.ShowKills, false)
+    DT_Options.Tooltip.ShowKills = core.helper:IfNil(DT_Options.Tooltip.ShowKills, true)
     DT_Options.Tooltip.ShowLooted = core.helper:IfNil(DT_Options.Tooltip.ShowLooted, false)
 
     DT_Options.Tooltip.ShowMoney = core.helper:IfNil(DT_Options.Tooltip.ShowMoney, true)
@@ -26,7 +21,7 @@ function core:InitOptions()
     DT_Options.Tooltip.ShowMoneyMM = core.helper:IfNil(DT_Options.Tooltip.ShowMoneyMM, false)
 
     DT_Options.Tooltip.ShowItems = core.helper:IfNil(DT_Options.Tooltip.ShowItems, true)
-    DT_Options.Tooltip.ShowIcons = core.helper:IfNil(DT_Options.Tooltip.ShowIcons, false)
+    DT_Options.Tooltip.ShowIcons = core.helper:IfNil(DT_Options.Tooltip.ShowIcons, true)
 
     DT_Options.Tooltip.MinQualityLevel = core.helper:IfNil(DT_Options.Tooltip.MinQualityLevel,
         DEFAULT_MIN_ITEM_QUALITY_LEVEL)
@@ -34,6 +29,4 @@ function core:InitOptions()
     if (DT_Options.Tooltip.MinQualityLevel < 0 or DT_Options.Tooltip.MinQualityLevel > 6) then
         DT_Options.Tooltip.MinQualityLevel = DEFAULT_MIN_ITEM_QUALITY_LEVEL
     end
-
-    Cleanup()
 end

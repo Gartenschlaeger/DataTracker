@@ -1,14 +1,16 @@
 ---@class DTCore
 local _, core = ...
 
--- Item database
+--- Item database
 DT_ItemDb = {}
 
--- Units database
+--- Units database
 DT_UnitDb = {}
 DT_UnitClassifications = {}
 
--- Zones database
+DT_MapDb = {}
+
+--- Zones database
 DT_ZoneDb = {}
 
 ---Clean up databases

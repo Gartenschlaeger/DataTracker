@@ -5,10 +5,6 @@ local _, core = ...
 function core:TrackKill(unitId, unitName)
     core.logging:Trace('TrackKill', unitId, unitName)
 
-    if (core.CurrentZoneId == nil) then
-        core:UpdateCurrentZone()
-    end
-
     -- get unit info
     local unitInfo = DT_UnitDb[unitId]
     if (unitInfo == nil) then
@@ -16,19 +12,18 @@ function core:TrackKill(unitId, unitName)
         DT_UnitDb[unitId] = unitInfo
     end
 
-    -- update kill counter
-    local totalKills = (unitInfo['kls'] or 0) + 1
-    unitInfo['kls'] = totalKills
+    -- total kill counter
+    local totalKills = (unitInfo.kls or 0) + 1
+    unitInfo.kls = totalKills
 
-    -- update zones
-    local zones = unitInfo['zns']
-    if (zones == nil) then
-        zones = {}
-        unitInfo['zns'] = zones
+    -- map kill counter
+    local mps = unitInfo.mps
+    if (mps == nil) then
+        mps = {}
+        unitInfo.mps = mps
     end
 
-    -- update zone kills counter
-    zones[core.CurrentZoneId] = (zones[core.CurrentZoneId] or 0) + 1
+    mps[core.mapDb:GetCurrentMapId()] = (mps[core.mapDb:GetCurrentMapId()] or 0) + 1
 
     core.logging:Debug('Kill: ' .. unitName .. ' (ID = ' .. unitId .. '), total kills = ' .. totalKills)
 end

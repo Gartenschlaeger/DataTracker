@@ -90,7 +90,7 @@ local function TrackItem(itemId, itemName, itemQuantity, itemQuality, unitId, so
         itemInfo = {}
         DT_ItemDb[itemId] = itemInfo
 
-        core.bc:NewItem(core.i18n.NEW_ITEM .. ': ' .. itemName)
+        core.bc:NewItem(itemId, itemName, itemQuality)
     end
 
     itemInfo.nam = itemName
@@ -382,11 +382,6 @@ function core:OnLootReady()
     end
 
     tmp_isLooting = true
-
-    -- ensure current zone id is set
-    if (core.CurrentZoneId == nil) then
-        core:UpdateCurrentZone()
-    end
 
     -- track loot
     for itemSlot = 1, GetNumLootItems() do
