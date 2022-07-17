@@ -100,7 +100,7 @@
         inherits="UIPanelDialogTemplate"
         enableMouse="true" 
         movable="true" 
-        frameStrata="DIALOG" 
+        frameStrata="MEDIUM" 
         hidden="true" 
         toplevel="true"
         virtual="false">
