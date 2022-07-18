@@ -18,14 +18,14 @@ logging.LogLevel = {
 -- Logs a Trace message to the chat
 function logging:Trace(msg, ...)
     if (DT_Options['MinLogLevel'] and DT_Options['MinLogLevel'] >= logging.LogLevel.Trace) then
-        print('[DT]', msg, ...)
+        print(msg, ...)
     end
 end
 
 -- Logs a Verbose message to the chat
 function logging:Verbose(msg, ...)
     if (DT_Options['MinLogLevel'] and DT_Options['MinLogLevel'] >= logging.LogLevel.Verbose) then
-        print('[DT]', msg, ...)
+        print(msg, ...)
     end
 end
 
@@ -37,14 +37,14 @@ end
 -- Logs a Debug message to the chat
 function logging:Debug(msg, ...)
     if (logging:IsDebugEnabled()) then
-        print('[DT]', msg, ...)
+        print(msg, ...)
     end
 end
 
 -- Logs a Warning message to the chat
 function logging:Warning(msg, ...)
     if (DT_Options['MinLogLevel'] and DT_Options['MinLogLevel'] >= logging.LogLevel.Warning) then
-        print('[DT]', msg, ...)
+        print(msg, ...)
     end
 end
 

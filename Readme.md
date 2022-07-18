@@ -44,6 +44,7 @@ DT_UnitDb = {
 		["clf"] = <Classification>,
 		["nam"] = <Unit Name>,
 		["ltd"] = <Looting counter>,
+		["elt"] = <Empty loot counter>,
 		["its"] = {
 			[<Item ID>] = <Looting counter>,
 			..

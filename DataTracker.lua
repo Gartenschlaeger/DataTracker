@@ -35,7 +35,7 @@ local function OnEvent(self, event, ...)
     elseif (event == 'LOOT_CLOSED') then
         DataTracker:OnLootClosed()
     elseif (event == 'COMBAT_LOG_EVENT_UNFILTERED') then
-        DataTracker:OnCombatLogEventUnfiltered()
+        DataTracker.killTracker:OnCombatLogEventUnfiltered()
     end
 end
 

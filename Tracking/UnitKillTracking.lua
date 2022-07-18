@@ -1,8 +1,15 @@
 ---@class DataTracker_Core
 local DataTracker = select(2, ...)
 
+---@class DataTracker_KillTracker
+local killTracker = {}
+DataTracker.killTracker = killTracker
+
+---Temporarily storage for attacked unit guids
+local attackedUnitGuids = {}
+
 -- Increments the kill counter
-function DataTracker:TrackKill(unitId, unitName)
+function killTracker:Track(unitGuid, unitId, unitName)
     DataTracker.logging:Trace('TrackKill', unitId, unitName)
 
     -- get unit info
@@ -16,6 +23,17 @@ function DataTracker:TrackKill(unitId, unitName)
     local totalKills = (unitInfo.kls or 0) + 1
     unitInfo.kls = totalKills
 
+    -- if unit was killed but has no loot, increment looting counter to have correct percentage calculations
+    -- wait for a second because otherwise the call to CanLootUnit perhaps returns invalid values
+    C_Timer.After(1, function()
+        local hasLoot, canLoot = CanLootUnit(unitGuid)
+        if (not hasLoot and not canLoot) then
+            -- print('CanLootUnit', CanLootUnit(unitGuid))
+            unitInfo.ltd = DataTracker.helper:IfNil(unitInfo.ltd, 0) + 1
+            unitInfo.elt = DataTracker.helper:IfNil(unitInfo.elt, 0) + 1
+        end
+    end)
+
     -- map kill counter
     local mps = unitInfo.mps
     if (mps == nil) then
@@ -28,11 +46,8 @@ function DataTracker:TrackKill(unitId, unitName)
     DataTracker.logging:Debug('Kill: ' .. unitName .. ' (ID = ' .. unitId .. '), total kills = ' .. totalKills)
 end
 
----Temporarily storage for attacked unit guids
-DataTracker.TmpAttackedUnitGuids = {}
-
 -- Occures for any combat log
-function DataTracker:OnCombatLogEventUnfiltered()
+function killTracker:OnCombatLogEventUnfiltered()
     local _, subEvent, _, sourceGUID, sourceName, _, _, destGUID, destName = CombatLogGetCurrentEventInfo()
 
     if (destGUID) then
@@ -43,15 +58,15 @@ function DataTracker:OnCombatLogEventUnfiltered()
         local isPetAttack = sourceGUID == UnitGUID('pet')
 
         if (isDamageSubEvent and (isPlayerAttack or isPetAttack)) then
-            DataTracker.TmpAttackedUnitGuids[destGUID] = true
+            attackedUnitGuids[destGUID] = true
         elseif (subEvent == "PARTY_KILL") then
-            DataTracker.TmpAttackedUnitGuids[destGUID] = true
+            attackedUnitGuids[destGUID] = true
         elseif (
             subEvent == 'UNIT_DIED' and DataTracker.helper:IsTrackableUnit(destGUID) and
-                DataTracker.TmpAttackedUnitGuids[destGUID] == true) then
-            DataTracker.TmpAttackedUnitGuids[destGUID] = nil
+                attackedUnitGuids[destGUID] == true) then
+            attackedUnitGuids[destGUID] = nil
             local unitId = DataTracker.helper:GetUnitIdFromGuid(destGUID)
-            DataTracker:TrackKill(unitId, destName)
+            self:Track(destGUID, unitId, destName)
         end
     end
 end
