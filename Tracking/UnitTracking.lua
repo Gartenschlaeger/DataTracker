@@ -22,7 +22,7 @@ DataTracker.TmpUnitInformations = {}
 function DataTracker:OnTargetChanged()
     DataTracker.logging:Trace('OnTargetChanged')
 
-    if (UnitIsPlayer('target') or not UnitCanAttack('player', 'target')) then
+    if (UnitIsPlayer('target') or UnitIsPVP('target') or not UnitCanAttack('player', 'target')) then
         DataTracker.logging:Verbose('Ignore none attackable target')
         return
     end
