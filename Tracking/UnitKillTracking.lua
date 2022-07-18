@@ -23,7 +23,7 @@ function core:TrackKill(unitId, unitName)
         unitInfo.mps = mps
     end
 
-    mps[core.mapDb:GetCurrentMapId()] = (mps[core.mapDb:GetCurrentMapId()] or 0) + 1
+    mps[core.MapDb:GetCurrentMapId()] = (mps[core.MapDb:GetCurrentMapId()] or 0) + 1
 
     core.logging:Debug('Kill: ' .. unitName .. ' (ID = ' .. unitId .. '), total kills = ' .. totalKills)
 end

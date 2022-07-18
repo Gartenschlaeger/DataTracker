@@ -5,28 +5,25 @@
 ## Version: 1.0.0
 ## SavedVariables: DT_Options, DT_ItemDb, DT_UnitDb, DT_ZoneDb, DT_MapDb, DT_UnitClassifications
 
-Main.lua
+DataTracker.lua
 
 Localization\en.lua
 Localization\de.lua
 
-Database.lua
+Databases/Database.lua
 Databases/MapDb.lua
 
-Options.lua
+General/Logging.lua
+General/Helper.lua
 
-Logging.lua
-Broadcast.lua
-Helper.lua
-
+UI/OptionsPanel.lua
+UI/Broadcast.lua
 UI/UIHelper.lua
 UI/DatabaseBrowser.lua
 UI/DatabaseBrowser.xml
 UI/Tooltips.lua
-UI/OptionsPanel.lua
+UI/SlashCommands.lua
 
-SlashCommands.lua
-
-UnitTracking.lua
-UnitKillTracking.lua
-LootTracking.lua
+Tracking/UnitTracking.lua
+Tracking/UnitKillTracking.lua
+Tracking/LootTracking.lua

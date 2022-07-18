@@ -1,21 +1,21 @@
 ---@class DTCore
-local _, core = ...
+local DataTracker = select(2, ...)
 
 ---Called when the addon is fully loaded and saved values are loaded from disk.
 local function OnAddonLoaded(addonName)
     if (addonName == 'DataTracker') then
-        core:InitOptions()
-        core:InitOptionsPanel()
-        core:InitSlashCommands()
-        core:InitTooltipHooks()
+        DataTracker:InitOptions()
+        DataTracker:InitOptionsPanel()
+        DataTracker:InitSlashCommands()
+        DataTracker:InitTooltipHooks()
 
-        local itemsCount = core.helper:GetTableSize(DT_ItemDb)
-        local unitsCount = core.helper:GetTableSize(DT_UnitDb)
-        local loadingMessage = string.format(core.i18n.LOADING_MSG,
+        local itemsCount = DataTracker.helper:GetTableSize(DT_ItemDb)
+        local unitsCount = DataTracker.helper:GetTableSize(DT_UnitDb)
+        local loadingMessage = string.format(DataTracker.i18n.LOADING_MSG,
             FormatLargeNumber(itemsCount),
             FormatLargeNumber(unitsCount))
 
-        core.logging:Info(loadingMessage)
+        DataTracker.logging:Info(loadingMessage)
     end
 end
 
@@ -25,17 +25,17 @@ local function OnEvent(self, event, ...)
     if (event == 'ADDON_LOADED') then
         OnAddonLoaded(...)
     elseif (event == 'PLAYER_TARGET_CHANGED') then
-        core:OnTargetChanged()
+        DataTracker:OnTargetChanged()
     elseif (event == 'PLAYER_ENTERING_WORLD' or event == 'ZONE_CHANGED_NEW_AREA') then
-        core.mapDb:TrackCurrentMap()
+        DataTracker.MapDb:TrackCurrentMap()
     elseif (event == 'UNIT_SPELLCAST_SUCCEEDED') then
-        core:OnUnitSpellcastSucceeded(...)
+        DataTracker:OnUnitSpellcastSucceeded(...)
     elseif (event == 'LOOT_READY') then
-        core:OnLootReady()
+        DataTracker:OnLootReady()
     elseif (event == 'LOOT_CLOSED') then
-        core:OnLootClosed()
+        DataTracker:OnLootClosed()
     elseif (event == 'COMBAT_LOG_EVENT_UNFILTERED') then
-        core:OnCombatLogEventUnfiltered()
+        DataTracker:OnCombatLogEventUnfiltered()
     end
 end
 

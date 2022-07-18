@@ -1,5 +1,5 @@
 ---@class DTCore
-local _, core = ...
+local DataTracker = select(2, ...)
 
 --- Item database
 DT_ItemDb = {}
@@ -14,7 +14,7 @@ DT_MapDb = {}
 DT_ZoneDb = {}
 
 ---Clean up databases
-function core:CleanupDatabase()
+function DataTracker:CleanupDatabase()
     -- units
     for _, unitInfos in pairs(DT_UnitDb) do
 
@@ -28,7 +28,7 @@ function core:CleanupDatabase()
             for itemId, _ in pairs(unitInfos.its_mn) do
                 if (unitInfos.its[itemId]) then
                     unitInfos.its[itemId] = nil
-                    core.logging:Debug('RM: ItemID = ' .. itemId .. ', UnitID = ' .. unitInfos.nam)
+                    DataTracker.logging:Debug('RM: ItemID = ' .. itemId .. ', UnitID = ' .. unitInfos.nam)
                 end
             end
         end
@@ -38,7 +38,7 @@ function core:CleanupDatabase()
             for itemId, _ in pairs(unitInfos.its_hb) do
                 if (unitInfos.its[itemId]) then
                     unitInfos.its[itemId] = nil
-                    core.logging:Debug('RM: ItemID = ' .. itemId .. ', UnitID = ' .. unitInfos.nam)
+                    DataTracker.logging:Debug('RM: ItemID = ' .. itemId .. ', UnitID = ' .. unitInfos.nam)
                 end
             end
         end
