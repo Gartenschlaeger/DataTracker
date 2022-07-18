@@ -1,29 +1,29 @@
----@class DTCore
+---@class DataTracker_Core
 local DataTracker = select(2, ...)
 
 local currentMapId = nil
 
 DT_MapDb = {}
 
----@class DTMapDatabase
-local MapDatabase = {}
-DataTracker.MapDb = MapDatabase
+---@class DataTracker_MapDatabase
+local MapDb = {}
+DataTracker.MapDb = MapDb
 
 ---Returns the id of the current map
 ---@return number?
-function MapDatabase.GetCurrentMapId()
+function MapDb.GetCurrentMapId()
     return currentMapId
 end
 
 ---Returns the map name by id
 ---@param mapId number
 ---@return string|nil
-function MapDatabase.GetById(self, mapId)
+function MapDb.GetById(self, mapId)
     return DT_MapDb[mapId]
 end
 
 ---Tracks the current map
-function MapDatabase.TrackCurrentMap(self)
+function MapDb.TrackCurrentMap(self)
     DataTracker.logging:Trace('mapDb:TrackCurrentMap')
 
     currentMapId = C_Map.GetBestMapForUnit('player')

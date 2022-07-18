@@ -1,9 +1,9 @@
----@class DTCore
-local _, core = ...
+---@class DataTracker_Core
+local DataTracker = select(2, ...)
 
----@class DTLocale
+---@class DataTracker_Locale
 local l = {}
-core.i18n = l
+DataTracker.i18n = l
 
 -- General
 l.LOADING_MSG = 'DataTracker loaded, %s items, %s units (use /dts for search)'

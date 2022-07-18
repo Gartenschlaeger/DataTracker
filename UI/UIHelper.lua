@@ -1,9 +1,9 @@
----@class DTCore
-local _, core = ...
+---@class DataTracker_Core
+local DataTracker = select(2, ...)
 
----@class DT_UI
+---@class DataTracker_UIHelper
 local ui = {}
-core.ui = ui
+DataTracker.ui = ui
 
 ---Creates a Checkbox control
 ---@param panel Frame
@@ -12,7 +12,7 @@ core.ui = ui
 ---@param text string
 ---@param initialValue any
 ---@param callback function
-function ui:AddCheckbox(panel, x, y, text, initialValue, callback)
+function ui.AddCheckbox(self, panel, x, y, text, initialValue, callback)
     local checkbox = CreateFrame("CheckButton", nil, panel, 'InterfaceOptionsCheckButtonTemplate')
 
     ---@diagnostic disable-next-line: undefined-field

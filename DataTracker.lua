@@ -1,4 +1,4 @@
----@class DTCore
+---@class DataTracker_Core
 local DataTracker = select(2, ...)
 
 ---Called when the addon is fully loaded and saved values are loaded from disk.

@@ -1,12 +1,12 @@
----@class DTCore
-local _, core = ...
+---@class DataTracker_Core
+local DataTracker = select(2, ...)
 
----@class DTHelper
+---@class DataTracker_Helper
 local helper = {}
-core.helper = helper
+DataTracker.helper = helper
 
 ---Returns the size for the given table
-function helper:GetTableSize(table)
+function helper.GetTableSize(self, table)
     local size = 0
     for _ in pairs(table) do
         size = size + 1
@@ -19,7 +19,7 @@ end
 ---@param value any
 ---@param defaultValue any
 ---@return any
-function helper:IfNil(value, defaultValue)
+function helper.IfNil(self, value, defaultValue)
     if (value == nil) then
         return defaultValue
     end
@@ -28,7 +28,7 @@ function helper:IfNil(value, defaultValue)
 end
 
 ---Converts a boolean value to a number (true = 1, false = 0)
-function helper:BoolToNumber(booleanValue)
+function helper.BoolToNumber(self, booleanValue)
     if (booleanValue) then
         return 1
     end
@@ -40,7 +40,7 @@ end
 ---@param timesLooted number
 ---@param foundItems number
 ---@return number
-function helper:CalculatePercentage(timesLooted, foundItems)
+function helper.CalculatePercentage(self, timesLooted, foundItems)
     if (not timesLooted or timesLooted <= 0) then
         return 0
     end
@@ -56,7 +56,7 @@ end
 ---Returns the unit type from unit guid
 ---@param unitGuid string
 ---@return string
-function helper:GetUnitTypeByGuid(unitGuid)
+function helper.GetUnitTypeByGuid(self, unitGuid)
     -- Cast-[type]-[serverID]-[instanceID]-[zoneUID]-[spellID]-[castUID]
     return select(1, strsplit('-', unitGuid))
 end
@@ -64,7 +64,7 @@ end
 ---Returns true if the unit should be tracked
 ---@param unitGuid string?
 ---@return boolean
-function helper:IsTrackableUnit(unitGuid)
+function helper.IsTrackableUnit(self, unitGuid)
     if (unitGuid) then
         local type = self:GetUnitTypeByGuid(unitGuid)
         if (type == 'Creature' or type == 'Vehicle') then
@@ -78,8 +78,8 @@ end
 ---Parses the item id from item link
 ---@param link string
 ---@return number
-function helper:GetItemIdFromLink(link)
-    core.logging:Verbose('GetItemIdFromLink, link = ', link)
+function helper.GetItemIdFromLink(self, link)
+    DataTracker.logging:Verbose('GetItemIdFromLink, link = ', link)
 
     if (link) then
         local _, _, idCode = string.find(link, "|Hitem:(%d*):(%d*):(%d*):")
@@ -93,7 +93,7 @@ end
 ---@param unitInfo table
 ---@param level number
 ---@return number|nil
-function helper:CalculateAvgUnitGoldCount(unitInfo, level)
+function helper.CalculateAvgUnitGoldCount(self, unitInfo, level)
     local copperInfo = unitInfo.cpi
     if (not copperInfo) then
         return nil -- no copper info in general
@@ -126,7 +126,7 @@ end
 ---Converts UnitGuid to UnitID
 ---@param guid string
 ---@return integer
-function helper:GetUnitIdFromGuid(guid)
+function helper.GetUnitIdFromGuid(self, guid)
     local id = select(6, strsplit('-', guid))
     return tonumber(id, 10)
 end
@@ -134,7 +134,7 @@ end
 ---formats a percentage value
 ---@param percentage number percentage value between 1 and 100
 ---@return string
-function helper:FormatPercentage(percentage)
+function helper.FormatPercentage(self, percentage)
     local result = ''
     if (percentage > 0) then
         local p = percentage * 100
@@ -153,7 +153,7 @@ local mapInfoCache = {}
 ---Returns the mapname from map cache or nil, if map is not found.
 ---@param mapId number
 ---@return string|nil
-function helper:GetMapNameById(mapId)
+function helper.GetMapNameById(self, mapId)
     local result = mapInfoCache[mapId]
     if (result == nil) then
         local mapInfo = C_Map.GetMapInfo(mapId)
@@ -161,7 +161,7 @@ function helper:GetMapNameById(mapId)
             mapInfoCache[mapId] = mapInfo.name
             result = mapInfo.name
         else
-            core.logging:Warning('Could not find mapinfo for map id ' .. mapId)
+            DataTracker.logging:Warning('Could not find mapinfo for map id ' .. mapId)
         end
     end
 
@@ -173,7 +173,7 @@ local itemCache = {}
 ---Returns item informations from cache, or nil if no item with given id was found.
 ---@param itemId number
 ---@return table|nil
-function helper:GetItemInfo(itemId)
+function helper.GetItemInfo(self, itemId)
     local itemInfo = itemCache[itemId]
     if (itemInfo == nil) then
         local itemName, _, itemQuality, _, _, _, _, _, _, itemTexture, _, _, _, _, _, _, _ = GetItemInfo(itemId)

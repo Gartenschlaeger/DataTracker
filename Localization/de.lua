@@ -1,11 +1,11 @@
----@class DTCore
-local _, core = ...
+---@class DataTracker_Core
+local DataTracker = select(2, ...)
 
 if (GetLocale() ~= 'deDE') then
     return
 end
 
-local l = core.i18n
+local l = DataTracker.i18n
 
 -- General
 l.LOADING_MSG = 'DataTracker geladen, %s Gegenstände, %s Gegner (verwende /dts um zu suchen)'

@@ -1,9 +1,9 @@
----@class DTCore
-local _, core = ...
+---@class DataTracker_Core
+local DataTracker = select(2, ...)
 
----@class DTLogging
+---@class DataTracker_Logging
 local logging = {}
-core.logging = logging
+DataTracker.logging = logging
 
 logging.LogLevel = {
     None = 0,

@@ -1,4 +1,4 @@
----@class DTCore
+---@class DataTracker_Core
 local DataTracker = select(2, ...)
 
 --- Item database
@@ -14,7 +14,7 @@ DT_MapDb = {}
 DT_ZoneDb = {}
 
 ---Clean up databases
-function DataTracker:CleanupDatabase()
+function DataTracker.CleanupDatabase(self)
     -- units
     for _, unitInfos in pairs(DT_UnitDb) do
 

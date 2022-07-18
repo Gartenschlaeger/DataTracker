@@ -1,5 +1,5 @@
----@class DTCore
-local _, core = ...
+---@class DataTracker_Core
+local DataTracker = select(2, ...)
 
 local DT_RESULT_ITEMS_COUNT = 18
 local DT_RESULT_DETAIL_ITEMS_COUNT = 17
@@ -36,7 +36,7 @@ local backBtn
 local lastItemDetailsIndex = nil
 
 function DT_DatabaseBrowser_OnLoad(self)
-    core.logging:Trace('DT_DatabaseBrowser_OnLoad')
+    DataTracker.logging:Trace('DT_DatabaseBrowser_OnLoad')
 
     DatabaseBrowserFrame = DT_DatabaseBrowserFrame
     DatabaseBrowserFrame.Title:SetText('DataTracker')
@@ -44,29 +44,29 @@ function DT_DatabaseBrowser_OnLoad(self)
 
     ItemSearchFrame = DatabaseBrowserFrame.itemSearch
     searchBtn = ItemSearchFrame.searchBtn
-    searchBtn:SetText(core.i18n.UI_SEARCH)
+    searchBtn:SetText(DataTracker.i18n.UI_SEARCH)
 
     local resetBtn = ItemSearchFrame.resetBtn
-    resetBtn:SetText(core.i18n.UI_RESET)
+    resetBtn:SetText(DataTracker.i18n.UI_RESET)
 
     searchBox = ItemSearchFrame.SearchBox
 
     ItemDetailsFrame = DatabaseBrowserFrame.itemDetails
 
     minKillsFilter = ItemDetailsFrame.MinKillCount
-    minKillsFilter.Instructions:SetText(core.i18n.UI_KILLS_PH)
+    minKillsFilter.Instructions:SetText(DataTracker.i18n.UI_KILLS_PH)
 
     unitNameFilter = ItemDetailsFrame.UnitName
-    unitNameFilter.Instructions:SetText(core.i18n.UI_UNIT_NAME)
+    unitNameFilter.Instructions:SetText(DataTracker.i18n.UI_UNIT_NAME)
 
     zoneNameFilter = ItemDetailsFrame.ZoneName
-    zoneNameFilter.Instructions:SetText(core.i18n.UI_ZONE_NAME)
+    zoneNameFilter.Instructions:SetText(DataTracker.i18n.UI_ZONE_NAME)
 
     goldLevelFilter = ItemDetailsFrame.GoldLevel
-    goldLevelFilter.Instructions:SetText(core.i18n.UI_GOLD_LEVEL)
+    goldLevelFilter.Instructions:SetText(DataTracker.i18n.UI_GOLD_LEVEL)
 
     backBtn = ItemDetailsFrame.backBtn
-    backBtn:SetText(core.i18n.UI_BACK)
+    backBtn:SetText(DataTracker.i18n.UI_BACK)
 
     -- disable by default
     for i = 1, DT_RESULT_ITEMS_COUNT do
@@ -79,7 +79,7 @@ function DT_DatabaseBrowser_OnLoad(self)
 end
 
 function DT_DatabaseBrowser_OnDragStart(self)
-    core.logging:Trace('DT_DatabaseBrowser_OnDragStart')
+    DataTracker.logging:Trace('DT_DatabaseBrowser_OnDragStart')
 
     if not self.isLocked then
         self:StartMoving()
@@ -87,17 +87,17 @@ function DT_DatabaseBrowser_OnDragStart(self)
 end
 
 function DT_DatabaseBrowser_OnDragStop(self)
-    core.logging:Trace('DT_DatabaseBrowser_OnDragStop')
+    DataTracker.logging:Trace('DT_DatabaseBrowser_OnDragStop')
 
     self:StopMovingOrSizing()
 end
 
 function DT_DatabaseBrowser_OnShow(self)
-    core.logging:Trace('DT_DatabaseBrowser_OnShow')
+    DataTracker.logging:Trace('DT_DatabaseBrowser_OnShow')
 end
 
 function DT_DatabaseBrowser_OnHide(self)
-    core.logging:Trace('DT_DatabaseBrowser_OnHide')
+    DataTracker.logging:Trace('DT_DatabaseBrowser_OnHide')
 end
 
 function DT_DatabaseBrowser_OnReset(self)
@@ -107,7 +107,7 @@ function DT_DatabaseBrowser_OnReset(self)
 end
 
 function DT_DatabaseBrowser_OnSearch(self)
-    core.logging:Trace('DT_DatabaseBrowser_OnSearch')
+    DataTracker.logging:Trace('DT_DatabaseBrowser_OnSearch')
 
     DT_SearchResults = {}
 
@@ -149,7 +149,7 @@ DT_SearchUnitResults = {}
 -- FauxScrollFrame_Update(frame, totalItems, numOfLines, pixelHeightPerLine)
 
 function DT_DatabaseBrowser_OnBack(self)
-    core.logging:Trace('DT_DatabaseBrowser_OnBack')
+    DataTracker.logging:Trace('DT_DatabaseBrowser_OnBack')
 
     lastItemDetailsIndex = nil
 
@@ -186,7 +186,7 @@ local function LoadItemDetails(itemIndex)
     lastItemDetailsIndex = itemIndex
     local itemResult = DT_SearchResults[itemIndex]
 
-    core.logging:Trace(itemResult.itemName, itemResult.itemId)
+    DataTracker.logging:Trace(itemResult.itemName, itemResult.itemId)
 
     DT_SearchUnitResults = {}
 
@@ -228,14 +228,14 @@ local function LoadItemDetails(itemIndex)
                 local ltd = tonumber(unitInfo['ltd']) or 0
                 for itemId, timesLooted in pairs(its) do
                     if (itemResult.itemId == itemId) then
-                        local percent = core.helper:CalculatePercentage(ltd, timesLooted)
+                        local percent = DataTracker.helper:CalculatePercentage(ltd, timesLooted)
                         local color = GetUnitColor(unitInfo.clf)
                         result = createUnitResult(
                             unitId,
                             unitInfo.nam,
                             unitInfo.kls,
-                            core.helper:CalculateAvgUnitGoldCount(unitInfo, goldLevel),
-                            core.helper:FormatPercentage(percent),
+                            DataTracker.helper:CalculateAvgUnitGoldCount(unitInfo, goldLevel),
+                            DataTracker.helper:FormatPercentage(percent),
                             color.r, color.g, color.b)
                         break
                     end
@@ -248,14 +248,14 @@ local function LoadItemDetails(itemIndex)
                 local ltd_sk = tonumber(unitInfo.ltd_sk) or 0
                 for itemId, timesLooted in pairs(unitItems) do
                     if (itemResult.itemId == itemId) then
-                        local percent = core.helper:CalculatePercentage(ltd_sk, timesLooted)
+                        local percent = DataTracker.helper:CalculatePercentage(ltd_sk, timesLooted)
                         local color = GetUnitColor(unitInfo.clf)
                         result = createUnitResult(
                             unitId,
                             unitInfo.nam,
                             unitInfo.kls,
-                            core.helper:CalculateAvgUnitGoldCount(unitInfo, goldLevel),
-                            core.helper:FormatPercentage(percent),
+                            DataTracker.helper:CalculateAvgUnitGoldCount(unitInfo, goldLevel),
+                            DataTracker.helper:FormatPercentage(percent),
                             color.r, color.g, color.b)
                         break
                     end
@@ -267,7 +267,7 @@ local function LoadItemDetails(itemIndex)
                 local mapIds = {}
                 if (unitInfo.mps) then
                     for mapId, _ in pairs(unitInfo.mps) do
-                        local mapName = core.helper:GetMapNameById(mapId)
+                        local mapName = DataTracker.helper:GetMapNameById(mapId)
                         if (mapName) then
                             table.insert(mapIds, mapId)
                             table.insert(maps, mapName)
@@ -315,7 +315,7 @@ function DT_AnyUnitFilter_TextChanged(self)
 end
 
 function DT_DatabaseBrowser_ScrollBarLoc_Update()
-    local totalResults = core.helper:GetTableSize(DT_SearchUnitResults)
+    local totalResults = DataTracker.helper:GetTableSize(DT_SearchUnitResults)
     FauxScrollFrame_Update(DT_DatabaseBrowser_ScrollBarLoc,
         totalResults,
         DT_RESULT_DETAIL_ITEMS_COUNT,
@@ -388,9 +388,9 @@ function DT_DatabaseBrowser_ScrollBarLoc_Update()
 end
 
 function DT_DatabaseBrowser_ScrollBar_Update()
-    core.logging:Trace('DT_DatabaseBrowser_ScrollBar_Update')
+    DataTracker.logging:Trace('DT_DatabaseBrowser_ScrollBar_Update')
 
-    local totalResults = core.helper:GetTableSize(DT_SearchResults)
+    local totalResults = DataTracker.helper:GetTableSize(DT_SearchResults)
     FauxScrollFrame_Update(DT_DatabaseBrowser_ScrollBar, totalResults, DT_RESULT_ITEMS_COUNT, DT_RESULT_PIXEL_HEIGHT)
 
     local offset = FauxScrollFrame_GetOffset(DT_DatabaseBrowser_ScrollBar)
