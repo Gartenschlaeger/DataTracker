@@ -6,11 +6,12 @@ local DT_RESULT_DETAIL_ITEMS_COUNT = 17
 local DT_RESULT_PIXEL_HEIGHT = 25
 
 ---@type Frame
-local DatabaseBrowserFrame
+local DataTrackerBrowserFrame
+
 ---@type Frame
-local ItemSearchFrame
+local itemSearchFrame
 ---@type Frame
-local ItemDetailsFrame
+local itemDetailsFrame
 
 ---@type Button
 local searchBtn
@@ -38,44 +39,44 @@ local lastItemDetailsIndex = nil
 function DT_DatabaseBrowser_OnLoad(self)
     DataTracker.logging:Trace('DT_DatabaseBrowser_OnLoad')
 
-    DatabaseBrowserFrame = DT_DatabaseBrowserFrame
-    DatabaseBrowserFrame.Title:SetText('DataTracker')
-    DatabaseBrowserFrame:RegisterForDrag("LeftButton")
+    DataTrackerBrowserFrame = DataTrackerBrowser
+    DataTrackerBrowserFrame.Title:SetText('DataTracker')
+    DataTrackerBrowserFrame:RegisterForDrag("LeftButton")
 
-    ItemSearchFrame = DatabaseBrowserFrame.itemSearch
-    searchBtn = ItemSearchFrame.searchBtn
+    itemSearchFrame = DataTrackerBrowserFrame.itemSearch
+    searchBtn = itemSearchFrame.searchBtn
     searchBtn:SetText(DataTracker.i18n.UI_SEARCH)
 
-    local resetBtn = ItemSearchFrame.resetBtn
+    local resetBtn = itemSearchFrame.resetBtn
     resetBtn:SetText(DataTracker.i18n.UI_RESET)
 
-    searchBox = ItemSearchFrame.SearchBox
+    searchBox = itemSearchFrame.SearchBox
 
-    ItemDetailsFrame = DatabaseBrowserFrame.itemDetails
+    itemDetailsFrame = DataTrackerBrowserFrame.itemDetails
 
-    minKillsFilter = ItemDetailsFrame.MinKillCount
+    minKillsFilter = itemDetailsFrame.MinKillCount
     minKillsFilter.Instructions:SetText(DataTracker.i18n.UI_KILLS_PH)
 
-    unitNameFilter = ItemDetailsFrame.UnitName
+    unitNameFilter = itemDetailsFrame.UnitName
     unitNameFilter.Instructions:SetText(DataTracker.i18n.UI_UNIT_NAME)
 
-    zoneNameFilter = ItemDetailsFrame.ZoneName
+    zoneNameFilter = itemDetailsFrame.ZoneName
     zoneNameFilter.Instructions:SetText(DataTracker.i18n.UI_ZONE_NAME)
 
-    goldLevelFilter = ItemDetailsFrame.GoldLevel
+    goldLevelFilter = itemDetailsFrame.GoldLevel
     goldLevelFilter.Instructions:SetText(DataTracker.i18n.UI_GOLD_LEVEL)
 
-    backBtn = ItemDetailsFrame.backBtn
+    backBtn = itemDetailsFrame.backBtn
     backBtn:SetText(DataTracker.i18n.UI_BACK)
 
     -- disable by default
     for i = 1, DT_RESULT_ITEMS_COUNT do
-        local btnEntry = _G['DT_DatabaseBrowser_Entry' .. i]
-        btnEntry:Disable()
+        local itemResultButton = itemSearchFrame['itemResult' .. i]
+        itemResultButton:Disable()
     end
 
     DT_DatabaseBrowser_ScrollBar_Update()
-    ItemSearchFrame:Show()
+    itemSearchFrame:Show()
 end
 
 function DT_DatabaseBrowser_OnDragStart(self)
@@ -154,9 +155,9 @@ function DT_DatabaseBrowser_OnBack(self)
     lastItemDetailsIndex = nil
 
     ---@diagnostic disable-next-line: undefined-field
-    DatabaseBrowserFrame.itemSearch:Show()
+    DataTrackerBrowserFrame.itemSearch:Show()
     ---@diagnostic disable-next-line: undefined-field
-    DatabaseBrowserFrame.itemDetails:Hide()
+    DataTrackerBrowserFrame.itemDetails:Hide()
 end
 
 local function createUnitResult(unitId, unitName, kills, gold, percent, colorR, colorG, colorB)
@@ -191,7 +192,7 @@ local function LoadItemDetails(itemIndex)
     DT_SearchUnitResults = {}
 
     ---@type FontString
-    local title = DT_DatabaseBrowser_DetailTitle
+    local title = itemDetailsFrame.itemNameTitle
     local itemTextureId = GetItemIcon(itemResult.itemId)
     local itemTexture = '|T' .. itemTextureId .. ':22|t'
     title:SetText(itemTexture .. ' ' .. itemResult.itemName)
@@ -302,9 +303,9 @@ local function LoadItemDetails(itemIndex)
     DT_DatabaseBrowser_ScrollBarLoc_Update()
 
     ---@diagnostic disable-next-line: undefined-field
-    DatabaseBrowserFrame.itemSearch:Hide()
+    DataTrackerBrowserFrame.itemSearch:Hide()
     ---@diagnostic disable-next-line: undefined-field
-    DatabaseBrowserFrame.itemDetails:Show()
+    DataTrackerBrowserFrame.itemDetails:Show()
 end
 
 function DT_AnyUnitFilter_TextChanged(self)
@@ -316,34 +317,34 @@ end
 
 function DT_DatabaseBrowser_ScrollBarLoc_Update()
     local totalResults = DataTracker.helper:GetTableSize(DT_SearchUnitResults)
-    FauxScrollFrame_Update(DT_DatabaseBrowser_ScrollBarLoc,
+    FauxScrollFrame_Update(itemDetailsFrame.unitsScrollFrame,
         totalResults,
         DT_RESULT_DETAIL_ITEMS_COUNT,
         DT_RESULT_PIXEL_HEIGHT)
 
-    local offset = FauxScrollFrame_GetOffset(DT_DatabaseBrowser_ScrollBarLoc)
+    local offset = FauxScrollFrame_GetOffset(itemDetailsFrame.unitsScrollFrame)
 
     -- print('totalResults:', totalResults, ', from:', offset, 'to:', offset + DT_RESULT_ITEMS_COUNT)
 
     for i = 1, DT_RESULT_DETAIL_ITEMS_COUNT do
         local result = DT_SearchUnitResults[i + offset]
 
-        local btn = _G['DT_DatabaseBrowser_EntryLoc' .. i]
+        local btn = itemDetailsFrame['unitResult' .. i]
 
         ---@type FontString
-        local fsUnit = _G["DT_DatabaseBrowser_EntryLoc" .. i .. 'Unit']
+        local fsUnit = btn.unit
 
         ---@type FontString
-        local fsMaps = _G["DT_DatabaseBrowser_EntryLoc" .. i .. 'Zone']
+        local fsMaps = btn.zone
 
         ---@type FontString
-        local fsGold = _G["DT_DatabaseBrowser_EntryLoc" .. i .. 'Gold']
+        local fsGold = btn.gold
 
         ---@type FontString
-        local fsKills = _G["DT_DatabaseBrowser_EntryLoc" .. i .. 'Kills']
+        local fsKills = btn.kills
 
         ---@type FontString
-        local fsPercentage = _G["DT_DatabaseBrowser_EntryLoc" .. i .. 'Percentage']
+        local fsPercentage = btn.percentage
 
         if (result) then
             fsUnit:SetText(result.unitName)
@@ -391,25 +392,26 @@ function DT_DatabaseBrowser_ScrollBar_Update()
     DataTracker.logging:Trace('DT_DatabaseBrowser_ScrollBar_Update')
 
     local totalResults = DataTracker.helper:GetTableSize(DT_SearchResults)
-    FauxScrollFrame_Update(DT_DatabaseBrowser_ScrollBar, totalResults, DT_RESULT_ITEMS_COUNT, DT_RESULT_PIXEL_HEIGHT)
+    FauxScrollFrame_Update(itemSearchFrame.itemsScrollFrame, totalResults, DT_RESULT_ITEMS_COUNT, DT_RESULT_PIXEL_HEIGHT)
 
-    local offset = FauxScrollFrame_GetOffset(DT_DatabaseBrowser_ScrollBar)
+    local offset = FauxScrollFrame_GetOffset(itemSearchFrame.itemsScrollFrame)
 
-    --print('totalResults:', totalResults, 'from:', offset, 'to:', offset + DT_RESULT_ITEMS_COUNT)
+    -- print('totalResults:', totalResults, 'from:', offset, 'to:', offset + DT_RESULT_ITEMS_COUNT)
 
     for i = 1, DT_RESULT_ITEMS_COUNT do
         local result = DT_SearchResults[i + offset]
 
-        local btn = _G['DT_DatabaseBrowser_Entry' .. i]
+        local btn = itemSearchFrame['itemResult' .. i]
+
         btn:SetAttribute('itemIndex', i + offset)
         btn:SetScript("OnClick", function(self)
             local itemIndex = tonumber(self:GetAttribute('itemIndex'))
             LoadItemDetails(itemIndex)
         end)
 
-        local fsVal1 = _G["DT_DatabaseBrowser_Entry" .. i .. 'Val1']
-        local fsVal2 = _G["DT_DatabaseBrowser_Entry" .. i .. 'Val2']
-        local fsVal3 = _G["DT_DatabaseBrowser_Entry" .. i .. 'Val3']
+        local fsVal1 = btn.val1
+        local fsVal2 = btn.val2
+        local fsVal3 = btn.val3
 
         if (result) then
             btn:Enable()

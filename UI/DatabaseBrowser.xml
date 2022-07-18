@@ -1,14 +1,15 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" 
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
     xsi:schemaLocation="http://www.blizzard.com/wow/ui/">
-    <Button name="DT_DatabaseBrowser_ResultItemTemplate" virtual="true">
+    <!-- templates -->
+    <Button name="DataTrackerItemResultButton" virtual="true">
         <Size x="750" y="25"/>
         <Layers>
             <Layer level="BACKGROUND">
-                <Texture name="$parentHighlight" file="Interface\QuestFrame\UI-QuestTitleHighlight" alphaMode="ADD" setAllPoints="true" hidden="true" />
+                <Texture parentKey="highlightTexture" file="Interface\QuestFrame\UI-QuestTitleHighlight" alphaMode="ADD" setAllPoints="true" hidden="true" />
             </Layer>
             <Layer level="ARTWORK">
-                <FontString name="$parentVal1" inherits="GameFontNormalSmall" justifyH="LEFT">
+                <FontString parentKey="val1" inherits="GameFontNormalSmall" justifyH="LEFT">
                     <Size x="450" y="25"/>
                     <Anchors>
                         <Anchor point="LEFT">
@@ -16,7 +17,7 @@
                         </Anchor>
                     </Anchors>
                 </FontString>
-                <FontString name="$parentVal2" inherits="GameFontNormalSmall" justifyH="LEFT">
+                <FontString parentKey="val2" inherits="GameFontNormalSmall" justifyH="LEFT">
                     <Size x="50" y="25"/>
                     <Anchors>
                         <Anchor point="LEFT">
@@ -24,7 +25,7 @@
                         </Anchor>
                     </Anchors>
                 </FontString>
-                <FontString name="$parentVal3" inherits="GameFontNormalSmall" justifyH="LEFT">
+                <FontString parentKey="val3" inherits="GameFontNormalSmall" justifyH="LEFT">
                     <Size x="250" y="25"/>
                     <Anchors>
                         <Anchor point="LEFT">
@@ -35,19 +36,18 @@
             </Layer>
         </Layers>
         <Scripts>
-            <OnEnter>_G[self:GetName().."Highlight"]:Show()</OnEnter>
-            <OnLeave>_G[self:GetName().."Highlight"]:Hide()</OnLeave>
+            <OnEnter>self.highlightTexture:Show()</OnEnter>
+            <OnLeave>self.highlightTexture:Hide()</OnLeave>
         </Scripts>
-        <NormalText name="$parentNormalText" inherits="GameFontNormalSmall" justifyH="LEFT"/>
     </Button>
-    <Button name="DT_DatabaseBrowser_ResultLocTemplate" virtual="true">
+    <Button name="DataTrackerUnitResultButton" virtual="true">
         <Size x="750" y="25"/>
         <Layers>
             <Layer level="BACKGROUND">
-                <Texture name="$parentHighlight" file="Interface\QuestFrame\UI-QuestTitleHighlight" alphaMode="ADD" setAllPoints="true" hidden="true" />
+                <Texture parentKey="highlightTexture" file="Interface\QuestFrame\UI-QuestTitleHighlight" alphaMode="ADD" setAllPoints="true" hidden="true" />
             </Layer>
             <Layer level="ARTWORK">
-                <FontString name="$parentUnit" inherits="GameFontNormalSmall" justifyH="LEFT">
+                <FontString parentKey="unit" inherits="GameFontNormalSmall" justifyH="LEFT">
                     <Size x="250" y="25"/>
                     <Anchors>
                         <Anchor point="LEFT">
@@ -55,7 +55,7 @@
                         </Anchor>
                     </Anchors>
                 </FontString>
-                <FontString name="$parentZone" inherits="GameFontNormalSmall" justifyH="LEFT">
+                <FontString parentKey="zone" inherits="GameFontNormalSmall" justifyH="LEFT">
                     <Size x="250" y="25"/>
                     <Anchors>
                         <Anchor point="LEFT">
@@ -63,7 +63,7 @@
                         </Anchor>
                     </Anchors>
                 </FontString>
-                <FontString name="$parentGold" inherits="GameFontNormalSmall" justifyH="RIGHT">
+                <FontString parentKey="gold" inherits="GameFontNormalSmall" justifyH="RIGHT">
                     <Size x="100" y="25"/>
                     <Anchors>
                         <Anchor point="LEFT">
@@ -71,7 +71,7 @@
                         </Anchor>
                     </Anchors>
                 </FontString>
-                <FontString name="$parentKills" inherits="GameFontNormalSmall" justifyH="RIGHT">
+                <FontString parentKey="kills" inherits="GameFontNormalSmall" justifyH="RIGHT">
                     <Size x="80" y="25"/>
                     <Anchors>
                         <Anchor point="LEFT">
@@ -79,7 +79,7 @@
                         </Anchor>
                     </Anchors>
                 </FontString>
-                <FontString name="$parentPercentage" inherits="GameFontNormalSmall" justifyH="RIGHT">
+                <FontString parentKey="percentage" inherits="GameFontNormalSmall" justifyH="RIGHT">
                     <Size x="60" y="25"/>
                     <Anchors>
                         <Anchor point="LEFT">
@@ -90,12 +90,12 @@
             </Layer>
         </Layers>
         <Scripts>
-            <OnEnter>_G[self:GetName().."Highlight"]:Show()</OnEnter>
-            <OnLeave>_G[self:GetName().."Highlight"]:Hide()</OnLeave>
+            <OnEnter>self.highlightTexture:Show()</OnEnter>
+            <OnLeave>self.highlightTexture:Hide()</OnLeave>
         </Scripts>
-        <NormalText name="$parentNormalText" inherits="GameFontNormalSmall" justifyH="LEFT"/>
     </Button>
-    <Frame name="DT_DatabaseBrowserFrame" 
+    <!-- main frame -->
+    <Frame name="DataTrackerBrowser" 
         parent="UIParent" 
         inherits="UIPanelDialogTemplate"
         enableMouse="true" 
@@ -147,108 +147,110 @@
                         </Scripts>
                     </Button>
                     <!-- scroll area -->
-                    <ScrollFrame name="DT_DatabaseBrowser_ScrollBar" inherits="FauxScrollFrameTemplate">
+                    <ScrollFrame parentKey="itemsScrollFrame" inherits="FauxScrollFrameTemplate">
                         <Anchors>
                             <Anchor point="TOPLEFT" x="-20" y="-40"  />
                             <Anchor point="BOTTOMRIGHT" x="-20" y="-5" />
                         </Anchors>
                         <Scripts>
-                            <OnVerticalScroll>FauxScrollFrame_OnVerticalScroll(self, offset, 25, DT_DatabaseBrowser_ScrollBar_Update)</OnVerticalScroll>
+                            <OnVerticalScroll>
+                                FauxScrollFrame_OnVerticalScroll(self, offset, 25, DT_DatabaseBrowser_ScrollBar_Update)
+                            </OnVerticalScroll>
                         </Scripts>
                     </ScrollFrame>
                     <!-- results -->
-                    <Button name="DT_DatabaseBrowser_Entry1" inherits="DT_DatabaseBrowser_ResultItemTemplate">
+                    <Button parentKey="itemResult1" inherits="DataTrackerItemResultButton">
                         <Anchors>
-                            <Anchor point="TOPLEFT" relativeTo="DT_DatabaseBrowser_ScrollBar" relativePoint="TOPLEFT">
+                            <Anchor point="TOPLEFT" relativeKey="$parent.itemsScrollFrame" relativePoint="TOPLEFT">
                                 <Offset>
                                     <AbsDimension x="18" y="0"/>
                                 </Offset>
                             </Anchor>
                         </Anchors>
                     </Button>
-                    <Button name="DT_DatabaseBrowser_Entry2" inherits="DT_DatabaseBrowser_ResultItemTemplate">
+                    <Button parentKey="itemResult2" inherits="DataTrackerItemResultButton">
                         <Anchors>
-                            <Anchor point="TOPLEFT" relativeTo="DT_DatabaseBrowser_Entry1" relativePoint="BOTTOMLEFT"/>
+                            <Anchor point="TOPLEFT" relativeKey="$parent.itemResult1" relativePoint="BOTTOMLEFT"/>
                         </Anchors>
                     </Button>
-                    <Button name="DT_DatabaseBrowser_Entry3" inherits="DT_DatabaseBrowser_ResultItemTemplate">
+                    <Button parentKey="itemResult3" inherits="DataTrackerItemResultButton">
                         <Anchors>
-                            <Anchor point="TOPLEFT" relativeTo="DT_DatabaseBrowser_Entry2" relativePoint="BOTTOMLEFT"/>
+                            <Anchor point="TOPLEFT" relativeKey="$parent.itemResult2" relativePoint="BOTTOMLEFT"/>
                         </Anchors>
                     </Button>
-                    <Button name="DT_DatabaseBrowser_Entry4" inherits="DT_DatabaseBrowser_ResultItemTemplate">
+                    <Button parentKey="itemResult4" inherits="DataTrackerItemResultButton">
                         <Anchors>
-                            <Anchor point="TOPLEFT" relativeTo="DT_DatabaseBrowser_Entry3" relativePoint="BOTTOMLEFT"/>
+                            <Anchor point="TOPLEFT" relativeKey="$parent.itemResult3" relativePoint="BOTTOMLEFT"/>
                         </Anchors>
                     </Button>
-                    <Button name="DT_DatabaseBrowser_Entry5" inherits="DT_DatabaseBrowser_ResultItemTemplate">
+                    <Button parentKey="itemResult5" inherits="DataTrackerItemResultButton">
                         <Anchors>
-                            <Anchor point="TOPLEFT" relativeTo="DT_DatabaseBrowser_Entry4" relativePoint="BOTTOMLEFT"/>
+                            <Anchor point="TOPLEFT" relativeKey="$parent.itemResult4" relativePoint="BOTTOMLEFT"/>
                         </Anchors>
                     </Button>
-                    <Button name="DT_DatabaseBrowser_Entry6" inherits="DT_DatabaseBrowser_ResultItemTemplate">
+                    <Button parentKey="itemResult6" inherits="DataTrackerItemResultButton">
                         <Anchors>
-                            <Anchor point="TOPLEFT" relativeTo="DT_DatabaseBrowser_Entry5" relativePoint="BOTTOMLEFT"/>
+                            <Anchor point="TOPLEFT" relativeKey="$parent.itemResult5" relativePoint="BOTTOMLEFT"/>
                         </Anchors>
                     </Button>
-                    <Button name="DT_DatabaseBrowser_Entry7" inherits="DT_DatabaseBrowser_ResultItemTemplate">
+                    <Button parentKey="itemResult7" inherits="DataTrackerItemResultButton">
                         <Anchors>
-                            <Anchor point="TOPLEFT" relativeTo="DT_DatabaseBrowser_Entry6" relativePoint="BOTTOMLEFT"/>
+                            <Anchor point="TOPLEFT" relativeKey="$parent.itemResult6" relativePoint="BOTTOMLEFT"/>
                         </Anchors>
                     </Button>
-                    <Button name="DT_DatabaseBrowser_Entry8" inherits="DT_DatabaseBrowser_ResultItemTemplate">
+                    <Button parentKey="itemResult8" inherits="DataTrackerItemResultButton">
                         <Anchors>
-                            <Anchor point="TOPLEFT" relativeTo="DT_DatabaseBrowser_Entry7" relativePoint="BOTTOMLEFT"/>
+                            <Anchor point="TOPLEFT" relativeKey="$parent.itemResult7" relativePoint="BOTTOMLEFT"/>
                         </Anchors>
                     </Button>
-                    <Button name="DT_DatabaseBrowser_Entry9" inherits="DT_DatabaseBrowser_ResultItemTemplate">
+                    <Button parentKey="itemResult9" inherits="DataTrackerItemResultButton">
                         <Anchors>
-                            <Anchor point="TOPLEFT" relativeTo="DT_DatabaseBrowser_Entry8" relativePoint="BOTTOMLEFT"/>
+                            <Anchor point="TOPLEFT" relativeKey="$parent.itemResult8" relativePoint="BOTTOMLEFT"/>
                         </Anchors>
                     </Button>
-                    <Button name="DT_DatabaseBrowser_Entry10" inherits="DT_DatabaseBrowser_ResultItemTemplate">
+                    <Button parentKey="itemResult10" inherits="DataTrackerItemResultButton">
                         <Anchors>
-                            <Anchor point="TOPLEFT" relativeTo="DT_DatabaseBrowser_Entry9" relativePoint="BOTTOMLEFT"/>
+                            <Anchor point="TOPLEFT" relativeKey="$parent.itemResult9" relativePoint="BOTTOMLEFT"/>
                         </Anchors>
                     </Button>
-                    <Button name="DT_DatabaseBrowser_Entry11" inherits="DT_DatabaseBrowser_ResultItemTemplate">
+                    <Button parentKey="itemResult11" inherits="DataTrackerItemResultButton">
                         <Anchors>
-                            <Anchor point="TOPLEFT" relativeTo="DT_DatabaseBrowser_Entry10" relativePoint="BOTTOMLEFT"/>
+                            <Anchor point="TOPLEFT" relativeKey="$parent.itemResult10" relativePoint="BOTTOMLEFT"/>
                         </Anchors>
                     </Button>
-                    <Button name="DT_DatabaseBrowser_Entry12" inherits="DT_DatabaseBrowser_ResultItemTemplate">
+                    <Button parentKey="itemResult12" inherits="DataTrackerItemResultButton">
                         <Anchors>
-                            <Anchor point="TOPLEFT" relativeTo="DT_DatabaseBrowser_Entry11" relativePoint="BOTTOMLEFT"/>
+                            <Anchor point="TOPLEFT" relativeKey="$parent.itemResult11" relativePoint="BOTTOMLEFT"/>
                         </Anchors>
                     </Button>
-                    <Button name="DT_DatabaseBrowser_Entry13" inherits="DT_DatabaseBrowser_ResultItemTemplate">
+                    <Button parentKey="itemResult13" inherits="DataTrackerItemResultButton">
                         <Anchors>
-                            <Anchor point="TOPLEFT" relativeTo="DT_DatabaseBrowser_Entry12" relativePoint="BOTTOMLEFT"/>
+                            <Anchor point="TOPLEFT" relativeKey="$parent.itemResult12" relativePoint="BOTTOMLEFT"/>
                         </Anchors>
                     </Button>
-                    <Button name="DT_DatabaseBrowser_Entry14" inherits="DT_DatabaseBrowser_ResultItemTemplate">
+                    <Button parentKey="itemResult14" inherits="DataTrackerItemResultButton">
                         <Anchors>
-                            <Anchor point="TOPLEFT" relativeTo="DT_DatabaseBrowser_Entry13" relativePoint="BOTTOMLEFT"/>
+                            <Anchor point="TOPLEFT" relativeKey="$parent.itemResult13" relativePoint="BOTTOMLEFT"/>
                         </Anchors>
                     </Button>
-                    <Button name="DT_DatabaseBrowser_Entry15" inherits="DT_DatabaseBrowser_ResultItemTemplate">
+                    <Button parentKey="itemResult15" inherits="DataTrackerItemResultButton">
                         <Anchors>
-                            <Anchor point="TOPLEFT" relativeTo="DT_DatabaseBrowser_Entry14" relativePoint="BOTTOMLEFT"/>
+                            <Anchor point="TOPLEFT" relativeKey="$parent.itemResult14" relativePoint="BOTTOMLEFT"/>
                         </Anchors>
                     </Button>
-                    <Button name="DT_DatabaseBrowser_Entry16" inherits="DT_DatabaseBrowser_ResultItemTemplate">
+                    <Button parentKey="itemResult16" inherits="DataTrackerItemResultButton">
                         <Anchors>
-                            <Anchor point="TOPLEFT" relativeTo="DT_DatabaseBrowser_Entry15" relativePoint="BOTTOMLEFT"/>
+                            <Anchor point="TOPLEFT" relativeKey="$parent.itemResult15" relativePoint="BOTTOMLEFT"/>
                         </Anchors>
                     </Button>
-                    <Button name="DT_DatabaseBrowser_Entry17" inherits="DT_DatabaseBrowser_ResultItemTemplate">
+                    <Button parentKey="itemResult17" inherits="DataTrackerItemResultButton">
                         <Anchors>
-                            <Anchor point="TOPLEFT" relativeTo="DT_DatabaseBrowser_Entry16" relativePoint="BOTTOMLEFT"/>
+                            <Anchor point="TOPLEFT" relativeKey="$parent.itemResult16" relativePoint="BOTTOMLEFT"/>
                         </Anchors>
                     </Button>
-                    <Button name="DT_DatabaseBrowser_Entry18" inherits="DT_DatabaseBrowser_ResultItemTemplate">
+                    <Button parentKey="itemResult18" inherits="DataTrackerItemResultButton">
                         <Anchors>
-                            <Anchor point="TOPLEFT" relativeTo="DT_DatabaseBrowser_Entry17" relativePoint="BOTTOMLEFT"/>
+                            <Anchor point="TOPLEFT" relativeKey="$parent.itemResult17" relativePoint="BOTTOMLEFT"/>
                         </Anchors>
                     </Button>
                 </Frames>
@@ -261,7 +263,7 @@
                 </Anchors>
                 <Layers>
                     <Layer level="OVERLAY">
-                        <FontString name="DT_DatabaseBrowser_DetailTitle" inherits="GameFontNormalLarge" justifyH="LEFT">
+                        <FontString parentKey="itemNameTitle" inherits="GameFontNormalLarge" justifyH="LEFT">
                             <Size x="450" y="25"/>
                             <Anchors>
                                 <Anchor point="TOPLEFT">
@@ -319,7 +321,7 @@
                         </Scripts>
                     </Button>
                     <!-- scroll area -->
-                    <ScrollFrame name="DT_DatabaseBrowser_ScrollBarLoc" inherits="FauxScrollFrameTemplate">
+                    <ScrollFrame parentKey="unitsScrollFrame" inherits="FauxScrollFrameTemplate">
                         <Anchors>
                             <Anchor point="TOPLEFT" x="-20" y="-65"  />
                             <Anchor point="BOTTOMRIGHT" x="-20" y="-5" />
@@ -329,93 +331,93 @@
                         </Scripts>
                     </ScrollFrame>
                     <!-- results -->
-                    <Button name="DT_DatabaseBrowser_EntryLoc1" inherits="DT_DatabaseBrowser_ResultLocTemplate">
+                    <Button parentKey="unitResult1" inherits="DataTrackerUnitResultButton">
                         <Anchors>
-                            <Anchor point="TOPLEFT" relativeTo="DT_DatabaseBrowser_ScrollBar" relativePoint="TOPLEFT">
+                            <Anchor point="TOPLEFT" relativeKey="$parent.unitsScrollFrame" relativePoint="TOPLEFT">
                                 <Offset>
-                                    <AbsDimension x="18" y="-25"/>
+                                    <AbsDimension x="18" y="0"/>
                                 </Offset>
                             </Anchor>
                         </Anchors>
                     </Button>
-                    <Button name="DT_DatabaseBrowser_EntryLoc2" inherits="DT_DatabaseBrowser_ResultLocTemplate">
+                    <Button parentKey="unitResult2" inherits="DataTrackerUnitResultButton">
                         <Anchors>
-                            <Anchor point="TOPLEFT" relativeTo="DT_DatabaseBrowser_EntryLoc1" relativePoint="BOTTOMLEFT"/>
+                            <Anchor point="TOPLEFT" relativeKey="$parent.unitResult1" relativePoint="BOTTOMLEFT"/>
                         </Anchors>
                     </Button>
-                    <Button name="DT_DatabaseBrowser_EntryLoc3" inherits="DT_DatabaseBrowser_ResultLocTemplate">
+                    <Button parentKey="unitResult3" inherits="DataTrackerUnitResultButton">
                         <Anchors>
-                            <Anchor point="TOPLEFT" relativeTo="DT_DatabaseBrowser_EntryLoc2" relativePoint="BOTTOMLEFT"/>
+                            <Anchor point="TOPLEFT" relativeKey="$parent.unitResult2" relativePoint="BOTTOMLEFT"/>
                         </Anchors>
                     </Button>
-                    <Button name="DT_DatabaseBrowser_EntryLoc4" inherits="DT_DatabaseBrowser_ResultLocTemplate">
+                    <Button parentKey="unitResult4" inherits="DataTrackerUnitResultButton">
                         <Anchors>
-                            <Anchor point="TOPLEFT" relativeTo="DT_DatabaseBrowser_EntryLoc3" relativePoint="BOTTOMLEFT"/>
+                            <Anchor point="TOPLEFT" relativeKey="$parent.unitResult3" relativePoint="BOTTOMLEFT"/>
                         </Anchors>
                     </Button>
-                    <Button name="DT_DatabaseBrowser_EntryLoc5" inherits="DT_DatabaseBrowser_ResultLocTemplate">
+                    <Button parentKey="unitResult5" inherits="DataTrackerUnitResultButton">
                         <Anchors>
-                            <Anchor point="TOPLEFT" relativeTo="DT_DatabaseBrowser_EntryLoc4" relativePoint="BOTTOMLEFT"/>
+                            <Anchor point="TOPLEFT" relativeKey="$parent.unitResult4" relativePoint="BOTTOMLEFT"/>
                         </Anchors>
                     </Button>
-                    <Button name="DT_DatabaseBrowser_EntryLoc6" inherits="DT_DatabaseBrowser_ResultLocTemplate">
+                    <Button parentKey="unitResult6" inherits="DataTrackerUnitResultButton">
                         <Anchors>
-                            <Anchor point="TOPLEFT" relativeTo="DT_DatabaseBrowser_EntryLoc5" relativePoint="BOTTOMLEFT"/>
+                            <Anchor point="TOPLEFT" relativeKey="$parent.unitResult5" relativePoint="BOTTOMLEFT"/>
                         </Anchors>
                     </Button>
-                    <Button name="DT_DatabaseBrowser_EntryLoc7" inherits="DT_DatabaseBrowser_ResultLocTemplate">
+                    <Button parentKey="unitResult7" inherits="DataTrackerUnitResultButton">
                         <Anchors>
-                            <Anchor point="TOPLEFT" relativeTo="DT_DatabaseBrowser_EntryLoc6" relativePoint="BOTTOMLEFT"/>
+                            <Anchor point="TOPLEFT" relativeKey="$parent.unitResult6" relativePoint="BOTTOMLEFT"/>
                         </Anchors>
                     </Button>
-                    <Button name="DT_DatabaseBrowser_EntryLoc8" inherits="DT_DatabaseBrowser_ResultLocTemplate">
+                    <Button parentKey="unitResult8" inherits="DataTrackerUnitResultButton">
                         <Anchors>
-                            <Anchor point="TOPLEFT" relativeTo="DT_DatabaseBrowser_EntryLoc7" relativePoint="BOTTOMLEFT"/>
+                            <Anchor point="TOPLEFT" relativeKey="$parent.unitResult7" relativePoint="BOTTOMLEFT"/>
                         </Anchors>
                     </Button>
-                    <Button name="DT_DatabaseBrowser_EntryLoc9" inherits="DT_DatabaseBrowser_ResultLocTemplate">
+                    <Button parentKey="unitResult9" inherits="DataTrackerUnitResultButton">
                         <Anchors>
-                            <Anchor point="TOPLEFT" relativeTo="DT_DatabaseBrowser_EntryLoc8" relativePoint="BOTTOMLEFT"/>
+                            <Anchor point="TOPLEFT" relativeKey="$parent.unitResult8" relativePoint="BOTTOMLEFT"/>
                         </Anchors>
                     </Button>
-                    <Button name="DT_DatabaseBrowser_EntryLoc10" inherits="DT_DatabaseBrowser_ResultLocTemplate">
+                    <Button parentKey="unitResult10" inherits="DataTrackerUnitResultButton">
                         <Anchors>
-                            <Anchor point="TOPLEFT" relativeTo="DT_DatabaseBrowser_EntryLoc9" relativePoint="BOTTOMLEFT"/>
+                            <Anchor point="TOPLEFT" relativeKey="$parent.unitResult9" relativePoint="BOTTOMLEFT"/>
                         </Anchors>
                     </Button>
-                    <Button name="DT_DatabaseBrowser_EntryLoc11" inherits="DT_DatabaseBrowser_ResultLocTemplate">
+                    <Button parentKey="unitResult11" inherits="DataTrackerUnitResultButton">
                         <Anchors>
-                            <Anchor point="TOPLEFT" relativeTo="DT_DatabaseBrowser_EntryLoc10" relativePoint="BOTTOMLEFT"/>
+                            <Anchor point="TOPLEFT" relativeKey="$parent.unitResult10" relativePoint="BOTTOMLEFT"/>
                         </Anchors>
                     </Button>
-                    <Button name="DT_DatabaseBrowser_EntryLoc12" inherits="DT_DatabaseBrowser_ResultLocTemplate">
+                    <Button parentKey="unitResult12" inherits="DataTrackerUnitResultButton">
                         <Anchors>
-                            <Anchor point="TOPLEFT" relativeTo="DT_DatabaseBrowser_EntryLoc11" relativePoint="BOTTOMLEFT"/>
+                            <Anchor point="TOPLEFT" relativeKey="$parent.unitResult11" relativePoint="BOTTOMLEFT"/>
                         </Anchors>
                     </Button>
-                    <Button name="DT_DatabaseBrowser_EntryLoc13" inherits="DT_DatabaseBrowser_ResultLocTemplate">
+                    <Button parentKey="unitResult13" inherits="DataTrackerUnitResultButton">
                         <Anchors>
-                            <Anchor point="TOPLEFT" relativeTo="DT_DatabaseBrowser_EntryLoc12" relativePoint="BOTTOMLEFT"/>
+                            <Anchor point="TOPLEFT" relativeKey="$parent.unitResult12" relativePoint="BOTTOMLEFT"/>
                         </Anchors>
                     </Button>
-                    <Button name="DT_DatabaseBrowser_EntryLoc14" inherits="DT_DatabaseBrowser_ResultLocTemplate">
+                    <Button parentKey="unitResult14" inherits="DataTrackerUnitResultButton">
                         <Anchors>
-                            <Anchor point="TOPLEFT" relativeTo="DT_DatabaseBrowser_EntryLoc13" relativePoint="BOTTOMLEFT"/>
+                            <Anchor point="TOPLEFT" relativeKey="$parent.unitResult13" relativePoint="BOTTOMLEFT"/>
                         </Anchors>
                     </Button>
-                    <Button name="DT_DatabaseBrowser_EntryLoc15" inherits="DT_DatabaseBrowser_ResultLocTemplate">
+                    <Button parentKey="unitResult15" inherits="DataTrackerUnitResultButton">
                         <Anchors>
-                            <Anchor point="TOPLEFT" relativeTo="DT_DatabaseBrowser_EntryLoc14" relativePoint="BOTTOMLEFT"/>
+                            <Anchor point="TOPLEFT" relativeKey="$parent.unitResult14" relativePoint="BOTTOMLEFT"/>
                         </Anchors>
                     </Button>
-                    <Button name="DT_DatabaseBrowser_EntryLoc16" inherits="DT_DatabaseBrowser_ResultLocTemplate">
+                    <Button parentKey="unitResult16" inherits="DataTrackerUnitResultButton">
                         <Anchors>
-                            <Anchor point="TOPLEFT" relativeTo="DT_DatabaseBrowser_EntryLoc15" relativePoint="BOTTOMLEFT"/>
+                            <Anchor point="TOPLEFT" relativeKey="$parent.unitResult15" relativePoint="BOTTOMLEFT"/>
                         </Anchors>
                     </Button>
-                    <Button name="DT_DatabaseBrowser_EntryLoc17" inherits="DT_DatabaseBrowser_ResultLocTemplate">
+                    <Button parentKey="unitResult17" inherits="DataTrackerUnitResultButton">
                         <Anchors>
-                            <Anchor point="TOPLEFT" relativeTo="DT_DatabaseBrowser_EntryLoc16" relativePoint="BOTTOMLEFT"/>
+                            <Anchor point="TOPLEFT" relativeKey="$parent.unitResult16" relativePoint="BOTTOMLEFT"/>
                         </Anchors>
                     </Button>
                 </Frames>
