@@ -78,7 +78,6 @@ local function addMoney(context)
                     addDoubleLine(context, core.i18n.TT_MAX_COP, GetCoinTextureString(maxCopper))
                 end
             end
-
         end
     end
 end
@@ -105,7 +104,6 @@ local function addLoot(context)
                     if (DT_Options.Tooltip.ShowIcons) then
                         local itemTextureId = GetItemIcon(itemId)
                         iconPrefix = '|T' .. itemTextureId .. ':14|t '
-
                     end
 
                     addDoubleLineRGB(context,
@@ -139,7 +137,6 @@ local function addSkinningLoot(context)
                     if (DT_Options.Tooltip.ShowIcons) then
                         local itemTextureId = GetItemIcon(itemId)
                         iconPrefix = '|T' .. itemTextureId .. ':14|t '
-
                     end
 
                     local r, g, b, _ = GetItemQualityColor(itemQuality)
@@ -174,7 +171,6 @@ local function addMiningLoot(context)
                     if (DT_Options.Tooltip.ShowIcons) then
                         local itemTextureId = GetItemIcon(itemId)
                         iconPrefix = '|T' .. itemTextureId .. ':14|t '
-
                     end
 
                     local r, g, b, _ = GetItemQualityColor(itemQuality)
@@ -209,7 +205,6 @@ local function addHerbalismLoot(context)
                     if (DT_Options.Tooltip.ShowIcons) then
                         local itemTextureId = GetItemIcon(itemId)
                         iconPrefix = '|T' .. itemTextureId .. ':14|t '
-
                     end
 
                     local r, g, b, _ = GetItemQualityColor(itemQuality)
@@ -293,7 +288,7 @@ local function OnTooltipCleared()
 end
 
 function core:InitTooltipHooks()
-    GameTooltip:HookScript("OnTooltipSetUnit", OnTooltipSetUnit)
-    GameTooltip:HookScript('OnTooltipSetItem', OnTooltipSetItem)
-    GameTooltip:HookScript("OnTooltipCleared", OnTooltipCleared)
+    --GameTooltip:HookScript("OnTooltipSetUnit", OnTooltipSetUnit)
+    --GameTooltip:HookScript('OnTooltipSetItem', OnTooltipSetItem)
+    --GameTooltip:HookScript("OnTooltipCleared", OnTooltipCleared)
 end
