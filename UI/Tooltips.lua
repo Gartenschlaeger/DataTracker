@@ -289,7 +289,6 @@ end
 
 function core:InitTooltipHooks()
     TooltipDataProcessor.AddTooltipPostCall(Enum.TooltipDataType.Unit, function(tooltip, data)
-        print('Unit', data)
         OnTooltipSetUnit(tooltip)
     end)
 
