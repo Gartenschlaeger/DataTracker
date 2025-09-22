@@ -264,23 +264,23 @@ local function OnTooltipSetUnit(tooltip)
     end
 end
 
-local function OnTooltipSetItem(tooltip)
-    local _, link = tooltip:GetItem()
-    if (link == nil) then
-        return
-    end
+-- local function OnTooltipSetItem(tooltip)
+--     local _, link = tooltip:GetItem()
+--     if (link == nil) then
+--         return
+--     end
 
-    local itemId = core.helper:GetItemIdFromLink(link)
-    if (itemId == -1) then
-        return
-    end
+--     local itemId = core.helper:GetItemIdFromLink(link)
+--     if (itemId == -1) then
+--         return
+--     end
 
-    if (itemTooltipLastItemId ~= itemId) then
-        itemTooltipLastItemId = itemId
+--     if (itemTooltipLastItemId ~= itemId) then
+--         itemTooltipLastItemId = itemId
 
-        -- TODO: implement item tooltip infos
-    end
-end
+--         -- TODO: implement item tooltip infos
+--     end
+-- end
 
 local function OnTooltipCleared()
     unitTooltipLastUnitId = nil
