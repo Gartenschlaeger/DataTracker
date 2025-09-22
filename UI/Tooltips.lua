@@ -288,7 +288,16 @@ local function OnTooltipCleared()
 end
 
 function core:InitTooltipHooks()
+    TooltipDataProcessor.AddTooltipPostCall(Enum.TooltipDataType.Unit, function(tooltip, data)
+        print('Unit', data)
+        OnTooltipSetUnit(tooltip)
+    end)
+
+    -- TooltipDataProcessor.AddTooltipPostCall(Enum.TooltipDataType.Item, function(tooltip, data)
+    --     OnTooltipSetItem(tooltip)
+    -- end)
+
     --GameTooltip:HookScript("OnTooltipSetUnit", OnTooltipSetUnit)
     --GameTooltip:HookScript('OnTooltipSetItem', OnTooltipSetItem)
-    --GameTooltip:HookScript("OnTooltipCleared", OnTooltipCleared)
+    GameTooltip:HookScript("OnTooltipCleared", OnTooltipCleared)
 end
