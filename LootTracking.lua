@@ -132,7 +132,7 @@ local function TrackItem(itemId, itemName, itemQuantity, itemQuality, unitId, so
 
     local unitItemLootedCounter = unitItemsInfo[itemId]
     if (unitItemLootedCounter == nil) then
-        unitItemLootedCounter = 1 --itemQuantity
+        unitItemLootedCounter = 1                         --itemQuantity
     else
         unitItemLootedCounter = unitItemLootedCounter + 1 --itemQuantity
     end
@@ -308,10 +308,8 @@ local function ProcessItemLootSlot(itemSlot)
                     IncrementLootCounter(lootingInfos)
                 end
             end
-
         end
     end
-
 end
 
 local function ProcessMoneyLoolSlot(itemSlot)
@@ -374,13 +372,10 @@ end
 
 ---Called when loot window is opened and loot is ready
 function core:OnLootReady()
-    core.logging:Trace('OnLootReady')
+    core.logging:Trace('OnLootOpened')
 
     -- ignore if event is already handled
-    if (tmp_isLooting) then
-        return
-    end
-
+    if (tmp_isLooting) then return end
     tmp_isLooting = true
 
     -- ensure current zone id is set
@@ -389,11 +384,12 @@ function core:OnLootReady()
     end
 
     -- track loot
-    for itemSlot = 1, GetNumLootItems() do
+    local numLootItems = GetNumLootItems()
+    for itemSlot = 1, numLootItems do
         local slotType = GetLootSlotType(itemSlot)
-        if (slotType == LOOT_SLOT_ITEM) then
+        if (slotType == Enum.LootSlotType.Item) then
             ProcessItemLootSlot(itemSlot)
-        elseif (slotType == LOOT_SLOT_MONEY) then
+        elseif (slotType == Enum.LootSlotType.Money) then
             ProcessMoneyLoolSlot(itemSlot)
         end
     end

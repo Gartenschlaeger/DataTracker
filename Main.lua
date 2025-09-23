@@ -21,7 +21,8 @@ end
 
 ---Tracks general game related events
 local function OnEvent(self, event, ...)
-    --DataTracker:LogTrace('EVENT', event, ...)
+    core.logging:Trace('EVENT', event, ...)
+
     if (event == 'ADDON_LOADED') then
         OnAddonLoaded(...)
     elseif (event == 'PLAYER_TARGET_CHANGED') then
@@ -30,7 +31,7 @@ local function OnEvent(self, event, ...)
         core:UpdateCurrentZone()
     elseif (event == 'UNIT_SPELLCAST_SUCCEEDED') then
         core:OnUnitSpellcastSucceeded(...)
-    elseif (event == 'LOOT_READY') then
+    elseif (event == 'LOOT_OPENED') then
         core:OnLootReady()
     elseif (event == 'LOOT_CLOSED') then
         core:OnLootClosed()

@@ -18,8 +18,6 @@
         "FauxScrollFrame_GetOffset",
         "COPPER_PER_GOLD",
         "COPPER_PER_SILVER",
-        "LOOT_SLOT_ITEM",
-        "LOOT_SLOT_MONEY",
         "FrameStackTooltip_Toggle",
         "SlashCmdList",
         "DT_DatabaseBrowser_SearchBtn",

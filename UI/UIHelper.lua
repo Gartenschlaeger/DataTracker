@@ -13,17 +13,16 @@ core.ui = ui
 ---@param initialValue any
 ---@param callback function
 function ui:AddCheckbox(panel, x, y, text, initialValue, callback)
-    local checkbox = CreateFrame("CheckButton", nil, panel, 'InterfaceOptionsCheckButtonTemplate')
+    local checkbox = CreateFrame("CheckButton", nil, panel, "InterfaceOptionsCheckButtonTemplate")
 
-    ---@diagnostic disable-next-line: undefined-field
     checkbox.Text:SetText(text)
-
     checkbox:SetPoint("TOPLEFT", x, y)
-
     checkbox:SetChecked(initialValue)
-    checkbox.SetValue = function(_, value)
-        callback(tonumber(value) == 1)
-    end
+
+    checkbox:SetScript("OnClick", function(self)
+        local checked = self:GetChecked()
+        callback(checked)
+    end)
 
     return checkbox
 end

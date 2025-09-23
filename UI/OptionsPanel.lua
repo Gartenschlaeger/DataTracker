@@ -5,8 +5,9 @@ function core:InitOptionsPanel()
     local panel = CreateFrame("Frame")
     panel.name = "DataTracker"
 
-    ---@diagnostic disable-next-line: undefined-global
-    InterfaceOptions_AddCategory(panel)
+    local category = Settings.RegisterCanvasLayoutCategory(panel, "DataTracker")
+    category.ID = "DataTracker"
+    Settings.RegisterAddOnCategory(category)
 
     -- general
     local titleGeneral = panel:CreateFontString("ARTWORK", nil, "GameFontNormalLarge")
@@ -15,12 +16,12 @@ function core:InitOptionsPanel()
 
     core.ui:AddCheckbox(panel, 10, -40, core.i18n.OP_DEBUG_LOGS,
         DT_Options.MinLogLevel == core.logging.LogLevel.Debug, function(isEnabled)
-        if (isEnabled) then
-            DT_Options.MinLogLevel = core.logging.LogLevel.Debug
-        else
-            DT_Options.MinLogLevel = core.logging.LogLevel.Info
-        end
-    end)
+            if (isEnabled) then
+                DT_Options.MinLogLevel = core.logging.LogLevel.Debug
+            else
+                DT_Options.MinLogLevel = core.logging.LogLevel.Info
+            end
+        end)
 
     -- tooltip
     local titleTooltip = panel:CreateFontString("ARTWORK", nil, "GameFontNormalLarge")
