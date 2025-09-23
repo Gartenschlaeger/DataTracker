@@ -18,8 +18,8 @@ Broadcast.lua
 Helper.lua
 
 UI/UIHelper.lua
-## UI/DatabaseBrowser.lua
-## UI/DatabaseBrowser.xml
+UI/DatabaseBrowser.lua
+UI/DatabaseBrowser.xml
 UI/Tooltips.lua
 UI/OptionsPanel.lua
 
