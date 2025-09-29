@@ -262,10 +262,19 @@ local function LoadItemDetails(itemIndex)
             end
 
             if (result) then
-                if (unitInfo.zns) then
+                if (unitInfo.mps) then
+                    for mapId, _ in pairs(unitInfo.mps) do
+                        local mapinfo = C_Map.GetMapInfo(mapId)
+                        if (mapinfo) then
+                            result.zoneName = result.zoneName .. ' ' .. mapinfo.name
+                            break
+                        end
+                    end
+                elseif (unitInfo.zns) then
                     for zoneId, _ in pairs(unitInfo.zns) do
                         local text = core:GetZoneText(zoneId)
                         result.zoneName = result.zoneName .. ' ' .. text
+                        break
                     end
                 end
 
@@ -283,7 +292,6 @@ local function LoadItemDetails(itemIndex)
                 end
             end
         end
-
     end
 
     -- print(totalResults)
