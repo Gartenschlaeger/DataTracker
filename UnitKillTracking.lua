@@ -5,7 +5,7 @@ local _, core = ...
 function core:TrackKill(unitId, unitName)
     core.logging:Trace('TrackKill', unitId, unitName)
 
-    if (core.CurrentZoneId == nil) then
+    if (core.CurrentMapId == nil) then
         core:UpdateCurrentZone()
     end
 
@@ -20,15 +20,17 @@ function core:TrackKill(unitId, unitName)
     local totalKills = (unitInfo['kls'] or 0) + 1
     unitInfo['kls'] = totalKills
 
-    -- update zones
-    local zones = unitInfo['zns']
-    if (zones == nil) then
-        zones = {}
-        unitInfo['zns'] = zones
+    -- update maps
+    local maps = unitInfo['mps']
+    if (maps == nil) then
+        maps = {}
+        unitInfo['mps'] = maps
     end
 
-    -- update zone kills counter
-    zones[core.CurrentZoneId] = (zones[core.CurrentZoneId] or 0) + 1
+    maps[core.CurrentMapId] = (maps[core.CurrentMapId] or 0) + 1
+
+    -- cleanup old data
+    unitInfo['zns'] = nil
 
     core.logging:Debug('Kill: ' .. unitName .. ' (ID = ' .. unitId .. '), total kills = ' .. totalKills)
 end
@@ -52,7 +54,7 @@ function core:OnCombatLogEventUnfiltered()
         elseif (subEvent == "PARTY_KILL") then
             core.TmpAttackedUnitGuids[destGUID] = true
         elseif (
-            subEvent == 'UNIT_DIED' and core.helper:IsTrackableUnit(destGUID) and
+                subEvent == 'UNIT_DIED' and core.helper:IsTrackableUnit(destGUID) and
                 core.TmpAttackedUnitGuids[destGUID] == true) then
             core.TmpAttackedUnitGuids[destGUID] = nil
             local unitId = core.helper:GetUnitIdFromGuid(destGUID)

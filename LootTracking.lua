@@ -379,7 +379,7 @@ function core:OnLootReady()
     tmp_isLooting = true
 
     -- ensure current zone id is set
-    if (core.CurrentZoneId == nil) then
+    if (core.CurrentMapId == nil) then
         core:UpdateCurrentZone()
     end
 
