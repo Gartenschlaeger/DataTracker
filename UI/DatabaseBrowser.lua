@@ -399,7 +399,15 @@ function DT_DatabaseBrowser_ScrollBar_Update()
                 local result = DT_SearchResults[itemIndex]
                 if result and result.itemId then
                     GameTooltip:SetOwner(self, "ANCHOR_NONE")
-                    GameTooltip:SetPoint("TOPRIGHT", self, "TOPLEFT", 0, 0)
+
+                    local screenWidth = UIParent:GetWidth()
+                    local buttonLeft = self:GetLeft() or 0
+                    if buttonLeft < screenWidth * 0.25 then
+                        GameTooltip:SetPoint("TOPLEFT", self, "TOPRIGHT", 0, 0)
+                    else
+                        GameTooltip:SetPoint("TOPRIGHT", self, "TOPLEFT", 0, 0)
+                    end
+
                     GameTooltip:SetItemByID(result.itemId)
                     GameTooltip:Show()
                 end
