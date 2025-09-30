@@ -159,16 +159,37 @@ function DT_DatabaseBrowser_OnBack(self)
     DatabaseBrowserFrame.itemDetails:Hide()
 end
 
-local function createUnitResult(unitId, unitName, kills, gold, percent, colorR, colorG, colorB)
-    return {
+local function DT_CreateUnitResult(unitId, unitInfo, gold, percent, colorR, colorG, colorB)
+    local result = {
         unitId = unitId,
-        unitName = unitName,
+        unitName = unitInfo.nam,
         zoneName = '',
-        kills = kills,
+        kills = unitInfo.kls,
         gold = gold,
         percent = percent,
         color = { r = colorR, g = colorG, b = colorB }
     }
+
+    if unitInfo and unitInfo.mps then
+        for mapId, _ in pairs(unitInfo.mps) do
+            result.mapId = mapId
+            break
+        end
+    end
+
+    return result
+end
+
+local function DT_OpenWorldMap(mapId)
+    if not WorldMapFrame:IsShown() then
+        WorldMapFrame:SetParent(UIParent)
+        WorldMapFrame:ClearAllPoints()
+        WorldMapFrame:SetPoint("CENTER")
+        WorldMapFrame:SetFrameStrata("FULLSCREEN_DIALOG")
+        WorldMapFrame:Show()
+    end
+    WorldMapFrame:SetMapID(mapId)
+    WorldMapFrame:OnMapChanged()
 end
 
 local function GetUnitColor(classification)
@@ -229,10 +250,9 @@ local function LoadItemDetails(itemIndex)
                     if (itemResult.itemId == itemId) then
                         local percent = core.helper:CalculatePercentage(ltd, timesLooted)
                         local color = GetUnitColor(unitInfo.clf)
-                        result = createUnitResult(
+                        result = DT_CreateUnitResult(
                             unitId,
-                            unitInfo.nam,
-                            unitInfo.kls,
+                            unitInfo,
                             core.helper:CalculateAvgUnitGoldCount(unitInfo, goldLevel),
                             core.helper:FormatPercentage(percent),
                             color.r, color.g, color.b)
@@ -249,10 +269,9 @@ local function LoadItemDetails(itemIndex)
                     if (itemResult.itemId == itemId) then
                         local percent = core.helper:CalculatePercentage(ltd_sk, timesLooted)
                         local color = GetUnitColor(unitInfo.clf)
-                        result = createUnitResult(
+                        result = DT_CreateUnitResult(
                             unitId,
-                            unitInfo.nam,
-                            unitInfo.kls,
+                            unitInfo,
                             core.helper:CalculateAvgUnitGoldCount(unitInfo, goldLevel),
                             core.helper:FormatPercentage(percent),
                             color.r, color.g, color.b)
@@ -310,6 +329,7 @@ function DT_AnyUnitFilter_TextChanged(self)
     end
 end
 
+-- updatefunction to handle item location results
 function DT_DatabaseBrowser_ScrollBarLoc_Update()
     local totalResults = core.helper:GetTableSize(DT_SearchUnitResults)
     FauxScrollFrame_Update(DT_DatabaseBrowser_ScrollBarLoc,
@@ -343,6 +363,30 @@ function DT_DatabaseBrowser_ScrollBarLoc_Update()
 
         if (result) then
             btn:Enable()
+            btn:SetAttribute('itemIndex', i + offset)
+
+            btn:SetScript("OnClick", function(self)
+                local itemIndex = self:GetAttribute("itemIndex")
+                local result = DT_SearchUnitResults[itemIndex]
+                if result and result.mapId then
+                    DT_OpenWorldMap(result.mapId)
+                end
+            end)
+
+            btn:SetScript("OnEnter", function(self)
+                local itemIndex = self:GetAttribute("itemIndex")
+                local result = DT_SearchUnitResults[itemIndex]
+
+                if result and result.mapId then
+                    _G[self:GetName() .. "Highlight"]:Show()
+                end
+            end)
+
+            btn:SetScript("OnLeave", function(self)
+                GameTooltip:Hide()
+                _G[self:GetName() .. "Highlight"]:Hide()
+            end)
+
             fsUnit:SetText(result.unitName)
             fsUnit:SetTextColor(result.color.r, result.color.g, result.color.b, 1)
 
@@ -412,6 +456,7 @@ function DT_DatabaseBrowser_ScrollBar_Update()
                     GameTooltip:Show()
                 end
             end
+
             _G[self:GetName() .. "Highlight"]:Show()
         end)
 
