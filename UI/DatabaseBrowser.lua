@@ -22,9 +22,6 @@ local searchBox
 local unitNameFilter
 
 ---@type EditBox
-local zoneNameFilter
-
----@type EditBox
 local minKillsFilter
 
 ---@type EditBox
@@ -58,9 +55,6 @@ function DT_DatabaseBrowser_OnLoad(self)
 
     unitNameFilter = ItemDetailsFrame.UnitName
     unitNameFilter.Instructions:SetText(core.i18n.UI_UNIT_NAME)
-
-    zoneNameFilter = ItemDetailsFrame.ZoneName
-    zoneNameFilter.Instructions:SetText(core.i18n.UI_ZONE_NAME)
 
     goldLevelFilter = ItemDetailsFrame.GoldLevel
     goldLevelFilter.Instructions:SetText(core.i18n.UI_GOLD_LEVEL)
@@ -220,7 +214,6 @@ local function LoadItemDetails(itemIndex)
     local unitName = unitNameFilter:GetText()
     local minKills = tonumber(minKillsFilter:GetText(), 10)
     local goldLevel = tonumber(goldLevelFilter:GetText(), 10)
-    local zoneName = zoneNameFilter:GetText()
 
     local totalResults = 0
     for unitId, unitInfo in pairs(DT_UnitDb) do
@@ -294,14 +287,6 @@ local function LoadItemDetails(itemIndex)
                         local text = core:GetZoneText(zoneId)
                         result.zoneName = result.zoneName .. ' ' .. text
                         break
-                    end
-                end
-
-                -- filter by zone name
-                if (zoneName) then
-                    local fm = result.zoneName:find(zoneName)
-                    if (not fm) then
-                        add = false
                     end
                 end
 
