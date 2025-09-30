@@ -355,24 +355,18 @@ function DT_DatabaseBrowser_ScrollBarLoc_Update()
             btn:SetAttribute('itemIndex', i + offset)
 
             btn:SetScript("OnClick", function(self)
-                local itemIndex = self:GetAttribute("itemIndex")
-                local result = DT_SearchUnitResults[itemIndex]
-                if result and result.mapId then
+                if result.mapId then
                     DT_OpenWorldMap(result.mapId)
                 end
             end)
 
             btn:SetScript("OnEnter", function(self)
-                local itemIndex = self:GetAttribute("itemIndex")
-                local result = DT_SearchUnitResults[itemIndex]
-
-                if result and result.mapId then
+                if result.mapId then
                     _G[self:GetName() .. "Highlight"]:Show()
                 end
             end)
 
             btn:SetScript("OnLeave", function(self)
-                GameTooltip:Hide()
                 _G[self:GetName() .. "Highlight"]:Hide()
             end)
 
@@ -380,7 +374,12 @@ function DT_DatabaseBrowser_ScrollBarLoc_Update()
             fsUnit:SetTextColor(result.color.r, result.color.g, result.color.b, 1)
 
             fsZone:SetText(result.zoneName)
-            fsZone:SetTextColor(1, 1, 1, 1)
+
+            if result.mapId then
+                fsZone:SetTextColor(0, 0.63, 1)
+            else
+                fsZone:SetTextColor(1, 1, 1, 1)
+            end
 
             if (result.gold and result.gold > 0) then
                 fsGold:SetText(GetCoinTextureString(result.gold))
