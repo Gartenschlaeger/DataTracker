@@ -298,6 +298,10 @@ local function LoadItemDetails(itemIndex)
         end
     end
 
+    table.sort(DT_SearchUnitResults, function(a, b)
+        return a.zoneName < b.zoneName
+    end)
+
     -- print(totalResults)
     DT_DatabaseBrowser_ScrollBarLoc_Update()
 
