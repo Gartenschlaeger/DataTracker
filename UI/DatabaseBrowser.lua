@@ -387,9 +387,29 @@ function DT_DatabaseBrowser_ScrollBar_Update()
 
         local btn = _G['DT_DatabaseBrowser_Entry' .. i]
         btn:SetAttribute('itemIndex', i + offset)
+
         btn:SetScript("OnClick", function(self)
             local itemIndex = tonumber(self:GetAttribute('itemIndex'))
             LoadItemDetails(itemIndex)
+        end)
+
+        btn:SetScript("OnEnter", function(self)
+            local itemIndex = self:GetAttribute("itemIndex")
+            if itemIndex then
+                local result = DT_SearchResults[itemIndex]
+                if result and result.itemId then
+                    GameTooltip:SetOwner(self, "ANCHOR_NONE")
+                    GameTooltip:SetPoint("TOPRIGHT", self, "TOPLEFT", 0, 0)
+                    GameTooltip:SetItemByID(result.itemId)
+                    GameTooltip:Show()
+                end
+            end
+            _G[self:GetName() .. "Highlight"]:Show()
+        end)
+
+        btn:SetScript("OnLeave", function(self)
+            GameTooltip:Hide()
+            _G[self:GetName() .. "Highlight"]:Hide()
         end)
 
         local fsVal1 = _G["DT_DatabaseBrowser_Entry" .. i .. 'Val1']
