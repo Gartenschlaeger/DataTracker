@@ -22,9 +22,6 @@ local searchBox
 local unitNameFilter
 
 ---@type EditBox
-local zoneNameFilter
-
----@type EditBox
 local minKillsFilter
 
 ---@type EditBox
@@ -58,9 +55,6 @@ function DT_DatabaseBrowser_OnLoad(self)
 
     unitNameFilter = ItemDetailsFrame.UnitName
     unitNameFilter.Instructions:SetText(core.i18n.UI_UNIT_NAME)
-
-    zoneNameFilter = ItemDetailsFrame.ZoneName
-    zoneNameFilter.Instructions:SetText(core.i18n.UI_ZONE_NAME)
 
     goldLevelFilter = ItemDetailsFrame.GoldLevel
     goldLevelFilter.Instructions:SetText(core.i18n.UI_GOLD_LEVEL)
@@ -119,7 +113,7 @@ function DT_DatabaseBrowser_OnSearch(self)
     searchText = strtrim(strlower(searchText))
     if (strlen(searchText) > 0) then
         for itemId, itemInfo in pairs(DT_ItemDb) do
-            local nameMatches = strfind(strlower(itemInfo.nam), searchText, 1, true)
+            local nameMatches = strfind(strlower(itemInfo.nam or ''), searchText, 1, true)
             if (nameMatches) then
                 local result = {}
                 result.itemId = itemId
@@ -159,16 +153,37 @@ function DT_DatabaseBrowser_OnBack(self)
     DatabaseBrowserFrame.itemDetails:Hide()
 end
 
-local function createUnitResult(unitId, unitName, kills, gold, percent, colorR, colorG, colorB)
-    return {
+local function DT_CreateUnitResult(unitId, unitInfo, gold, percent, colorR, colorG, colorB)
+    local result = {
         unitId = unitId,
-        unitName = unitName,
+        unitName = unitInfo.nam,
         zoneName = '',
-        kills = kills,
+        kills = unitInfo.kls,
         gold = gold,
         percent = percent,
         color = { r = colorR, g = colorG, b = colorB }
     }
+
+    if unitInfo and unitInfo.mps then
+        for mapId, _ in pairs(unitInfo.mps) do
+            result.mapId = mapId
+            break
+        end
+    end
+
+    return result
+end
+
+local function DT_OpenWorldMap(mapId)
+    if not WorldMapFrame:IsShown() then
+        WorldMapFrame:SetParent(UIParent)
+        WorldMapFrame:ClearAllPoints()
+        WorldMapFrame:SetPoint("CENTER")
+        WorldMapFrame:SetFrameStrata("FULLSCREEN_DIALOG")
+        WorldMapFrame:Show()
+    end
+    WorldMapFrame:SetMapID(mapId)
+    WorldMapFrame:OnMapChanged()
 end
 
 local function GetUnitColor(classification)
@@ -199,7 +214,6 @@ local function LoadItemDetails(itemIndex)
     local unitName = unitNameFilter:GetText()
     local minKills = tonumber(minKillsFilter:GetText(), 10)
     local goldLevel = tonumber(goldLevelFilter:GetText(), 10)
-    local zoneName = zoneNameFilter:GetText()
 
     local totalResults = 0
     for unitId, unitInfo in pairs(DT_UnitDb) do
@@ -229,10 +243,9 @@ local function LoadItemDetails(itemIndex)
                     if (itemResult.itemId == itemId) then
                         local percent = core.helper:CalculatePercentage(ltd, timesLooted)
                         local color = GetUnitColor(unitInfo.clf)
-                        result = createUnitResult(
+                        result = DT_CreateUnitResult(
                             unitId,
-                            unitInfo.nam,
-                            unitInfo.kls,
+                            unitInfo,
                             core.helper:CalculateAvgUnitGoldCount(unitInfo, goldLevel),
                             core.helper:FormatPercentage(percent),
                             color.r, color.g, color.b)
@@ -249,10 +262,9 @@ local function LoadItemDetails(itemIndex)
                     if (itemResult.itemId == itemId) then
                         local percent = core.helper:CalculatePercentage(ltd_sk, timesLooted)
                         local color = GetUnitColor(unitInfo.clf)
-                        result = createUnitResult(
+                        result = DT_CreateUnitResult(
                             unitId,
-                            unitInfo.nam,
-                            unitInfo.kls,
+                            unitInfo,
                             core.helper:CalculateAvgUnitGoldCount(unitInfo, goldLevel),
                             core.helper:FormatPercentage(percent),
                             color.r, color.g, color.b)
@@ -262,18 +274,19 @@ local function LoadItemDetails(itemIndex)
             end
 
             if (result) then
-                if (unitInfo.zns) then
+                if (unitInfo.mps) then
+                    for mapId, _ in pairs(unitInfo.mps) do
+                        local mapinfo = C_Map.GetMapInfo(mapId)
+                        if (mapinfo) then
+                            result.zoneName = result.zoneName .. ' ' .. mapinfo.name
+                            break
+                        end
+                    end
+                elseif (unitInfo.zns) then
                     for zoneId, _ in pairs(unitInfo.zns) do
                         local text = core:GetZoneText(zoneId)
                         result.zoneName = result.zoneName .. ' ' .. text
-                    end
-                end
-
-                -- filter by zone name
-                if (zoneName) then
-                    local fm = result.zoneName:find(zoneName)
-                    if (not fm) then
-                        add = false
+                        break
                     end
                 end
 
@@ -283,8 +296,11 @@ local function LoadItemDetails(itemIndex)
                 end
             end
         end
-
     end
+
+    table.sort(DT_SearchUnitResults, function(a, b)
+        return a.zoneName < b.zoneName
+    end)
 
     -- print(totalResults)
     DT_DatabaseBrowser_ScrollBarLoc_Update()
@@ -302,6 +318,7 @@ function DT_AnyUnitFilter_TextChanged(self)
     end
 end
 
+-- updatefunction to handle item location results
 function DT_DatabaseBrowser_ScrollBarLoc_Update()
     local totalResults = core.helper:GetTableSize(DT_SearchUnitResults)
     FauxScrollFrame_Update(DT_DatabaseBrowser_ScrollBarLoc,
@@ -335,11 +352,34 @@ function DT_DatabaseBrowser_ScrollBarLoc_Update()
 
         if (result) then
             btn:Enable()
+            btn:SetAttribute('itemIndex', i + offset)
+
+            btn:SetScript("OnClick", function(self)
+                if result.mapId then
+                    DT_OpenWorldMap(result.mapId)
+                end
+            end)
+
+            btn:SetScript("OnEnter", function(self)
+                if result.mapId then
+                    _G[self:GetName() .. "Highlight"]:Show()
+                end
+            end)
+
+            btn:SetScript("OnLeave", function(self)
+                _G[self:GetName() .. "Highlight"]:Hide()
+            end)
+
             fsUnit:SetText(result.unitName)
             fsUnit:SetTextColor(result.color.r, result.color.g, result.color.b, 1)
 
             fsZone:SetText(result.zoneName)
-            fsZone:SetTextColor(1, 1, 1, 1)
+
+            if result.mapId then
+                fsZone:SetTextColor(0, 0.63, 1)
+            else
+                fsZone:SetTextColor(1, 1, 1, 1)
+            end
 
             if (result.gold and result.gold > 0) then
                 fsGold:SetText(GetCoinTextureString(result.gold))
@@ -379,9 +419,38 @@ function DT_DatabaseBrowser_ScrollBar_Update()
 
         local btn = _G['DT_DatabaseBrowser_Entry' .. i]
         btn:SetAttribute('itemIndex', i + offset)
+
         btn:SetScript("OnClick", function(self)
             local itemIndex = tonumber(self:GetAttribute('itemIndex'))
             LoadItemDetails(itemIndex)
+        end)
+
+        btn:SetScript("OnEnter", function(self)
+            local itemIndex = self:GetAttribute("itemIndex")
+            if itemIndex then
+                local result = DT_SearchResults[itemIndex]
+                if result and result.itemId then
+                    GameTooltip:SetOwner(self, "ANCHOR_NONE")
+
+                    local screenWidth = UIParent:GetWidth()
+                    local buttonLeft = self:GetLeft() or 0
+                    if buttonLeft < screenWidth * 0.25 then
+                        GameTooltip:SetPoint("TOPLEFT", self, "TOPRIGHT", 0, 0)
+                    else
+                        GameTooltip:SetPoint("TOPRIGHT", self, "TOPLEFT", 0, 0)
+                    end
+
+                    GameTooltip:SetItemByID(result.itemId)
+                    GameTooltip:Show()
+                end
+            end
+
+            _G[self:GetName() .. "Highlight"]:Show()
+        end)
+
+        btn:SetScript("OnLeave", function(self)
+            GameTooltip:Hide()
+            _G[self:GetName() .. "Highlight"]:Hide()
         end)
 
         local fsVal1 = _G["DT_DatabaseBrowser_Entry" .. i .. 'Val1']
