@@ -11,7 +11,12 @@ function core:UpdateCurrentZone()
 
     core.CurrentMapId = C_Map.GetBestMapForUnit('player')
 
-    core.logging:Debug('Changed current map (ID = ' .. core.CurrentMapId .. ')')
+    if (core.CurrentMapId == nil) then
+        core.logging:Warning('Could not determine current map')
+        return
+    end
+
+    core.logging:Debug('Changed current map (ID = ' .. (core.CurrentMapId or 0) .. ')')
 end
 
 ---@param zoneId number

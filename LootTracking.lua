@@ -381,7 +381,11 @@ function core:OnLootReady()
     -- ensure current zone id is set
     if (core.CurrentMapId == nil) then
         core:UpdateCurrentZone()
+        if (core.CurrentMapId == nil) then
+            return
+        end
     end
+
 
     -- track loot
     local numLootItems = GetNumLootItems()

@@ -7,6 +7,9 @@ function core:TrackKill(unitId, unitName)
 
     if (core.CurrentMapId == nil) then
         core:UpdateCurrentZone()
+        if (core.CurrentMapId == nil) then
+            return
+        end
     end
 
     -- get unit info
