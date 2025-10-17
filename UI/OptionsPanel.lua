@@ -111,4 +111,62 @@ function core:InitOptionsPanel()
     end)
 
     SetMinQualityLevelText(DT_Options.Tooltip.MinQualityLevel)
+
+    -- limit items
+    local sliderMaxItems
+    local sliderValueText
+
+    local cbLimitItems = core.ui:AddCheckbox(panel, 10, -395, core.i18n.OP_TT_LIMIT_ITEMS,
+        DT_Options.Tooltip.LimitItems,
+        function(isEnabled)
+            DT_Options.Tooltip.LimitItems = isEnabled
+            if sliderMaxItems then
+                sliderMaxItems:EnableMouse(isEnabled)
+                sliderMaxItems:SetAlpha(isEnabled and 1 or 0.5)
+            end
+            if sliderValueText then
+                sliderValueText:SetTextColor(isEnabled and 1 or 0.5, isEnabled and 1 or 0.5, isEnabled and 1 or 0.5)
+            end
+        end)
+
+    sliderMaxItems = CreateFrame("Slider", "DT_MaxItemsSlider", panel, "OptionsSliderTemplate")
+    sliderMaxItems:SetPoint("TOPLEFT", 30, -420)
+    sliderMaxItems:SetMinMaxValues(10, 100)
+    sliderMaxItems:SetValueStep(1)
+    sliderMaxItems:SetObeyStepOnDrag(true)
+    sliderMaxItems:SetWidth(200)
+    sliderMaxItems:SetValue(DT_Options.Tooltip.MaxItemsToShow or 50)
+    sliderMaxItems:EnableMouse(DT_Options.Tooltip.LimitItems)
+    sliderMaxItems:SetAlpha(DT_Options.Tooltip.LimitItems and 1 or 0.5)
+
+    _G[sliderMaxItems:GetName() .. 'Low']:SetText('10')
+    _G[sliderMaxItems:GetName() .. 'High']:SetText('100')
+    _G[sliderMaxItems:GetName() .. 'Text']:SetText('')
+
+    sliderValueText = panel:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+    sliderValueText:SetPoint("LEFT", sliderMaxItems, "RIGHT", 10, 0)
+    sliderValueText:SetText(tostring(DT_Options.Tooltip.MaxItemsToShow or 50))
+    sliderValueText:SetTextColor(DT_Options.Tooltip.LimitItems and 1 or 0.5, DT_Options.Tooltip.LimitItems and 1 or 0.5,
+        DT_Options.Tooltip.LimitItems and 1 or 0.5)
+
+    sliderMaxItems:SetScript("OnValueChanged", function(self, value)
+        value = math.floor(value + 0.5)
+        DT_Options.Tooltip.MaxItemsToShow = value
+        sliderValueText:SetText(value)
+    end)
+
+    -- item types
+    core.ui:AddCheckbox(panel, 10, -450, core.i18n.OP_TT_SHOW_EQUIP,
+        DT_Options.Tooltip.ShowEquipmentItems,
+        function(isEnabled)
+            DT_Options.Tooltip.ShowEquipmentItems = isEnabled
+            cbShowIcons:SetEnabled(isEnabled)
+        end)
+
+    core.ui:AddCheckbox(panel, 10, -480, core.i18n.OP_TT_SHOW_JOBS,
+        DT_Options.Tooltip.ShowProfessionItems,
+        function(isEnabled)
+            DT_Options.Tooltip.ShowProfessionItems = isEnabled
+            cbShowIcons:SetEnabled(isEnabled)
+        end)
 end
