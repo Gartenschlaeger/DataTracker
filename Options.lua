@@ -35,5 +35,10 @@ function core:InitOptions()
         DT_Options.Tooltip.MinQualityLevel = DEFAULT_MIN_ITEM_QUALITY_LEVEL
     end
 
+    DT_Options.Tooltip.LimitItems = core.helper:IfNil(DT_Options.Tooltip.LimitItems, true)
+    DT_Options.Tooltip.MaxItemsToShow = core.helper:IfNil(DT_Options.Tooltip.MaxItemsToShow, 25)
+    DT_Options.Tooltip.ShowEquipmentItems = core.helper:IfNil(DT_Options.Tooltip.ShowEquipmentItems, false)
+    DT_Options.Tooltip.ShowProfessionItems = core.helper:IfNil(DT_Options.Tooltip.ShowProfessionItems, true)
+
     Cleanup()
 end

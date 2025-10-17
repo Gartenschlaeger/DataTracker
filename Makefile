@@ -17,5 +17,9 @@ pack: build
 
 sync: build
 	mkdir -p $(WOW_ADDON_DIR)/DataTracker
-	cp DataTracker/*.toc $(WOW_ADDON_DIR)/DataTracker
-	cp DataTracker/*.lua $(WOW_ADDON_DIR)/DataTracker
+	cp -vf DataTracker/*.toc $(WOW_ADDON_DIR)/DataTracker
+	cp -vf DataTracker/*.lua $(WOW_ADDON_DIR)/DataTracker
+	cp -vfR DataTracker/Localization $(WOW_ADDON_DIR)/DataTracker
+	cp -vfR DataTracker/UI $(WOW_ADDON_DIR)/DataTracker
+	mkdir -p $(WOW_ADDON_DIR)/DataTracker/Media
+	cp -vfR DataTracker/Media/icon.tga $(WOW_ADDON_DIR)/DataTracker/Media/

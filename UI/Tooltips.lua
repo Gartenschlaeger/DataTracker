@@ -8,8 +8,16 @@ local function addEmptyLine(context)
     end
 end
 
+local function addHeaderText(context)
+    if (context.headerText) then
+        context.tooltip:AddLine(context.headerText, nil, nil, nil, nil, true)
+        context.headerText = nil
+    end
+end
+
 local function addDoubleLineRGB(context, left, right, r, g, b)
     addEmptyLine(context)
+    addHeaderText(context)
     context.tooltip:AddDoubleLine(left, right, r, g, b, 1, 1, 1)
 end
 
@@ -82,6 +90,15 @@ local function addMoney(context)
     end
 end
 
+local function shallAddItem(itemClassId)
+    if DT_Options.Tooltip.ShowEquipmentItems ~= true and
+        (itemClassId == Enum.ItemClass.Weapon or itemClassId == Enum.ItemClass.Armor) then
+        return false
+    end
+
+    return true
+end
+
 local function addLoot(context)
     if (not DT_Options.Tooltip.ShowItems) then
         return
@@ -90,26 +107,51 @@ local function addLoot(context)
     local lootInfos = context.unitInfo['its']
     if (lootInfos) then
         local ltd = tonumber(context.unitInfo['ltd']) or 0
-
         context.shouldAddAnEmptyLine = true
+
+        local items = {}
         for itemId, timesItemWasLooted in pairs(lootInfos) do
             local itemInfo = DT_ItemDb[itemId]
             if (itemInfo) then
                 local itemQuality = tonumber(itemInfo['qlt'])
+                local itemClassID, itemSubClassID = select(6, GetItemInfoInstant(itemId))
                 if (itemQuality and itemQuality >= DT_Options.Tooltip.MinQualityLevel) then
-                    local percentage = core.helper:CalculatePercentage(ltd, timesItemWasLooted)
-                    local r, g, b, _ = GetItemQualityColor(itemQuality)
+                    table.insert(items, {
+                        id = itemId,
+                        name = itemInfo['nam'],
+                        quality = itemQuality,
+                        classId = itemClassID,
+                        timesLooted = timesItemWasLooted
+                    })
+                end
+            end
+        end
 
-                    local iconPrefix = ''
-                    if (DT_Options.Tooltip.ShowIcons) then
-                        local itemTextureId = GetItemIcon(itemId)
-                        iconPrefix = '|T' .. itemTextureId .. ':14|t '
-                    end
+        table.sort(items, function(a, b)
+            return string.lower(a.name) < string.lower(b.name)
+        end)
 
-                    addDoubleLineRGB(context,
-                        iconPrefix .. itemInfo['nam'],
-                        core.helper:FormatPercentage(percentage),
-                        r, g, b)
+        local itemsAdded = 0
+        for _, item in ipairs(items) do
+            if shallAddItem(item.classId) then
+                local iconPrefix = ''
+                if (DT_Options.Tooltip.ShowIcons) then
+                    local itemTextureId = GetItemIcon(item.id)
+                    iconPrefix = '|T' .. itemTextureId .. ':14|t '
+                end
+
+                local percentage = core.helper:CalculatePercentage(ltd, item.timesLooted)
+                local r, g, b, _ = GetItemQualityColor(item.quality)
+                addDoubleLineRGB(context,
+                    iconPrefix .. item.name,
+                    core.helper:FormatPercentage(percentage),
+                    r, g, b)
+
+                itemsAdded = itemsAdded + 1
+                if (DT_Options.Tooltip.LimitItems and itemsAdded >= DT_Options.Tooltip.MaxItemsToShow) then
+                    local remainingItems = #items - itemsAdded
+                    context.tooltip:AddLine(string.format(core.i18n.OP_TT_MORE_ITEMS, remainingItems))
+                    break
                 end
             end
         end
@@ -124,6 +166,8 @@ local function addSkinningLoot(context)
     local itemsSkinning = context.unitInfo['its_sk']
     if (itemsSkinning) then
         context.shouldAddAnEmptyLine = true
+        context.headerText = core.i18n.TT_SKINNING
+
         local ltd_sk = tonumber(context.unitInfo['ltd_sk']) or 0
 
         for itemId, itemCount in pairs(itemsSkinning) do
@@ -158,6 +202,8 @@ local function addMiningLoot(context)
     local items = context.unitInfo.its_mn
     if (items) then
         context.shouldAddAnEmptyLine = true
+        context.headerText = core.i18n.TT_MINING
+
         local ltd_mn = tonumber(context.unitInfo.ltd_mn) or 0
 
         for itemId, itemCount in pairs(items) do
@@ -192,6 +238,8 @@ local function addHerbalismLoot(context)
     local items = context.unitInfo.its_hb
     if (items) then
         context.shouldAddAnEmptyLine = true
+        context.headerText = core.i18n.TT_HERBALISM
+
         local timesLooted = tonumber(context.unitInfo.ltd_hb) or 0
 
         for itemId, itemCount in pairs(items) do
@@ -219,7 +267,6 @@ local function addHerbalismLoot(context)
 end
 
 local unitTooltipLastUnitId = nil
-local itemTooltipLastItemId = nil
 
 local function OnTooltipSetUnit(tooltip)
     local _, unit = tooltip:GetUnit();
@@ -251,12 +298,16 @@ local function OnTooltipSetUnit(tooltip)
                 context.shouldAddAnEmptyLine = true
                 addLoot(context)
 
-                context.shouldAddAnEmptyLine = true
-                addSkinningLoot(context)
-                context.shouldAddAnEmptyLine = true
-                addMiningLoot(context)
-                context.shouldAddAnEmptyLine = true
-                addHerbalismLoot(context)
+                if DT_Options.Tooltip.ShowProfessionItems then
+                    context.shouldAddAnEmptyLine = true
+                    addSkinningLoot(context)
+
+                    context.shouldAddAnEmptyLine = true
+                    addMiningLoot(context)
+
+                    context.shouldAddAnEmptyLine = true
+                    addHerbalismLoot(context)
+                end
 
                 unitTooltipLastUnitId = unitId
             end
@@ -264,27 +315,8 @@ local function OnTooltipSetUnit(tooltip)
     end
 end
 
--- local function OnTooltipSetItem(tooltip)
---     local _, link = tooltip:GetItem()
---     if (link == nil) then
---         return
---     end
-
---     local itemId = core.helper:GetItemIdFromLink(link)
---     if (itemId == -1) then
---         return
---     end
-
---     if (itemTooltipLastItemId ~= itemId) then
---         itemTooltipLastItemId = itemId
-
---         -- TODO: implement item tooltip infos
---     end
--- end
-
 local function OnTooltipCleared()
     unitTooltipLastUnitId = nil
-    itemTooltipLastItemId = nil
 end
 
 function core:InitTooltipHooks()
@@ -292,11 +324,5 @@ function core:InitTooltipHooks()
         OnTooltipSetUnit(tooltip)
     end)
 
-    -- TooltipDataProcessor.AddTooltipPostCall(Enum.TooltipDataType.Item, function(tooltip, data)
-    --     OnTooltipSetItem(tooltip)
-    -- end)
-
-    --GameTooltip:HookScript("OnTooltipSetUnit", OnTooltipSetUnit)
-    --GameTooltip:HookScript('OnTooltipSetItem', OnTooltipSetItem)
     GameTooltip:HookScript("OnTooltipCleared", OnTooltipCleared)
 end
