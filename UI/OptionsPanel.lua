@@ -155,6 +155,7 @@ function core:InitOptionsPanel()
         sliderValueText:SetText(value)
     end)
 
+    -- item types
     core.ui:AddCheckbox(panel, 10, -450, core.i18n.OP_TT_SHOW_EQUIP,
         DT_Options.Tooltip.ShowEquipmentItems,
         function(isEnabled)
