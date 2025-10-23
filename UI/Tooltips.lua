@@ -1,6 +1,9 @@
 ---@class DTCore
 local _, core = ...
 
+local _, _, _, TOC_VERSION = GetBuildInfo()
+local IS_CLASSIC = TOC_VERSION < 20000
+
 local function addEmptyLine(context)
     if (context.shouldAddAnEmptyLine) then
         context.tooltip:AddLine(' ')
@@ -269,48 +272,59 @@ end
 local unitTooltipLastUnitId = nil
 
 local function OnTooltipSetUnit(tooltip)
-    local _, unit = tooltip:GetUnit();
-    if (unit) then
-        local unitGuid = UnitGUID(unit);
-        if (not unitGuid or not core.helper:IsTrackableUnit(unitGuid)) then
-            return
-        end
+    local unit
+    if tooltip.GetUnit then
+        _, unit = tooltip:GetUnit()
+    end
 
-        local unitLevel = UnitLevel(unit)
-        local unitId = core.helper:GetUnitIdFromGuid(unitGuid);
-        if (unitId and unitTooltipLastUnitId ~= unitId) then
-            local unitInfo = DT_UnitDb[unitId]
-            if (unitInfo) then
-                local context = {
-                    tooltip = tooltip,
-                    unitInfo = unitInfo,
-                    unitLevel = unitLevel,
-                    shouldAddAnEmptyLine = true
-                }
+    if (not unit) and IS_CLASSIC and GameTooltip:GetUnit() then
+        _, unit = GameTooltip:GetUnit()
+    end
+
+    if not unit then
+        return
+    end
+
+    local unitGuid = UnitGUID(unit)
+    if (not unitGuid or not core.helper:IsTrackableUnit(unitGuid)) then
+        return
+    end
+
+    local unitLevel = UnitLevel(unit)
+    local unitId = core.helper:GetUnitIdFromGuid(unitGuid)
+
+    if (unitId and unitTooltipLastUnitId ~= unitId) then
+        local unitInfo = DT_UnitDb[unitId]
+        if unitInfo then
+            local context = {
+                tooltip = tooltip,
+                unitInfo = unitInfo,
+                unitLevel = unitLevel,
+                shouldAddAnEmptyLine = true
+            }
+
+            context.shouldAddAnEmptyLine = true
+            addTimesLooted(context)
+            addTimesKilled(context)
+
+            context.shouldAddAnEmptyLine = true
+            addMoney(context)
+
+            context.shouldAddAnEmptyLine = true
+            addLoot(context)
+
+            if DT_Options.Tooltip.ShowProfessionItems then
+                context.shouldAddAnEmptyLine = true
+                addSkinningLoot(context)
 
                 context.shouldAddAnEmptyLine = true
-                addTimesLooted(context)
-                addTimesKilled(context)
+                addMiningLoot(context)
 
                 context.shouldAddAnEmptyLine = true
-                addMoney(context)
-
-                context.shouldAddAnEmptyLine = true
-                addLoot(context)
-
-                if DT_Options.Tooltip.ShowProfessionItems then
-                    context.shouldAddAnEmptyLine = true
-                    addSkinningLoot(context)
-
-                    context.shouldAddAnEmptyLine = true
-                    addMiningLoot(context)
-
-                    context.shouldAddAnEmptyLine = true
-                    addHerbalismLoot(context)
-                end
-
-                unitTooltipLastUnitId = unitId
+                addHerbalismLoot(context)
             end
+
+            unitTooltipLastUnitId = unitId
         end
     end
 end
@@ -320,9 +334,13 @@ local function OnTooltipCleared()
 end
 
 function core:InitTooltipHooks()
-    TooltipDataProcessor.AddTooltipPostCall(Enum.TooltipDataType.Unit, function(tooltip, data)
-        OnTooltipSetUnit(tooltip)
-    end)
+    if IS_RETAIL then
+        TooltipDataProcessor.AddTooltipPostCall(Enum.TooltipDataType.Unit, function(tooltip, data)
+            OnTooltipSetUnit(tooltip)
+        end)
+    else
+        GameTooltip:HookScript("OnTooltipSetUnit", OnTooltipSetUnit)
+    end
 
     GameTooltip:HookScript("OnTooltipCleared", OnTooltipCleared)
 end

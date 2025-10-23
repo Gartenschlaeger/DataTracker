@@ -1,4 +1,4 @@
-## Interface: 110200
+## Interface: 11508 110200
 ## Title: DataTracker
 ## Notes: Addon to track looted items and fighted units.
 ## Author: Kai Gartenschläger
