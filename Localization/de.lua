@@ -42,6 +42,9 @@ l.UI_UNIT_NAME         = 'Gegner name'
 l.UI_ZONE_NAME         = 'Zone'
 l.UI_KILLS_PH          = 'Getötet'
 l.UI_GOLD_LEVEL        = 'Gold level'
+l.UI_YES               = 'Ja'
+l.UI_NO                = 'Nein'
+l.UI_PURGE_CONFIRM     = 'Bist du sicher, dass du die gesamte Datenbank leeren willst?'
 
 -- Tooltip
 l.TT_KILLS             = 'Getötet'
@@ -53,3 +56,5 @@ l.TT_MAX_COP           = 'Max. Gold'
 l.TT_SKINNING          = 'Kürschnerei'
 l.TT_MINING            = 'Bergbau'
 l.TT_HERBALISM         = 'Kräuterkunde'
+
+l.CMDS_PURGEDB         = 'Datenbanken wurde zurückgesetzt'

@@ -10,11 +10,28 @@ local TIME_TO_STORE_LOOTINGINFOS = 60 * 5
 local TIME_TO_STORE_UNIT_INFOS = 60
 
 local SPELLID_SKINNING = 8613
+local SPELLID_SKINNING1 = 8617
+local SPELLID_SKINNING2 = 8618
+local SPELLID_SKINNING3 = 8619
+local SPELLID_SKINNING4 = 8620
+
 local SPELLID_MINING = 32606
 local SPELLID_HERBALISM = 32605
 
 function core:PlayerHasSkinning()
-    return IsPlayerSpell(SPELLID_SKINNING)
+    return IsPlayerSpell(SPELLID_SKINNING) or
+        IsPlayerSpell(SPELLID_SKINNING1) or
+        IsPlayerSpell(SPELLID_SKINNING2) or
+        IsPlayerSpell(SPELLID_SKINNING3) or
+        IsPlayerSpell(SPELLID_SKINNING4)
+end
+
+local function IsSkinningSpellId(spellId)
+    return spellId == SPELLID_SKINNING or
+        spellId == SPELLID_SKINNING1 or
+        spellId == SPELLID_SKINNING2 or
+        spellId == SPELLID_SKINNING3 or
+        spellId == SPELLID_SKINNING4
 end
 
 function core:PlayerHasMining()
@@ -350,14 +367,14 @@ end
 ---Occured when a spell is casted (used to track when skinning is started)
 function core:OnUnitSpellcastSucceeded(unitTarget, castGUID, spellID)
     if (unitTarget == 'player') then
-        --print(GetSpellInfo(spellID))
+        core.logging:Debug('OnUnitSpellcastSucceeded', spellID)
 
         local unitGuid = UnitGUID("target")
         if (not unitGuid) then
             return
         end
 
-        if (spellID == SPELLID_SKINNING) then
+        if (IsSkinningSpellId(spellID)) then
             local lootingInfo = GetLootingInformations(unitGuid, core.helper:GetUnitIdFromGuid(unitGuid))
             lootingInfo.skinningStarted = true
         elseif (spellID == SPELLID_MINING) then
@@ -385,7 +402,6 @@ function core:OnLootReady()
             return
         end
     end
-
 
     -- track loot
     local numLootItems = GetNumLootItems()

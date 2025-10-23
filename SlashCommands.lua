@@ -48,6 +48,24 @@ function SlashCommand_CleanupDatabase()
     core:CleanupDatabase()
 end
 
+StaticPopupDialogs["DATATRACKER_PURGE_CONFIRM"] = {
+    text = core.i18n.UI_PURGE_CONFIRM,
+    button1 = core.i18n.UI_YES,
+    button2 = core.i18n.UI_NO,
+    OnAccept = function()
+        core:PurgeDatabase()
+    end,
+    timeout = 0,
+    whileDead = true,
+    hideOnEscape = true,
+    preferredIndex = 3,
+}
+
+SLASH_DT_PURGEDB1 = '/dtpdb'
+function SlashCommand_PurgeDatabase()
+    StaticPopup_Show("DATATRACKER_PURGE_CONFIRM")
+end
+
 function core:InitSlashCommands()
     SlashCmdList.DT_SHOW = SlashCommand_Show
     SlashCmdList.DT_HIDE = SlashCommand_Hide
@@ -55,4 +73,5 @@ function core:InitSlashCommands()
     SlashCmdList.DT_UIDEBUG = SlashCommand_UIDebug
     SlashCmdList.DT_REMUNIT = SlashCommand_DataTrackerRemoveUnit
     SlashCmdList.DT_CLEANUPDB = SlashCommand_CleanupDatabase
+    SlashCmdList.DT_PURGEDB = SlashCommand_PurgeDatabase
 end

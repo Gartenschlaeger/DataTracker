@@ -1,8 +1,8 @@
-## Interface: 110200
+## Interface: 11508 110200
 ## Title: DataTracker
 ## Notes: Addon to track looted items and fighted units.
 ## Author: Kai Gartenschläger
-## Version: 1.1.0
+## Version: 1.2.0
 ## IconTexture: Interface\AddOns\DataTracker\Media\icon
 ## Category: Inventory
 ## Category-deDE: Inventar
