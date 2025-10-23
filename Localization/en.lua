@@ -40,6 +40,9 @@ l.UI_UNIT_NAME         = 'Unit name'
 l.UI_ZONE_NAME         = 'Zone'
 l.UI_KILLS_PH          = 'Kills'
 l.UI_GOLD_LEVEL        = 'Gold level'
+l.UI_YES               = 'Yes'
+l.UI_NO                = 'No'
+l.UI_PURGE_CONFIRM     = 'Are you sure you want to purge the entire database?'
 
 -- Tooltip
 l.TT_KILLS             = 'Kills'
@@ -50,3 +53,5 @@ l.TT_MAX_COP           = 'Max. money'
 l.TT_SKINNING          = 'Skinning'
 l.TT_MINING            = 'Mining'
 l.TT_HERBALISM         = 'Herbalism'
+
+l.CMDS_PURGEDB         = 'Databases have been purged'

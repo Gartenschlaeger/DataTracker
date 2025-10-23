@@ -15,7 +15,6 @@ DT_ZoneDb = {}
 function core:CleanupDatabase()
     -- units
     for _, unitInfos in pairs(DT_UnitDb) do
-
         -- remove old copper counters
         unitInfos.cop = nil
         unitInfos.mnc = nil
@@ -40,6 +39,12 @@ function core:CleanupDatabase()
                 end
             end
         end
-
     end
+end
+
+function core:PurgeDatabase()
+    DT_ItemDb = {}
+    DT_UnitDb = {}
+    DT_ZoneDb = {}
+    core.logging:Info(core.i18n.CMDS_PURGEDB)
 end
