@@ -334,12 +334,12 @@ local function OnTooltipCleared()
 end
 
 function core:InitTooltipHooks()
-    if IS_RETAIL then
+    if IS_CLASSIC then
+        GameTooltip:HookScript("OnTooltipSetUnit", OnTooltipSetUnit)
+    else
         TooltipDataProcessor.AddTooltipPostCall(Enum.TooltipDataType.Unit, function(tooltip, data)
             OnTooltipSetUnit(tooltip)
         end)
-    else
-        GameTooltip:HookScript("OnTooltipSetUnit", OnTooltipSetUnit)
     end
 
     GameTooltip:HookScript("OnTooltipCleared", OnTooltipCleared)
