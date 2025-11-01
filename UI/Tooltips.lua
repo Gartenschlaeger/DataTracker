@@ -145,8 +145,14 @@ local function addLoot(context)
 
                 local percentage = core.helper:CalculatePercentage(ltd, item.timesLooted)
                 local r, g, b, _ = GetItemQualityColor(item.quality)
+
+                local amount = '';
+                if core.logging:IsDebugEnabled() then
+                    amount = ' (' .. item.timesLooted .. ')';
+                end
+
                 addDoubleLineRGB(context,
-                    iconPrefix .. item.name,
+                    iconPrefix .. item.name .. amount,
                     core.helper:FormatPercentage(percentage),
                     r, g, b)
 
