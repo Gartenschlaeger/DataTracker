@@ -194,7 +194,7 @@ local function addSkinningLoot(context)
 
                     local r, g, b, _ = GetItemQualityColor(itemQuality)
                     addDoubleLineRGB(context,
-                        iconPrefix .. itemInfo['nam'],
+                        iconPrefix .. (itemInfo['nam'] or core.i18n.TT_UNKNOWN),
                         core.helper:FormatPercentage(percentage),
                         r, g, b)
                 end

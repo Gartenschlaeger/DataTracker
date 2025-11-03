@@ -47,6 +47,8 @@ l.UI_PURGE_CONFIRM     = 'Are you sure you want to purge the entire database?'
 -- Tooltip
 l.TT_KILLS             = 'Kills'
 l.TT_LOOTED            = 'Looted'
+l.TT_UNKNOWN           = 'Unbekannt'
+
 l.TT_AVG_COP           = 'Money'
 l.TT_MIN_COP           = 'Min. money'
 l.TT_MAX_COP           = 'Max. money'

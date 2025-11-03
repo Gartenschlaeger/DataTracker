@@ -49,6 +49,7 @@ l.UI_PURGE_CONFIRM     = 'Bist du sicher, dass du die gesamte Datenbank leeren w
 -- Tooltip
 l.TT_KILLS             = 'Getötet'
 l.TT_LOOTED            = 'Gelootet'
+l.TT_UNKNOWN           = 'Unbekannt'
 
 l.TT_AVG_COP           = 'Gold'
 l.TT_MIN_COP           = 'Min. Gold'
