@@ -131,7 +131,7 @@ local function addLoot(context)
         end
 
         table.sort(items, function(a, b)
-            return string.lower(a.name) < string.lower(b.name)
+            return string.lower(a.name or '') < string.lower(b.name or '')
         end)
 
         local itemsAdded = 0
